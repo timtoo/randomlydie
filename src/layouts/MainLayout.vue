@@ -113,8 +113,8 @@ export default defineComponent({
                   <q-slider
                     v-model="options.slideshow_delay"
                     :min="1"
-                    :max="15"
-                    :step="0.5"
+                    :max="30"
+                    :step="1"
                     color="primary"
                     label
                   />
