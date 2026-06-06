@@ -4,7 +4,10 @@ import { MODE } from 'src/lib/modes';
 
 <template>
   <q-page class="rr-page-container q-pb-xl">
-    <div class="text-h5 text-center q-py-md">Modes</div>
+    <div class="row items-center q-py-md">
+      <q-btn flat round dense icon="arrow_back" color="primary" to="/" />
+      <div class="q-ml-sm text-h5">Modes</div>
+    </div>
 
     <div class="row q-col-gutter-md justify-center">
       <template v-for="(val, key) in MODE" :key="key">
