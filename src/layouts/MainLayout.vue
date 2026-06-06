@@ -17,7 +17,7 @@ export default defineComponent({
       hideQuick: false,
       enableDebug: false,
       default_roll: '1d10',
-      slideshow_delay: 4.5,
+      slideshow_delay: 5,
     };
     const options = useStorage('options', options_default);
     const $q = useQuasar();

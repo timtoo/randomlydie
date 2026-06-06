@@ -82,15 +82,13 @@ export default defineComponent({
     const slideshow = ref(false);
     const router = useRouter();
     const route = useRoute();
-    const slideshow_delay_extra = 500;
     const reset_confirm_dialog = ref(false);
     const settingsDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
 
     const slideshow_delay = computed(() => {
-      const base = (props.options?.slideshow_delay || 4.5) * 1000;
-      return base + slideshow_delay_extra * (die.value.dice - 1);
+      return (props.options?.slideshow_delay || 5) * 1000;
     });
 
     watch(
