@@ -242,9 +242,11 @@ class Die {
       const mult: string | undefined =
         match.groups?.mult2 || match.groups?.mult1 || match.groups?.mult;
       if (mult) {
-        DIVIDE_CHARS.indexOf(mult[0]) >= 0
-          ? (this.mult = 1 / +mult.slice(1))
-          : (this.mult = +mult.slice(1));
+        if (DIVIDE_CHARS.indexOf(mult[0]) >= 0) {
+          this.mult = 1 / +mult.slice(1);
+        } else {
+          this.mult = +mult.slice(1);
+        }
       }
 
       this.exclusive = false;

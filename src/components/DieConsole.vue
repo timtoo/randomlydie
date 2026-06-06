@@ -33,7 +33,9 @@ watch(
 );
 
 watch(console_input, () => {
-  console_input.value === '' ? (error_status.value = false) : null;
+  if (console_input.value === '') {
+    error_status.value = false;
+  }
 });
 
 function onSubmit() {

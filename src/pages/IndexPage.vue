@@ -33,8 +33,6 @@ function letsroll(
   max?: number
 ): Die {
   const title_divider = ' | ';
-  if (min === undefined) min = die.min;
-  if (max === undefined) max = die.max;
   if (quantity !== undefined && quantity !== die.dice) die.dice = quantity;
 
   die.roll();
