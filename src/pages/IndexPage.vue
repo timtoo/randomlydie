@@ -492,7 +492,7 @@ export default defineComponent({
       <q-btn
         fab
         :icon="slideshow ? 'stop' : MODE[mode].material_icon"
-        :color="slideshow ? 'negative' : 'secondary'"
+        :color="slideshow ? 'positive' : 'secondary'"
         text-color="black"
         @click="fabClick"
       >
