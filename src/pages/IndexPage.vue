@@ -489,7 +489,7 @@ export default defineComponent({
     ></DieConsole>
 
     <!-- FAB -->
-    <q-page-sticky position="bottom-right" :offset="[20, 20]">
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000">
       <q-btn
         fab
         :icon="slideshow ? 'stop' : MODE[mode].material_icon"
@@ -500,7 +500,7 @@ export default defineComponent({
         &nbsp;
         <span style="text-transform: none">{{ slideshow ? 'Stop' : die.toString() }}</span>
       </q-btn>
-    </q-page-sticky>
+    </div>
 
     <!-- Reset Dialog -->
     <q-dialog v-model="reset_confirm_dialog">
