@@ -1,4 +1,4 @@
-<!-- Display a 100-sided die face as SVG (regular hexagon, flat top/bottom) -->
+<!-- Display a 100-sided die face as SVG (regular hexagon) -->
 <script lang="ts">
 import { defineComponent } from 'vue';
 
@@ -15,25 +15,17 @@ export default defineComponent({
   <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <g :stroke-width="strokeWidth">
       <!--
-        D100 face: a regular hexagon (flat top & bottom, points left/right).
-        Side length ≈ 35.
-
-        Vertices (clockwise from top-right):
-        1. TR  (68, 20)
-        2. R   (85, 50)
-        3. BR  (68, 80)
-        4. BL  (32, 80)
-        5. L   (15, 50)
-        6. TL  (32, 20)
+        D100 face: a regular hexagon.
+        Corners rounded with r≈4.
+        Even values: flat top/bottom. Odd values: rotated 30°.
       -->
-      <polygon
-        points="68,20 85,50 68,80 32,80 15,50 32,20"
+      <path
+        d="M 70.0,23.5 L 83.0,46.5 Q 85,50 83.0,53.5 L 70.0,76.5 Q 68,80 64,80 L 36,80 Q 32,80 30.0,76.5 L 17.0,53.5 Q 15,50 17.0,46.5 L 30.0,23.5 Q 32,20 36,20 L 64,20 Q 68,20 70.0,23.5 Z"
         fill="#fff"
         stroke="#000"
         stroke-linejoin="round"
         :transform="value % 2 === 1 ? 'rotate(30, 50, 50)' : ''"
       />
-      <!-- Digit centred in the hexagon -->
       <text
         x="50"
         y="50"

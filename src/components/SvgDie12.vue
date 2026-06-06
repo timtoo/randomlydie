@@ -16,22 +16,14 @@ export default defineComponent({
     <g :stroke-width="strokeWidth">
       <!--
         D12 face: a regular pentagon (flat base, pointed top).
-        Circumradius ≈ 38.7, centred at (50, 53.7).
-
-        Vertices (clockwise from top):
-        1. Top    (50,  15)
-        2. UR     (87,  42)
-        3. LR     (73,  85)
-        4. LL     (27,  85)
-        5. UL     (13,  42)
+        Corners rounded with r≈4.
       -->
-      <polygon
-        points="50,15 87,42 73,85 27,85 13,42"
+      <path
+        d="M 53.2,17.4 L 83.8,39.6 Q 87,42 85.8,45.8 L 74.2,81.2 Q 73,85 69,85 L 31,85 Q 27,85 25.8,81.2 L 14.2,45.8 Q 13,42 16.2,39.6 L 46.8,17.4 Q 50,15 53.2,17.4 Z"
         fill="#fff"
         stroke="#000"
         stroke-linejoin="round"
       />
-      <!-- Digit centred at the pentagon centroid -->
       <text
         x="50"
         y="56"

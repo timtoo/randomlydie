@@ -16,20 +16,14 @@ export default defineComponent({
     <g :stroke-width="strokeWidth">
       <!--
         D20 face: an equilateral triangle (flat base, pointed top).
-        Height ≈ 76, side ≈ 88.
-
-        Vertices:
-        1. Top    (50, 12)
-        2. BR     (94, 88)
-        3. BL     (6,  88)
+        Corners rounded with r≈4.
       -->
-      <polygon
-        points="50,12 94,88 6,88"
+      <path
+        d="M 52.0,15.5 L 92.0,84.5 Q 94,88 90.0,88 L 10.0,88 Q 6,88 8.0,84.5 L 48.0,15.5 Q 50,12 52.0,15.5 Z"
         fill="#fff"
         stroke="#000"
         stroke-linejoin="round"
       />
-      <!-- Digit centred at the triangle centroid -->
       <text
         x="50"
         y="63"
