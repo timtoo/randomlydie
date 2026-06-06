@@ -53,7 +53,7 @@ function activeChange() {
 <template>
   <q-ajax-bar
     ref='bar'
-    position='bottom'
+    position='top'
     color='primary'
     size='5px'
     skip-hijack

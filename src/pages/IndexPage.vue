@@ -142,7 +142,10 @@ export default defineComponent({
 
     function toggleSlideshow() {
       slideshow.value = !slideshow.value;
-      if (slideshow.value) bigButtonClick();
+      if (slideshow.value) {
+        bigButtonClick();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       console.log('Slideshow now ', slideshow.value);
     }
 
