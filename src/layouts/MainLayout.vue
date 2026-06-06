@@ -18,6 +18,7 @@ export default defineComponent({
       enableDebug: false,
       default_roll: '1d10',
       slideshow_delay: 5,
+      fab_position: 'bottom-right',
     };
     const options = useStorage('options', options_default);
     const $q = useQuasar();
@@ -117,6 +118,33 @@ export default defineComponent({
                     :step="1"
                     color="primary"
                     label
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-separator spaced style="background: var(--rr-border)" />
+
+              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
+                FAB Position
+              </q-item-label>
+              <q-item>
+                <q-item-section>
+                  <q-select
+                    v-model="options.fab_position"
+                    :options="[
+                      { label: 'Bottom right', value: 'bottom-right' },
+                      { label: 'Bottom left', value: 'bottom-left' },
+                      { label: 'Top right', value: 'top-right' },
+                      { label: 'Top left', value: 'top-left' },
+                    ]"
+                    option-value="value"
+                    option-label="label"
+                    emit-value
+                    map-options
+                    dense
+                    outlined
+                    color="primary"
+                    class="bg-rrinput"
                   />
                 </q-item-section>
               </q-item>

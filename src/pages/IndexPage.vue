@@ -91,6 +91,21 @@ export default defineComponent({
       return (props.options?.slideshow_delay || 5) * 1000;
     });
 
+    const fabStyle = computed(() => {
+      const pos = props.options?.fab_position || 'bottom-right';
+      const base = { position: 'fixed' as const, zIndex: 1000 };
+      switch (pos) {
+        case 'bottom-left':
+          return { ...base, bottom: '20px', left: '20px' };
+        case 'top-right':
+          return { ...base, top: '60px', right: '20px' };
+        case 'top-left':
+          return { ...base, top: '60px', left: '20px' };
+        default:
+          return { ...base, bottom: '20px', right: '20px' };
+      }
+    });
+
     watch(
       () => route.params,
       () => handleURLChange()
@@ -290,6 +305,7 @@ export default defineComponent({
       incrementDice,
       decrementDice,
       fabClick,
+      fabStyle,
     };
   },
 });
@@ -489,7 +505,7 @@ export default defineComponent({
     ></DieConsole>
 
     <!-- FAB -->
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000">
+    <div :style="fabStyle">
       <q-btn
         fab
         :icon="slideshow ? 'stop' : MODE[mode].material_icon"
