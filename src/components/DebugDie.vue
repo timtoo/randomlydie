@@ -21,7 +21,7 @@ function handleClick() {
 <template>
   <div v-if="active">
     <q-page-sticky :position="(loc as any)" :offset="[18, 18]">
-      <div class="debug-sticky q-pa-sm" :style="{backgroundColor: bgColor}" @click="handleClick">
+      <div class="debug-sticky q-pa-sm text-caption" :style="{backgroundColor: bgColor}" @click="handleClick">
         <pre>{{ JSON.stringify(die, null, 3) || 'no die?' }}</pre>
       </div>
     </q-page-sticky>
@@ -33,6 +33,6 @@ function handleClick() {
   background-color: rgb(250, 250, 175);
   opacity: 0.5;
   color: black;
-  font-size: 8pt;
+
 }
 </style>

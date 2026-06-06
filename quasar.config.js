@@ -99,6 +99,7 @@ export default defineConfig(function (/* ctx */) {
       // Quasar plugins
       plugins: [
         'Notify',
+        'Dark',
       ]
     },
 

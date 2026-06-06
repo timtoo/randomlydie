@@ -1,7 +1,8 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useStorage } from '@vueuse/core';
-import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -17,9 +18,20 @@ export default defineComponent({
       enableDebug: false,
       default_roll: '1d10',
     };
-    const leftDrawerOpen = ref(false);
     const options = useStorage('options', options_default);
-    const router = useRouter()
+    const $q = useQuasar();
+    const darkMode = useStorage('darkMode', true);
+    const router = useRouter();
+    const showSettingsMenu = ref(false);
+
+    onMounted(() => {
+      $q.dark.set(darkMode.value);
+    });
+
+    function toggleDark() {
+      darkMode.value = !darkMode.value;
+      $q.dark.set(darkMode.value);
+    }
 
     function handleReset() {
       options.value = { ...options_default };
@@ -27,95 +39,105 @@ export default defineComponent({
 
     return {
       options,
-      leftDrawerOpen,
-      router,
+      darkMode,
+      showSettingsMenu,
+      toggleDark,
       handleReset,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
+      router,
     };
   },
 });
 </script>
 
 <template>
-  <q-layout view="lHh lpR lFf">
-    <q-toolbar>
-      <div class="col-1">
+  <q-layout view="hHh lpR lFf">
+    <q-header class="bg-transparent shadow-none" style="border-bottom: 1px solid var(--rr-border)">
+      <q-toolbar class="q-px-md" style="min-height: 44px">
+        <q-toolbar-title class="text-subtitle1" style="color: var(--rr-text-muted)">
+          Randomly/Die
+        </q-toolbar-title>
         <q-btn
           flat
-          dense
           round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
+          dense
+          icon="settings"
+          style="color: var(--rr-text-muted)"
+          class="q-mr-sm"
+        >
+          <q-menu
+            v-model="showSettingsMenu"
+            class="bg-rrinput"
+            style="min-width: 240px"
+            auto-close
+          >
+            <q-list dense>
+              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
+                Display
+              </q-item-label>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.hideQuick" color="primary" />
+                </q-item-section>
+                <q-item-section>Hide quick buttons</q-item-section>
+              </q-item>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.hidePrevious" color="primary" />
+                </q-item-section>
+                <q-item-section>Hide previous rolls toggle</q-item-section>
+              </q-item>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.hideHistory" color="primary" />
+                </q-item-section>
+                <q-item-section>Hide roll history toggle</q-item-section>
+              </q-item>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.hideAdvanced" color="primary" />
+                </q-item-section>
+                <q-item-section>Hide settings dialog trigger</q-item-section>
+              </q-item>
+
+              <q-separator spaced style="background: var(--rr-border)" />
+
+              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
+                Developer
+              </q-item-label>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.enableDebug" color="red" />
+                </q-item-section>
+                <q-item-section>Enable debug</q-item-section>
+              </q-item>
+
+              <q-separator spaced style="background: var(--rr-border)" />
+
+              <q-item clickable @click="router.push('/modes')">
+                <q-item-section avatar>
+                  <q-icon name="list" size="xs" />
+                </q-item-section>
+                <q-item-section>Modes</q-item-section>
+              </q-item>
+              <q-item clickable @click="handleReset">
+                <q-item-section avatar>
+                  <q-icon name="restore" size="xs" />
+                </q-item-section>
+                <q-item-section>Reset all options</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+        <q-btn
+          flat
+          round
+          dense
+          :icon="darkMode ? 'dark_mode' : 'light_mode'"
+          style="color: var(--rr-text-muted)"
+          @click="toggleDark"
         />
-      </div>
-
-      <q-toolbar-title class="col-stretch text-h6" style="text-align: center">
-        <span @click="router.push('/')">Randomly/Die</span>
-      </q-toolbar-title>
-
-      <div class="col-1">&nbsp;</div>
-    </q-toolbar>
-
-    <!-- left side drawer -->
-    <q-drawer v-model="leftDrawerOpen" bordered class="rr-drawer">
-      <q-list>
-        <div style="float: right; vertical-align: top">
-          <q-btn
-            round
-            flat
-            dense
-            icon="close"
-            aria-label="Close Menu"
-            @click="toggleLeftDrawer"
-          ></q-btn>
-        </div>
-        <q-item-label header class="rr-drawer-header">
-          <span>Options</span>
-        </q-item-label>
-        <q-item>
-          <q-toggle
-            v-model="options.hideQuick"
-            label="Hide quick buttons"
-            color="yellow"
-          ></q-toggle>
-        </q-item>
-        <q-item>
-          <q-toggle
-            v-model="options.hidePrevious"
-            label="Hide previous rolls"
-            color="yellow"
-          ></q-toggle>
-        </q-item>
-        <q-item>
-          <q-toggle
-            v-model="options.hideHistory"
-            label="Hide history buttons"
-            color="yellow"
-          ></q-toggle>
-        </q-item>
-        <q-item>
-          <q-toggle
-            v-model="options.hideAdvanced"
-            label="Hide advanced settings"
-            color="yellow"
-          ></q-toggle>
-        </q-item>
-        <q-item>
-          <q-toggle
-            v-model="options.enableDebug"
-            label="Enable debug"
-            color="red"
-          ></q-toggle>
-        </q-item>
-        <q-item>
-          <q-btn outline @click="handleReset">Reset</q-btn>
-        </q-item>
-      </q-list>
-      <q-item clickable to="/modes">modes</q-item>
-    </q-drawer>
+      </q-toolbar>
+    </q-header>
 
     <q-page-container>
       <router-view :options="options" />
@@ -124,12 +146,4 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
-.rr-drawer {
-  background-color: $background !important;
-  color: $text-default;
-}
-.rr-drawer-header {
-  background-color: $primary;
-  color: $text-default;
-}
 </style>

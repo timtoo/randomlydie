@@ -4,11 +4,10 @@ import { defineComponent, computed, PropType } from 'vue';
 import { rollHistoryType } from 'components/models';
 import { MODE } from 'src/lib/modes';
 
-// return list of strings of roll results from history (recent first)
 export default defineComponent({
   name: 'PreviousRolls',
   props: {
-    label: { type: String, default: 'Previous:' },
+    label: { type: String, default: 'Previous rolls' },
     rolls: { type: Object as PropType<rollHistoryType[]>, required: true },
     limit: { type: Number, default: 50 },
     skip: { type: Number, default: 1 },
@@ -16,7 +15,6 @@ export default defineComponent({
   setup(props) {
     const previousRollsString = computed((): string => {
       const result: string[] = [];
-      // skip first roll
       for (const r of props.rolls.slice(
         props.skip,
         props.limit + 1 + props.skip
@@ -32,35 +30,13 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
-    style="overflow: hidden; white-space: nowrap"
-    class="q-mx-lg rr-pr"
-    v-if="previousRollsString"
-  >
-    <div>
-      <span class="rr-pr-label">{{ label }}</span>
+  <div v-if="previousRollsString" class="rr-fade-right overflow-hidden">
+    <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px; scrollbar-width: none">
+      <span class="rr-pr-label text-body1">{{ label }}</span>
       <span class="grad" v-html="previousRollsString"></span>
     </div>
   </div>
+  <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">
+    No rolls yet
+  </div>
 </template>
-
-<style scoped lang="scss">
-.rr-pr {
-  color: $primary;
-  &-label {
-    color: $text-default;
-  }
-}
-
-.grad {
-  color: black;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-image: linear-gradient(
-    225deg,
-    $paper 0%,
-    $primary 50%,
-    $primary 100%
-  );
-}
-</style>

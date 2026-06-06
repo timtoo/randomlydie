@@ -11,7 +11,6 @@ export default defineComponent({
       default: '',
     },
     mode: {
-      //type: Object as PropType<MODE>, // caused "Expected Object, got Number"
       type: Number,
       required: true,
     },
@@ -32,16 +31,14 @@ export default defineComponent({
 
 <template>
   <template v-if="button_set">
-    <div style="color: $secondary" class="text-sm">
-      {{ label }}
-    </div>
-    <div class="row justify-center">
+    <div class="row justify-center q-py-sm" style="flex-wrap: wrap">
       <template v-for="v in button_set" :key="v[0]">
         <q-btn
-          flat
+          unelevated
+          rounded
           no-caps
           @click="$emit('onQuickButton', v[0])"
-          class="rr-qb"
+          class="rr-qb text-body1"
           :class="{ 'rr-qb-selected': current === v[0] }"
         >
           {{ v[1] }}

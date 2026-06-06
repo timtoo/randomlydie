@@ -5,16 +5,50 @@ body {
     color: $text-default;
 }
 
+// CSS custom properties for theme switching
+:root {
+  --rr-bg: #{$background};
+  --rr-paper: #{$paper};
+  --rr-text: #{$text-default};
+  --rr-text-muted: #8899aa;
+  --rr-border: rgba(255, 255, 255, 0.08);
+  --rr-grad-start: #{$paper};
+  --rr-grad-end: #{$primary};
+}
+
+body.body--light {
+  --rr-bg: #f0f2f5;
+  --rr-paper: #ffffff;
+  --rr-text: #1a1a2e;
+  --rr-text-muted: #667788;
+  --rr-border: rgba(0, 0, 0, 0.08);
+  --rr-grad-start: #e0e6f0;
+  --rr-grad-end: #3a6db5;
+
+  background-color: var(--rr-bg);
+  color: var(--rr-text);
+}
+
+body.body--dark {
+  --rr-bg: #{$background};
+  --rr-paper: #{$paper};
+  --rr-text: #{$text-default};
+  --rr-text-muted: #8899aa;
+  --rr-border: rgba(255, 255, 255, 0.08);
+  --rr-grad-start: #{$paper};
+  --rr-grad-end: #{$primary};
+}
+
 .span-link:hover {
   cursor: pointer;
 }
 
 .text-rrinput {
-  color: $text-default !important;
+  color: var(--rr-text) !important;
 }
 
 .bg-rrinput {
-  background: #24344d !important;
+  background: var(--rr-paper) !important;
   &-center {
     text-align:center;
   }
@@ -25,15 +59,21 @@ body {
     color: $background;
     margin-right: 0.3em;
     margin-bottom: 0.3em;
+    border-radius: 999px;
+    padding: 0.3em 1em;
     &-selected {
         background: $secondary;
-        color: black;    
+        color: black;
     }
+}
+
+body.body--light .rr-qb {
+    color: white;
 }
 
 .rr-card {
     background-color: $primary;
-    border-color: black;    
+    border-color: black;
 }
 
 .bounce-enter-active {
@@ -53,4 +93,99 @@ body {
       transform: scale(1);
     }
   }
-  
+
+// Layout utilities
+.rr-page-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.rr-hero-display {
+  min-height: 160px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.rr-settings-bar {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.rr-quantity-stepper {
+  .q-btn {
+    min-width: 3rem;
+    min-height: 3rem;
+  }
+  .rr-quantity-value {
+    font-weight: 500;
+    min-width: 3rem;
+    text-align: center;
+    color: var(--rr-text);
+  }
+}
+
+.rr-history-panel {
+  border: 1px solid var(--rr-border);
+  border-radius: 8px;
+  background: var(--rr-paper);
+}
+
+.rr-action-row {
+  .q-btn {
+    margin: 0 0.25rem;
+  }
+}
+
+// Previous rolls gradient (theme aware)
+.rr-pr {
+  color: $primary;
+  &-label {
+    color: var(--rr-text-muted);
+    margin-right: 0.5rem;
+  }
+}
+
+.grad {
+  color: black;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(
+    225deg,
+    var(--rr-grad-start) 0%,
+    var(--rr-grad-end) 50%,
+    var(--rr-grad-end) 100%
+  );
+}
+
+// Fade at right edge for scrollable text
+.rr-fade-right {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2rem;
+    background: linear-gradient(to right, transparent, var(--rr-paper));
+    pointer-events: none;
+  }
+}
+
+.rr-big-btn {
+  color: $primary;
+  min-width: 2.6em;
+  text-transform: none;
+}
+
+.rr-hl {
+  color: $primary;
+}

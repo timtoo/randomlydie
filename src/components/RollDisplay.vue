@@ -11,7 +11,7 @@ export default defineComponent({
   props: {
     value: { type: Number, default: 0 },
     display: String,
-    roll: { type: Object as PropType<rollHistoryType | null>, default: null }, // required: true causes typescript warnings
+    roll: { type: Object as PropType<rollHistoryType | null>, default: null },
     index: { type: Number, default: 0 },
   },
   components: { SvgDie6 },
@@ -71,7 +71,6 @@ export default defineComponent({
     };
   },
 });
-//   <div class="clickable" on-long-press="[handleLongPress, { delay: 750 }]">
 </script>
 
 <template>
@@ -80,12 +79,14 @@ export default defineComponent({
     unelevated
     :outline="roll?.mode !== MODE_ID.dice"
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
-    class="q-pa-lg rr-big-btn text-h3"
+    class="q-pa-lg rr-big-btn"
+    :class="roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3'"
+    style="min-height: 120px; border-radius: 16px"
   >
     <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
       <SvgDie6
         viewBox="0 0 100 100"
-        height="1.5em"
+        height="2em"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"

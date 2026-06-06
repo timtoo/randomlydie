@@ -3,11 +3,10 @@ import { defineComponent, computed, PropType } from 'vue';
 import { rollHistoryType } from 'components/models';
 import { MODE } from 'src/lib/modes'
 
-// return list of strings of roll results from history (recent first)
 export default defineComponent({
   name: 'HistoryList',
   props: {
-    label: { type: String, default: 'History:' },
+    label: { type: String, default: 'Roll history' },
     rolls: { type: Object as PropType<rollHistoryType[]>, required: true },
     limit: { type: Number, default: 50 },
   },
@@ -42,29 +41,19 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
-    style="overflow: hidden; white-space: nowrap; color: white"
-    class="q-mx-lg rr-hl"
-    v-if="filteredRolls.length > 0"
-  >
-    <div>
-      {{ label }}
-      <template v-for="r of filteredRolls" :key="makeKey(r)">
-        <q-chip
-          dense
-          :color="currentKey === makeKey(r) ? 'secondary' : 'primary'"
-          clickable
-          @click="$emit('onDieChip', r)"
-          :icon="MODE[r.mode].material_icon"
-          >{{ r.label }}</q-chip
-        >
-      </template>
-    </div>
+  <div v-if="filteredRolls.length > 0" class="q-gutter-xs row items-center">
+    <template v-for="r of filteredRolls" :key="makeKey(r)">
+      <q-chip
+        dense
+        :color="currentKey === makeKey(r) ? 'secondary' : 'primary'"
+        clickable
+        @click="$emit('onDieChip', r)"
+        :icon="MODE[r.mode].material_icon"
+        text-color="white"
+      >{{ r.label }}</q-chip>
+    </template>
+  </div>
+  <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">
+    No history yet
   </div>
 </template>
-
-<style scoped lang="scss">
-.rr-hl {
-  color: $primary;
-}
-</style>
