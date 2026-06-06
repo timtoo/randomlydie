@@ -375,8 +375,9 @@ export default defineComponent({
     </div>
 
     <!-- History Toggles -->
-    <div class="row justify-center q-gutter-sm q-mt-md" v-if="rolls.length > 0">
+    <div class="row justify-center q-gutter-sm q-mt-md" v-if="rolls.length > 0 && (!options?.hidePrevious || !options?.hideHistory)">
       <q-btn
+        v-if="!options?.hidePrevious"
         :unelevated="showPrevious"
         :outline="!showPrevious"
         color="primary"
@@ -387,6 +388,7 @@ export default defineComponent({
         @click="showPrevious = !showPrevious"
       />
       <q-btn
+        v-if="!options?.hideHistory"
         :unelevated="showHistory"
         :outline="!showHistory"
         color="primary"
