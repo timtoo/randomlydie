@@ -10,7 +10,7 @@
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "vitest run",
-    "deploy": "push-dir --dir=dist/spa --remote=gh-pages --branch=gh-pages",
+    "deploy": "push-dir --dir=dist/pwa --remote=gh-pages --branch=gh-pages",
     "postinstall": "quasar prepare"
   },
   "dependencies": {
