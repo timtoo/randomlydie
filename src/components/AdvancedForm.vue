@@ -159,7 +159,7 @@ export default defineComponent({
               .map((m) => m.id)"
             :key="m"
           >
-            <q-item clickable v-close-popup @click="$emit('mode-change', m)">
+            <q-item clickable @click="$emit('mode-change', m)">
               <q-item-section>
                 <q-item-label>
                   <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{ MODE[m].name }}

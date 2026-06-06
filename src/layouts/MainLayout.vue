@@ -70,7 +70,6 @@ export default defineComponent({
             v-model="showSettingsMenu"
             class="bg-rrinput"
             style="min-width: 240px"
-            auto-close
           >
             <q-list dense>
               <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
@@ -125,7 +124,7 @@ export default defineComponent({
               <q-separator spaced style="background: var(--rr-border)" />
 
               <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
-                FAB Position
+                Float Button Position
               </q-item-label>
               <q-item>
                 <q-item-section>
