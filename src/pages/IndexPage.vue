@@ -162,8 +162,12 @@ export default defineComponent({
     }
 
     function fabClick() {
-      bigButtonClick();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (slideshow.value) {
+        toggleSlideshow();
+      } else {
+        bigButtonClick();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     function handleQuickButton(v: number) {
@@ -487,13 +491,13 @@ export default defineComponent({
     <q-page-sticky position="bottom-right" :offset="[20, 20]">
       <q-btn
         fab
-        :icon="MODE[mode].material_icon"
-        color="secondary"
+        :icon="slideshow ? 'stop' : MODE[mode].material_icon"
+        :color="slideshow ? 'negative' : 'secondary'"
         text-color="black"
         @click="fabClick"
       >
         &nbsp;
-        <span style="text-transform: none">{{ die.toString() }}</span>
+        <span style="text-transform: none">{{ slideshow ? 'Stop' : die.toString() }}</span>
       </q-btn>
     </q-page-sticky>
 
