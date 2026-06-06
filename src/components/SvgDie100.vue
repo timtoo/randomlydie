@@ -1,9 +1,9 @@
-<!-- Display a 10-sided die face as SVG -->
+<!-- Display a 100-sided die face as SVG (regular hexagon, flat top/bottom) -->
 <script lang="ts">
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'SvgDie10',
+  name: 'SvgDie100',
   props: {
     value: { type: Number, default: 0 },
     strokeWidth: { type: Number, default: 2 },
@@ -15,30 +15,33 @@ export default defineComponent({
   <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <g :stroke-width="strokeWidth">
       <!--
-        D10 face: a symmetric kite (convex quadrilateral).
-        Interior angles: top 72°, sides 68° each, bottom 152°.
+        D100 face: a regular hexagon (flat top & bottom, points left/right).
+        Side length ≈ 35.
 
-        Vertices (clockwise from top):
-        1. Top    (50.0, 17.5)
-        2. Right  (80.0, 72.5)
-        3. Bottom (50.0, 82.5)
-        4. Left   (20.0, 72.5)
+        Vertices (clockwise from top-right):
+        1. TR  (68, 20)
+        2. R   (85, 50)
+        3. BR  (68, 80)
+        4. BL  (32, 80)
+        5. L   (15, 50)
+        6. TL  (32, 20)
       -->
       <polygon
-        points="50,17.5 80,72.5 50,82.5 20,72.5"
+        points="68,20 85,50 68,80 32,80 15,50 32,20"
         fill="#fff"
         stroke="#000"
         stroke-linejoin="round"
+        :transform="value % 2 === 1 ? 'rotate(30, 50, 50)' : ''"
       />
-      <!-- Digit centred at the kite centroid -->
+      <!-- Digit centred in the hexagon -->
       <text
         x="50"
-        y="58"
+        y="50"
         text-anchor="middle"
         dominant-baseline="central"
         font-family="sans-serif"
         font-weight="bold"
-        :font-size="value >= 10 ? '28' : '33'"
+        :font-size="value >= 10 ? '26' : '33'"
         fill="#282828"
       >
         {{ value }}

@@ -6,6 +6,9 @@ import { rollHistoryType } from 'components/models';
 import { MODE_ID } from 'src/lib/modes';
 import SvgDie6 from 'components/SvgDie6.vue';
 import SvgDie10 from 'components/SvgDie10.vue';
+import SvgDie12 from 'components/SvgDie12.vue';
+import SvgDie20 from 'components/SvgDie20.vue';
+import SvgDie100 from 'components/SvgDie100.vue';
 
 export default defineComponent({
   name: 'RollDisplay',
@@ -15,7 +18,7 @@ export default defineComponent({
     roll: { type: Object as PropType<rollHistoryType | null>, default: null },
     index: { type: Number, default: 0 },
   },
-  components: { SvgDie6, SvgDie10 },
+  components: { SvgDie6, SvgDie10, SvgDie12, SvgDie20, SvgDie100 },
   emits: ['onRollDisplayClick'],
   setup(props) {
     const $q = useQuasar();
@@ -100,6 +103,30 @@ export default defineComponent({
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie10>
+    </template>
+    <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 12">
+      <SvgDie12
+        height="2em"
+        :value="value"
+        :alt="value + ' die'"
+        :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
+      ></SvgDie12>
+    </template>
+    <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 20">
+      <SvgDie20
+        height="2em"
+        :value="value"
+        :alt="value + ' die'"
+        :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
+      ></SvgDie20>
+    </template>
+    <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 100">
+      <SvgDie100
+        height="2em"
+        :value="value"
+        :alt="value + ' die'"
+        :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
+      ></SvgDie100>
     </template>
     <template v-else>
       <span v-html="displayValue"></span>
