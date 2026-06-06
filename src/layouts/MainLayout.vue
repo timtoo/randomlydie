@@ -13,7 +13,6 @@ export default defineComponent({
     const options_default = {
       hideHistory: false,
       hidePrevious: false,
-      hideAdvanced: false,
       hideQuick: false,
       enableDebug: false,
       default_roll: '1d10',
@@ -93,13 +92,6 @@ export default defineComponent({
                 </q-item-section>
                 <q-item-section>Hide roll history toggle</q-item-section>
               </q-item>
-              <q-item tag="label" v-ripple>
-                <q-item-section side>
-                  <q-toggle v-model="options.hideAdvanced" color="primary" />
-                </q-item-section>
-                <q-item-section>Hide settings dialog trigger</q-item-section>
-              </q-item>
-
               <q-separator spaced style="background: var(--rr-border)" />
 
               <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
