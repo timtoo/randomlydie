@@ -5,6 +5,7 @@ import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'components/models';
 import { MODE_ID } from 'src/lib/modes';
 import SvgDie6 from 'components/SvgDie6.vue';
+import SvgDie10 from 'components/SvgDie10.vue';
 
 export default defineComponent({
   name: 'RollDisplay',
@@ -14,7 +15,7 @@ export default defineComponent({
     roll: { type: Object as PropType<rollHistoryType | null>, default: null },
     index: { type: Number, default: 0 },
   },
-  components: { SvgDie6 },
+  components: { SvgDie6, SvgDie10 },
   emits: ['onRollDisplayClick'],
   setup(props) {
     const $q = useQuasar();
@@ -91,6 +92,14 @@ export default defineComponent({
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
       ></SvgDie6>
+    </template>
+    <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 10">
+      <SvgDie10
+        height="2em"
+        :value="value"
+        :alt="value + ' die'"
+        :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
+      ></SvgDie10>
     </template>
     <template v-else>
       <span v-html="displayValue"></span>
