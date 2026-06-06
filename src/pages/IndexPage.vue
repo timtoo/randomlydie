@@ -69,7 +69,7 @@ export default defineComponent({
     TimerBar,
     DebugDie,
   },
-  setup() {
+  setup(props) {
     const _rolls: rollHistoryType[] = [];
     const die = ref(new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY));
     const rolls = ref(_rolls);
