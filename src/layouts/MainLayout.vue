@@ -17,6 +17,7 @@ export default defineComponent({
       hideQuick: false,
       enableDebug: false,
       default_roll: '1d10',
+      slideshow_delay: 4.5,
     };
     const options = useStorage('options', options_default);
     const $q = useQuasar();
@@ -97,6 +98,27 @@ export default defineComponent({
                   <q-toggle v-model="options.hideAdvanced" color="primary" />
                 </q-item-section>
                 <q-item-section>Hide settings dialog trigger</q-item-section>
+              </q-item>
+
+              <q-separator spaced style="background: var(--rr-border)" />
+
+              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
+                Auto-roll
+              </q-item-label>
+              <q-item>
+                <q-item-section>
+                  <q-item-label class="text-body2">
+                    Delay: {{ options.slideshow_delay }}s
+                  </q-item-label>
+                  <q-slider
+                    v-model="options.slideshow_delay"
+                    :min="1"
+                    :max="15"
+                    :step="0.5"
+                    color="primary"
+                    label
+                  />
+                </q-item-section>
               </q-item>
 
               <q-separator spaced style="background: var(--rr-border)" />
