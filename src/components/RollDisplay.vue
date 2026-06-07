@@ -51,6 +51,17 @@ export default defineComponent({
       return `hsla(${h}, 80%, 60%, ${alpha})`;
     });
 
+    const sparkleEmojis = computed(() => {
+      if (!props.sparkle || !props.roll) return [];
+      const emojis = ['✨', '🎲', '🌈', '🔥', '⭐', '🎉', '💫', '🌟', '👏', '🐕', '🐈', '🐋', '🌸', '😊', '🦄', '🍀', '🌺', '🎈', '🌙', '☀️'];
+      const count = 2 + Math.floor(Math.random() * 4);
+      const result = [];
+      for (let i = 0; i < count; i++) {
+        result.push(emojis[Math.floor(Math.random() * emojis.length)]);
+      }
+      return result;
+    });
+
     function handleLongPress() {
       inLongPress.value = true;
       if (props.roll) {
@@ -87,6 +98,7 @@ export default defineComponent({
       displayValue,
       sparkleBg,
       sparkleGlow,
+      sparkleEmojis,
       handleLongPress,
       inLongPress,
       MODE_ID,
@@ -149,6 +161,20 @@ export default defineComponent({
     </template>
     <template v-else>
       <span v-html="displayValue"></span>
+    </template>
+    <template v-for="(emoji, idx) in sparkleEmojis" :key="idx">
+      <div
+        class="rr-sparkle-emoji"
+        :style="{
+          left: (35 + Math.random() * 30) + '%',
+          top: (35 + Math.random() * 30) + '%',
+          '--rr-float-x': (Math.random() * 10 - 5) + 'rem',
+          '--rr-float-y': (Math.random() * 10 - 5) + 'rem',
+          animationDelay: (Math.random() * 0.3) + 's'
+        }"
+      >
+        {{ emoji }}
+      </div>
     </template>
   </q-btn>
 </template>
