@@ -162,6 +162,7 @@ export default defineComponent({
     <template v-else>
       <span v-html="displayValue"></span>
     </template>
+    <!-- sparkle emojis - disabled for now
     <template v-for="(emoji, idx) in sparkleEmojis" :key="idx">
       <div
         class="rr-sparkle-emoji"
@@ -176,6 +177,7 @@ export default defineComponent({
         {{ emoji }}
       </div>
     </template>
+    -->
   </q-btn>
 </template>
 
