@@ -491,7 +491,7 @@ export default defineComponent({
         no-caps
         size="md"
         class="text-body1"
-        label="Roll history"
+        :label="'Roll history (' + rolls.length + ')'"
         @click="showHistory = !showHistory"
       />
     </div>
