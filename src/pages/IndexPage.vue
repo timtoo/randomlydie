@@ -5,6 +5,7 @@ import { rollHistoryType } from 'components/models';
 import { MODE_ID, MODE, mode_by_name } from 'src/lib/modes';
 import { Die } from 'src/lib/die';
 import SettingsDialog from 'components/SettingsDialog.vue';
+import ModePickerDialog from 'components/ModePickerDialog.vue';
 import HistoryList from 'src/components/HistoryList.vue';
 import PreviousRolls from 'components/PreviousRolls.vue';
 import QuickButtons from 'components/QuickButtons.vue';
@@ -68,6 +69,7 @@ export default defineComponent({
     PreviousRolls,
     HistoryList,
     SettingsDialog,
+    ModePickerDialog,
     DieConsole,
     TimerBar,
     DebugDie,
@@ -87,6 +89,7 @@ export default defineComponent({
     const route = useRoute();
     const reset_confirm_dialog = ref(false);
     const settingsDialogOpen = ref(false);
+    const modeDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
 
@@ -213,6 +216,7 @@ export default defineComponent({
       if (die.value.dice < 10) {
         die.value.dice++;
         advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+        bigButtonClick();
       }
     }
 
@@ -220,6 +224,7 @@ export default defineComponent({
       if (die.value.dice > 1) {
         die.value.dice--;
         advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+        bigButtonClick();
       }
     }
 
@@ -229,15 +234,23 @@ export default defineComponent({
       bigButtonClick();
     }
 
-    function handleModeChange(m: number) {
+    function handleModeChange(m: number, reroll = true) {
       if (m != mode.value) {
         const new_mode = MODE[m];
         if (new_mode) {
           die.value = die.value.clone();
           if (new_mode.override) {
             Object.assign(die.value, new_mode.override);
+          } else {
+            die.value.zerobase = false;
+            die.value.exclusive = false;
+          }
+          if (!new_mode.quick.includes(die.value.max)) {
+            die.value.max = new_mode.default_max;
+            die.value.min = die.value.zerobase ? 0 : 1;
           }
           mode.value = m;
+          if (reroll) bigButtonClick();
         }
       }
     }
@@ -333,6 +346,7 @@ export default defineComponent({
       version,
       reset_confirm_dialog,
       settingsDialogOpen,
+      modeDialogOpen,
       showPrevious,
       showHistory,
       bigButtonClick,
@@ -380,14 +394,24 @@ export default defineComponent({
 
     <!-- Settings Summary Bar -->
     <div
-      class="text-center q-mt-sm rr-settings-bar text-body1"
-      @click="settingsDialogOpen = true"
+      class="text-center q-mt-sm rr-settings-bar text-body1 row justify-center items-center q-gutter-x-sm"
     >
-      <span>{{ die.getRangeString(true, ' to ') }}</span>
-      <span class="q-mx-sm" style="color: var(--rr-text-muted)">·</span>
-      <q-icon :name="MODE[mode].material_icon" size="sm" />
-      <span class="q-ml-xs">{{ MODE[mode].name }}</span>
-      <q-icon name="chevron_right" size="sm" style="color: var(--rr-text-muted)" />
+      <span
+        class="rr-settings-item cursor-pointer"
+        @click="settingsDialogOpen = true"
+      >
+        {{ die.getRangeString(true, ' to ') }}
+        <q-icon name="edit" size="xs" class="q-ml-xs" style="opacity: 0.6" />
+      </span>
+      <span style="color: var(--rr-text-muted)">·</span>
+      <span
+        class="rr-settings-item cursor-pointer"
+        @click="modeDialogOpen = true"
+      >
+        <q-icon :name="MODE[mode].material_icon" size="sm" />
+        <span class="q-ml-xs">{{ MODE[mode].name }}</span>
+        <q-icon name="expand_more" size="xs" class="q-ml-xs" style="opacity: 0.6" />
+      </span>
     </div>
 
     <!-- Timestamp -->
@@ -533,8 +557,16 @@ export default defineComponent({
       @advanced-update="(v:number[]) => advancedUpdate(v)"
       @base-toggle="handleZeroBaseToggle"
       @exclusive-toggle="() => (die.exclusive = !die.exclusive)"
-      @mode-change="(m:number) => handleModeChange(m)"
+      @mode-change="(m:number) => handleModeChange(m, false)"
+      @close="bigButtonClick"
     ></SettingsDialog>
+
+    <!-- Mode Picker Dialog -->
+    <ModePickerDialog
+      v-model="modeDialogOpen"
+      :mode="mode"
+      @mode-change="(m:number) => handleModeChange(m)"
+    ></ModePickerDialog>
 
     <!-- Console -->
     <DieConsole

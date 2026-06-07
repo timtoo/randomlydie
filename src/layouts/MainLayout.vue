@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
@@ -24,7 +24,7 @@ export default defineComponent({
     // Merge with defaults so new fields are populated on old stored data
     options.value = { ...options_default, ...options.value };
     const $q = useQuasar();
-    const darkMode = useStorage('darkMode', true);
+    const darkMode = useStorage<'auto' | boolean>('darkMode', 'auto');
     const router = useRouter();
     const showSettingsMenu = ref(false);
     const { lastRollDisplay } = useLastRoll();
@@ -34,9 +34,20 @@ export default defineComponent({
     });
 
     function toggleDark() {
-      darkMode.value = !darkMode.value;
+      if (darkMode.value === 'auto') {
+        darkMode.value = false;
+      } else if (darkMode.value === false) {
+        darkMode.value = true;
+      } else {
+        darkMode.value = 'auto';
+      }
       $q.dark.set(darkMode.value);
     }
+
+    const darkIcon = computed(() => {
+      if (darkMode.value === 'auto') return 'brightness_auto';
+      return darkMode.value ? 'dark_mode' : 'light_mode';
+    });
 
     function handleReset() {
       options.value = { ...options_default };
@@ -68,6 +79,7 @@ export default defineComponent({
     return {
       options,
       darkMode,
+      darkIcon,
       showSettingsMenu,
       toggleDark,
       handleReset,
@@ -216,7 +228,7 @@ export default defineComponent({
           flat
           round
           dense
-          :icon="darkMode ? 'dark_mode' : 'light_mode'"
+          :icon="darkIcon"
           style="color: var(--rr-text-muted)"
           @click="toggleDark"
         />

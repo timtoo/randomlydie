@@ -10,7 +10,7 @@ export default defineComponent({
     die: { type: Die, required: true },
     mode: { type: Number, required: true },
   },
-  emits: ['update:modelValue', 'advanced-update', 'base-toggle', 'exclusive-toggle', 'mode-change'],
+  emits: ['update:modelValue', 'advanced-update', 'base-toggle', 'exclusive-toggle', 'mode-change', 'close'],
   components: { AdvancedForm },
   setup(props, ctx) {
     const localOpen = ref(props.modelValue);
@@ -44,7 +44,7 @@ export default defineComponent({
         ></AdvancedForm>
       </q-card-section>
       <q-card-actions align="center" class="q-px-md q-pb-md">
-        <q-btn label="Close" color="primary" v-close-popup style="min-width: 120px" />
+        <q-btn label="Close" color="primary" style="min-width: 120px" @click="$emit('close'); localOpen = false" />
       </q-card-actions>
     </q-card>
   </q-dialog>
