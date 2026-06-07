@@ -202,6 +202,15 @@ body.body--light .rr-big-btn.q-btn--outline::before {
   color: $primary;
 }
 
+.rr-sparkle-glow {
+  animation: rr-pulse-glow 2s ease-out forwards;
+}
+
+@keyframes rr-pulse-glow {
+  0% { opacity: 1; box-shadow: 0 0 30px 14px var(--rr-glow-color, transparent); }
+  100% { opacity: 0.6; box-shadow: 0 0 4px 2px var(--rr-glow-color, transparent); }
+}
+
 .desktop-only {
   @media (hover: none) and (pointer: coarse) {
     display: none;
