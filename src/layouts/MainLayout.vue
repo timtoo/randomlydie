@@ -21,6 +21,8 @@ export default defineComponent({
       fab_position: 'bottom-right',
     };
     const options = useStorage('options', options_default);
+    // Merge with defaults so new fields are populated on old stored data
+    options.value = { ...options_default, ...options.value };
     const $q = useQuasar();
     const darkMode = useStorage('darkMode', true);
     const router = useRouter();
