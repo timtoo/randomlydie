@@ -471,7 +471,7 @@ export default defineComponent({
     </div>
 
     <!-- History Toggles -->
-    <div class="row justify-center q-gutter-sm q-mt-md" v-if="!options?.hidePrevious || !options?.hideHistory">
+    <div class="row justify-center q-gutter-sm q-mt-md" v-if="rolls.length > 0 && (!options?.hidePrevious || !options?.hideHistory)">
       <q-btn
         v-if="!options?.hidePrevious"
         :unelevated="showPrevious"
