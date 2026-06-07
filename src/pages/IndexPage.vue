@@ -345,8 +345,6 @@ export default defineComponent({
       <span class="q-mx-sm" style="color: var(--rr-text-muted)">·</span>
       <q-icon :name="MODE[mode].material_icon" size="sm" />
       <span class="q-ml-xs">{{ MODE[mode].name }}</span>
-      <span class="q-mx-sm" style="color: var(--rr-text-muted)">·</span>
-      <span>{{ die.exclusive ? 'Exclusive' : 'Inclusive' }}</span>
       <q-icon name="chevron_right" size="sm" style="color: var(--rr-text-muted)" />
     </div>
 
