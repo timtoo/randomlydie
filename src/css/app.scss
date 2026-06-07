@@ -189,3 +189,15 @@ body.body--light .rr-qb {
 .rr-hl {
   color: $primary;
 }
+
+.desktop-only {
+  @media (hover: none) and (pointer: coarse) {
+    display: none;
+  }
+}
+
+.touch-only {
+  @media (hover: hover) {
+    display: none;
+  }
+}

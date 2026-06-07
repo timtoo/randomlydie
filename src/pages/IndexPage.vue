@@ -279,6 +279,43 @@ export default defineComponent({
     onKeyStroke('`', () => (console_active.value = true));
     onKeyStroke('Escape', () => (console_active.value = false));
 
+    function shouldIgnoreHotkey() {
+      if (console_active.value || settingsDialogOpen.value) return true;
+      const active = document.activeElement;
+      if (!active) return false;
+      const tag = active.tagName.toLowerCase();
+      return tag === 'input' || tag === 'textarea' || (active as HTMLElement).isContentEditable;
+    }
+
+    onKeyStroke('n', () => {
+      if (shouldIgnoreHotkey()) return;
+      die.value.min = Math.max(0, die.value.min - 1);
+      advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+    });
+    onKeyStroke('N', () => {
+      if (shouldIgnoreHotkey()) return;
+      if (die.value.min < die.value.max - 1) die.value.min++;
+      advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+    });
+    onKeyStroke('x', () => {
+      if (shouldIgnoreHotkey()) return;
+      if (die.value.max > die.value.min + 1) die.value.max--;
+      advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+    });
+    onKeyStroke('X', () => {
+      if (shouldIgnoreHotkey()) return;
+      die.value.max++;
+      advancedUpdate([die.value.min, die.value.max, die.value.dice]);
+    });
+    onKeyStroke('d', () => {
+      if (shouldIgnoreHotkey()) return;
+      decrementDice();
+    });
+    onKeyStroke('D', () => {
+      if (shouldIgnoreHotkey()) return;
+      incrementDice();
+    });
+
     return {
       MODE,
       lastRoll,
@@ -440,10 +477,10 @@ export default defineComponent({
                 <b>new number(s)</b>. Too obvious?
               </li>
               <li>
-                Long press (click and hold) random number to copy to
-                <b>clipboard</b>
+                Long press (click and hold) random item to copy to
+                <b>clipboard</b> (or use the copy button, or click previous rolls!)
               </li>
-              <li>
+              <li class="desktop-only">
                 Hot keys! Min: N/n, Max: X/x, # 'dice': D/d, roll: Enter/Space
               </li>
               <li>
@@ -454,10 +491,10 @@ export default defineComponent({
                 prefer!)
               </li>
               <li>Use five dice to play Yahtzee?</li>
-              <li>` for console. Is that crazy?</li>
+              <li class="desktop-only" >` for console. Is that crazy?</li>
             </ul>
             <div style="float: right">v{{ version }}</div>
-            <i>Use randomness for good.</i>
+            <i>Use your randomness for good.</i>
           </div>
         </q-tooltip>
       </q-btn>
