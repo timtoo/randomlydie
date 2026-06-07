@@ -5,7 +5,7 @@ export enum MODE_ID {
   binary = 1,
   dice = 2,
   hex = 3,
-  yesno = 4,
+  decision = 4,
   note = 5,
 }
 
@@ -175,9 +175,9 @@ class ModeHex extends ModeBase {
   number_base = 16;
 }
 
-class ModeYesNo extends ModeBase {
-  id = MODE_ID.yesno;
-  name = 'Yes/No';
+class ModeDecision extends ModeBase {
+  id = MODE_ID.decision;
+  name = 'Decision';
   material_icon = 'help';
   override = {
     min: 0,
@@ -189,9 +189,10 @@ class ModeYesNo extends ModeBase {
     [2]: ['No', 'Yes'],
     [3]: ['No', 'Yes', 'Maybe'],
     [4]: ['No', 'Yes', 'Probably not', 'Probably'],
-    [5]: ['No', 'Yes', 'Probably not', 'Probably', 'Whatever'],
+    [5]: ['Nah', 'Ok', 'Iffy', 'Could be', 'Whatever'],
   };
   quick = [2, 3, 4, 5];
+  _quick_label = ['Yes/No', 'Maybe', 'Probably', 'Whatever'];
   default_max = 2;
   number_base = 0;
 }
@@ -238,7 +239,7 @@ const all_modes = [
   new ModeHex(),
   new ModeDice(),
   new ModeNote(),
-  new ModeYesNo(),
+  new ModeDecision(),
 ];
 
 export const MODE: { [mode: number]: ModeBase } = Object.fromEntries(
