@@ -17,7 +17,6 @@ export default defineComponent({
       hideQuick: false,
       enableDebug: false,
       sparkleMode: false,
-      default_roll: '1d10',
       slideshow_delay: 5,
       fab_position: 'bottom-right',
     };
@@ -59,6 +58,7 @@ export default defineComponent({
 
     function handleReset() {
       options.value = { ...options_default };
+      showSettingsMenu.value = false;
     }
 
     function handleCopy() {
@@ -238,7 +238,7 @@ export default defineComponent({
                 <q-item-section avatar>
                   <q-icon name="restore" size="xs" />
                 </q-item-section>
-                <q-item-section>Reset all options</q-item-section>
+                <q-item-section>Reset preferences</q-item-section>
               </q-item>
             </q-list>
           </q-menu>

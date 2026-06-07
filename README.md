@@ -13,6 +13,7 @@ http://timtoo.github.io/rapidly-random
 Have fun. Use randomness for good. Below are just some silly details 
 you need not worry about.
 
+
 ## About the console
 
 I had the idea of implementing a game console inspired text input mode using
@@ -81,3 +82,6 @@ Other notes:
   just `1d6` despite the zero base flag, but `1d6z` would be the range 0 to 6. 
 
 
+## Accessability
+
+We are trying really hard with the accessibility elements. Hopefully it's not too bad.
