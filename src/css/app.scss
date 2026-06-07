@@ -59,7 +59,7 @@ body.body--dark {
     color: $background;
     margin-right: 0.3em;
     margin-bottom: 0.3em;
-    border-radius: 999px;
+    border-radius: 0.5rem;
     padding: 0.3em 1em;
     &-selected {
         background: $secondary;
@@ -185,9 +185,17 @@ body.body--light .rr-qb {
 }
 
 .rr-big-btn {
-  color: $primary;
+  color: var(--rr-text);
   min-width: 2.6em;
   text-transform: none;
+}
+
+body.body--dark .rr-big-btn.q-btn--outline::before {
+  border-color: $primary !important;
+}
+
+body.body--light .rr-big-btn.q-btn--outline::before {
+  border-color: #3a6db5 !important;
 }
 
 .rr-hl {

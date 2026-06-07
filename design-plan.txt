@@ -1,0 +1,186 @@
+
+ plan: multiple-man-psylocke-cloak.md ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ UI Redesign Plan: Randomly/Die
+
+ Goals
+
+ • Make generated numbers/dice prominent and immediately visible
+ • Reduce clutter while keeping all functionality
+ • Make the two history lists contained and less arbitrary
+ • Convert cramped form into a compact settings summary + popup dialog
+ • Separate dice quantity into an obvious control
+ • Add easy dark/light mode toggle
+ • Remove hamburger menu / title row — poor use of space
+ • Prioritize mobile while keeping responsive desktop layout
+ • Maintain minimalistic, slightly retro-modern aesthetic
+
+ Current Pain Points
+
+ 1. Everything centered-stacked competes visually — no hierarchy
+ 2. Previous rolls (gradient text) and History chips sit in the middle with no containment
+ 3. Advanced form is 4 dense rows that aren't self-explanatory
+ 4. Dice count (#) buried in form
+ 5. Toolbar with hamburger + centered title wastes vertical space for a single-user PWA
+ 6. No light mode
+ 7. Show/hide toggles hidden in a drawer nobody opens
+
+ Proposed New Layout (mobile-first)
+
+ ```
+   ┌─────────────────────────────┐
+   │ Randomly/Die          ☀/☾   │  <- minimal top bar: title left, theme toggle right
+   ├─────────────────────────────┤
+   │                             │
+   │      ┌─────────────┐        │
+   │      │    42       │        │  <- HERO: large result, tap to reroll
+   │      └─────────────┘        │
+   │      1 to 100 · Number      │  <- settings summary bar (tap to edit)
+   │                             │
+   │  ┌─────────────────────┐    │
+   │  │  🎲  [ 3 ]  +  -    │    │  <- prominent dice quantity stepper
+   │  └─────────────────────┘    │
+   │                             │
+   │  [d6] [d20] [d100] [d256]   │  <- quick buttons (pill style, h-scroll on mobile)
+   │                             │
+   │  ▼ Previous rolls           │  <- collapsible (expansion item)
+   │    4 … 2 … 6 … 1 …          │
+   │                             │
+   │  ▼ Roll history             │  <- collapsible (expansion item)
+   │    [d6] [d20] [d100]        │
+   │                             │
+   │    [?] [>_] [↻] [▶]         │  <- action icons centered
+   │                             │
+   └─────────────────────────────┘
+           [  ROLL  ]            <- FAB (kept, bottom-right)
+ ```
+
+ Desktop
+
+ • Same structure but content centered within a max-width: 720px container
+ • More internal padding, less edge-to-edge feel
+ • Quick buttons wrap instead of scroll
+
+ Implementation Steps
+
+ 1. Enable Quasar Dark Mode (quasar.config.js)
+
+ • Add 'Dark' to framework.plugins
+ • This gives us .body--dark / .body--light classes automatically
+
+ 2. Theme-Aware Styles (src/css/quasar.variables.scss, src/css/app.scss)
+
+ • Convert custom color variables to CSS custom properties
+ • Define both dark and light values scoped to body--dark / body--light
+ • Keep $primary, $secondary as they work in both themes
+ • Override $background, $paper, $text-default for light mode
+
+ 3. Restructure MainLayout (src/layouts/MainLayout.vue)
+
+ • Remove hamburger menu entirely
+ • Remove left drawer entirely
+ • Replace with a minimal q-toolbar:
+     • Left: "Randomly/Die" in small subdued text
+     • Right: dark/light toggle button (stored in localStorage via @vueuse/core useStorage)
+ • Pass dark mode state to child routes or handle globally via Quasar Dark plugin
+
+ 4. Create Settings Dialog (src/components/SettingsDialog.vue — NEW)
+
+ • Extract the full AdvancedForm into a q-dialog
+ • Triggered by tapping the settings summary bar or a gear icon
+ • Contains: Min, Max, Dice count (also shown outside), Mode dropdown, Zero-based toggle, Exclusive toggle
+ • Dialog title: "Generator Settings"
+
+ 5. Restructure IndexPage (src/pages/IndexPage.vue)
+
+ New vertical order:
+ 1. Hero Result Display — keep RollDisplay but give it more vertical breathing room
+ 2. Settings Summary Bar — one-line compact display of: mode icon, range, base, inclusive status. Tap opens SettingsDialog. This replaces the old
+ settings-summary div.
+ 3. Dice Quantity Stepper — new prominent control: large - [ 3 ] + buttons. Emits changes directly.
+ 4. Quick Buttons — horizontal scroll on mobile, wrap on desktop. Pill style.
+ 5. Previous Rolls — inside q-expansion-item, default collapsed on mobile, expanded on desktop
+ 6. History List — inside q-expansion-item, default collapsed
+ 7. Action Icons — help, console, reset, auto-roll as a single centered row of small flat round buttons
+ 8. FAB — unchanged position, but style updated for better contrast
+
+ 6. Update Components
+
+ src/components/RollDisplay.vue
+
+ • Increase min-height/padding for more prominence
+ • Slightly larger font for single results
+ • Better contrast in both themes
+
+ src/components/QuickButtons.vue
+
+ • Change from flat boxes to rounded pills (rounded prop, or custom border-radius)
+ • Selected state: filled secondary instead of just color swap
+ • Add horizontal scroll container for mobile (overflow-x-auto)
+ • Remove label — no longer needed with the new layout context
+
+ src/components/PreviousRolls.vue
+
+ • Wrap in a style that works inside expansion item
+ • Keep gradient text effect but make it work in light mode too
+ • Add subtle fade at right edge to suggest scrollability
+
+ src/components/HistoryList.vue
+
+ • Wrap chips in a style that works inside expansion item
+ • Smaller, more compact chips
+
+ src/components/AdvancedForm.vue
+
+ • Keep existing form logic
+ • Style inputs to work inside a dialog (more padding, clearer labels)
+ • Remove dice count from here since it's now a separate prominent control (or keep it as a mirror)
+
+ 7. Remove Redundancy
+
+ • Delete the old settings-summary block (replaced by SettingsBar)
+ • Delete the old icon row layout (replaced by cleaner centered row)
+ • Move show/hide toggles from drawer into SettingsDialog as checkboxes (or remove entirely — history expansion items make them less necessary)
+
+ Files Modified / Created
+
+ ┌───────────────────────────────────┬─────────────────────────────────────────┐
+ │ File                              │ Action                                  │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ quasar.config.js                  │ Add Dark plugin                         │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/css/quasar.variables.scss     │ Adjust for theme compatibility          │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/css/app.scss                  │ Add light mode styles, layout utilities │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/layouts/MainLayout.vue        │ Minimal header, remove drawer           │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/pages/IndexPage.vue           │ Complete restructure                    │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/SettingsDialog.vue │ NEW — popup settings form               │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/AdvancedForm.vue   │ Dialog-ready styling                    │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/QuickButtons.vue   │ Pill style, scroll container            │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/HistoryList.vue    │ Compact chips for expansion item        │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/PreviousRolls.vue  │ Theme-aware gradient, fade edge         │
+ ├───────────────────────────────────┼─────────────────────────────────────────┤
+ │ src/components/RollDisplay.vue    │ Larger, more prominent                  │
+ └───────────────────────────────────┴─────────────────────────────────────────┘
+
+ Trade-offs
+
+ • Removing the drawer means show/hide toggles for sections disappear. Mitigation: history sections become collapsible expansion items, and the settings
+ dialog can include visibility toggles if needed. Most users likely never used the drawer.
+ • Settings in a dialog adds one tap to change mode/range. Mitigation: the most common actions (quick buttons, dice quantity) remain one-tap. Advanced
+ settings are intentionally less frequent.
+ • Light mode requires testing all custom SCSS. The gradient in PreviousRolls especially needs a light-mode variant.
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Ready to build with this plan?
+
+ 1. Approve
+ 2. Reject
+ 3. Revise
+

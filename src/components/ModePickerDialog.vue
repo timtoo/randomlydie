@@ -49,12 +49,14 @@ export default defineComponent({
             <q-btn
               outline
               no-caps
+              stack
               class="full-width"
+              style="min-height: 5rem; border-radius: 0.5rem"
               :color="mode === m.id ? 'secondary' : 'primary'"
               @click="select(m.id)"
             >
-              <q-icon :name="m.material_icon" class="q-mr-sm" />
-              {{ m.name }}
+              <q-icon :name="m.material_icon" size="sm" />
+              <div class="text-caption q-mt-xs">{{ m.name }}</div>
             </q-btn>
           </div>
         </div>

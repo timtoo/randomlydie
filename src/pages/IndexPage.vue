@@ -400,8 +400,8 @@ export default defineComponent({
         class="rr-settings-item cursor-pointer"
         @click="settingsDialogOpen = true"
       >
+        <q-icon name="expand_more" size="xs" class="q-mr-xs" style="opacity: 0.6" />
         {{ die.getRangeString(true, ' to ') }}
-        <q-icon name="edit" size="xs" class="q-ml-xs" style="opacity: 0.6" />
       </span>
       <span style="color: var(--rr-text-muted)">·</span>
       <span

@@ -135,7 +135,7 @@ export default defineComponent({
 
 <style lang="scss">
 .rr-big-btn {
-  color: $primary;
+  color: var(--rr-text);
   min-width: 2.6em;
   text-transform: none;
 }
