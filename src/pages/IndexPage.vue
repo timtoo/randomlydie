@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { rollHistoryType } from 'components/models';
 import { MODE_ID, MODE, mode_by_name } from 'src/lib/modes';
 import { Die } from 'src/lib/die';
-import SettingsDialog from 'components/SettingsDialog.vue';
+import GeneratorSettingsDialog from 'components/GeneratorSettingsDialog.vue';
 import ModePickerDialog from 'components/ModePickerDialog.vue';
 import HistoryList from 'src/components/HistoryList.vue';
 import PreviousRolls from 'components/PreviousRolls.vue';
@@ -68,7 +68,7 @@ export default defineComponent({
     RollDisplay,
     PreviousRolls,
     HistoryList,
-    SettingsDialog,
+    GeneratorSettingsDialog,
     ModePickerDialog,
     DieConsole,
     TimerBar,
@@ -579,7 +579,7 @@ export default defineComponent({
     </div>
 
     <!-- Settings Dialog -->
-    <SettingsDialog
+    <GeneratorSettingsDialog
       v-model="settingsDialogOpen"
       :die="die"
       :mode="mode"
@@ -589,7 +589,7 @@ export default defineComponent({
       @mode-change="(m:number) => handleModeChange(m, false)"
       @close="bigButtonClick"
       @clear-history="rolls.value = []"
-    ></SettingsDialog>
+    ></GeneratorSettingsDialog>
 
     <!-- Mode Picker Dialog -->
     <ModePickerDialog

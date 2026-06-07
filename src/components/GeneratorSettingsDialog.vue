@@ -4,7 +4,7 @@ import { Die } from 'src/lib/die';
 import AdvancedForm from 'components/AdvancedForm.vue';
 
 export default defineComponent({
-  name: 'SettingsDialog',
+  name: 'GeneratorSettingsDialog',
   props: {
     modelValue: { type: Boolean, default: false },
     die: { type: Die, required: true },
