@@ -101,6 +101,20 @@ body.body--light .rr-qb {
   padding: 0 1rem;
 }
 
+@media (min-width: 768px) {
+  .rr-page-container {
+    box-shadow:
+      -40px 0 80px -40px rgba(0, 0, 0, 0.25),
+      40px 0 80px -40px rgba(0, 0, 0, 0.25);
+  }
+
+  body.body--light .rr-page-container {
+    box-shadow:
+      -40px 0 80px -40px rgba(0, 0, 0, 0.08),
+      40px 0 80px -40px rgba(0, 0, 0, 0.08);
+  }
+}
+
 .rr-hero-display {
   min-height: 160px;
   display: flex;

@@ -100,15 +100,18 @@ export default defineComponent({
     const fabStyle = computed(() => {
       const pos = props.options?.fab_position || 'bottom-right';
       const base = { position: 'fixed' as const, zIndex: 1000 };
+      const maxW = 720;
+      const pad = 16;
+      const margin = 'max(' + pad + 'px, calc((100vw - ' + maxW + 'px) / 2 + ' + pad + 'px))';
       switch (pos) {
         case 'bottom-left':
-          return { ...base, bottom: '20px', left: '20px' };
+          return { ...base, bottom: '20px', left: margin };
         case 'top-right':
-          return { ...base, top: '60px', right: '20px' };
+          return { ...base, top: '60px', right: margin };
         case 'top-left':
-          return { ...base, top: '60px', left: '20px' };
+          return { ...base, top: '60px', left: margin };
         default:
-          return { ...base, bottom: '20px', right: '20px' };
+          return { ...base, bottom: '20px', right: margin };
       }
     });
 
@@ -281,6 +284,7 @@ export default defineComponent({
     }
 
     onKeyStroke([' ', 'r', 'R'], (e) => {
+      if (e.ctrlKey || e.metaKey) return;
       if (console_active.value) {
         console.log('console open: no enter');
       } else if (!shouldIgnoreHotkey()) {
