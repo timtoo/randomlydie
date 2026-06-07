@@ -85,12 +85,11 @@ export default defineComponent({
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
     class="q-pa-lg rr-big-btn"
     :class="roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3'"
-    style="min-height: 120px; border-radius: 16px"
+    style="min-height: 9rem; border-radius: 1rem"
   >
     <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
       <SvgDie6
-        viewBox="0 0 100 100"
-        height="2em"
+        height="6rem"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
@@ -98,7 +97,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 10">
       <SvgDie10
-        height="2em"
+        height="6rem"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -106,7 +105,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 12">
       <SvgDie12
-        height="2em"
+        height="6rem"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -114,7 +113,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 20">
       <SvgDie20
-        height="2em"
+        height="6rem"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -122,7 +121,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 100">
       <SvgDie100
-        height="2em"
+        height="6rem"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"

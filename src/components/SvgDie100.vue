@@ -6,13 +6,13 @@ export default defineComponent({
   name: 'SvgDie100',
   props: {
     value: { type: Number, default: 0 },
-    strokeWidth: { type: Number, default: 2 },
+    strokeWidth: { type: Number, default: 1.3 },
   },
 });
 </script>
 
 <template>
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="13 18 74 64" xmlns="http://www.w3.org/2000/svg">
     <g :stroke-width="strokeWidth">
       <!--
         D100 face: a regular hexagon.

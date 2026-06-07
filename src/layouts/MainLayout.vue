@@ -54,7 +54,11 @@ export default defineComponent({
   <q-layout view="hHh lpR lFf">
     <q-header class="bg-transparent shadow-none" style="border-bottom: 1px solid var(--rr-border)">
       <q-toolbar class="q-px-md" style="min-height: 44px">
-        <q-toolbar-title class="text-subtitle1" style="color: var(--rr-text-muted)">
+        <q-toolbar-title
+          class="text-subtitle1 cursor-pointer"
+          style="color: var(--rr-text-muted)"
+          @click="router.push('/')"
+        >
           Randomly/Die
         </q-toolbar-title>
         <q-btn
