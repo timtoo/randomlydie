@@ -352,7 +352,7 @@ export default defineComponent({
     </div>
 
     <!-- Timestamp -->
-    <div class="text-center q-mt-xs text-body2" style="color: var(--rr-text-muted)">
+    <div class="text-center q-mt-xs text-body2 text-italic" style="color: var(--rr-text-muted)">
       {{ lastRoll ? lastRoll.time.toLocaleString() : '&nbsp;' }}
     </div>
 
