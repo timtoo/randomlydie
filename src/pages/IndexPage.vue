@@ -13,6 +13,7 @@ import DieConsole from 'components/DieConsole.vue';
 import DebugDie from 'components/DebugDie.vue';
 import TimerBar from 'components/TimerBar.vue';
 import { onKeyStroke, useStorage } from '@vueuse/core';
+import { useLastRoll } from 'src/composables/useLastRoll';
 import { version } from '../../package.json';
 
 const DEFAULT_QUANTITY = 1;
@@ -20,6 +21,7 @@ const DEFAULT_MIN = 1;
 const DEFAULT_MAX = 10;
 const MAX_QUANTITY = 100;
 const MAX_HISTORY = MAX_QUANTITY * 5;
+const { lastRollDisplay } = useLastRoll();
 
 function letsroll(
   die: Die,
@@ -50,6 +52,7 @@ function letsroll(
     document.title = document.title.slice(title_divider_index + title_divider.length);
   }
   document.title = `${rolls[0].display}${title_divider}${rolls[0].label}${title_divider}${document.title}`;
+  lastRollDisplay.value = rolls[0].display;
 
   return newDie;
 }

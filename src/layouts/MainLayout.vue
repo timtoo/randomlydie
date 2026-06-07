@@ -1,8 +1,9 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { useStorage } from '@vueuse/core';
-import { useQuasar } from 'quasar';
+import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
+import { useLastRoll } from 'src/composables/useLastRoll';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -24,6 +25,7 @@ export default defineComponent({
     const darkMode = useStorage('darkMode', true);
     const router = useRouter();
     const showSettingsMenu = ref(false);
+    const { lastRollDisplay } = useLastRoll();
 
     onMounted(() => {
       $q.dark.set(darkMode.value);
@@ -38,12 +40,37 @@ export default defineComponent({
       options.value = { ...options_default };
     }
 
+    function handleCopy() {
+      if (!lastRollDisplay.value) return;
+      copyToClipboard(lastRollDisplay.value)
+        .then(() => {
+          $q.notify({
+            message: 'Copied "' + lastRollDisplay.value + '" to clipboard!',
+            icon: 'announcement',
+            color: 'primary',
+            position: 'top',
+            textColor: 'background',
+          });
+        })
+        .catch(() => {
+          $q.notify({
+            message: 'Clipboard failed',
+            icon: 'warning',
+            color: 'warn',
+            position: 'top',
+            textColor: 'background',
+          });
+        });
+    }
+
     return {
       options,
       darkMode,
       showSettingsMenu,
       toggleDark,
       handleReset,
+      handleCopy,
+      lastRollDisplay,
       router,
     };
   },
@@ -61,6 +88,16 @@ export default defineComponent({
         >
           Randomly/Die
         </q-toolbar-title>
+        <q-btn
+          flat
+          round
+          dense
+          icon="content_copy"
+          style="color: var(--rr-text-muted)"
+          class="q-mr-sm"
+          :disable="!lastRollDisplay"
+          @click="handleCopy"
+        />
         <q-btn
           flat
           round
