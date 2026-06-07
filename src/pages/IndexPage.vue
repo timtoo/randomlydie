@@ -273,7 +273,6 @@ export default defineComponent({
       console_active.value = false;
       die.value = new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY);
       mode.value = MODE_ID.dice;
-      rolls.value = [];
       reset_confirm_dialog.value = false;
       router.push({ path: '/' });
     }
