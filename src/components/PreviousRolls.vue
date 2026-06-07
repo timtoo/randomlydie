@@ -73,13 +73,15 @@ export default defineComponent({
         class="rr-pr-label text-body1 cursor-pointer"
         @click="copyAll"
       >{{ label }}</span>
-      <template v-for="(r, idx) in previousRolls" :key="idx">
-        <span
-          class="grad cursor-pointer"
-          @click="copySingle(r.text)"
-        >{{ r.text }}</span>
-        <span v-if="idx < previousRolls.length - 1" class="grad" style="opacity: 0.6"> … </span>
-      </template>
+      <span class="grad">
+        <template v-for="(r, idx) in previousRolls" :key="idx">
+          <span
+            class="cursor-pointer"
+            @click="copySingle(r.text)"
+          >{{ r.text }}</span>
+          <span v-if="idx < previousRolls.length - 1" style="opacity: 0.6"> … </span>
+        </template>
+      </span>
     </div>
   </div>
   <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">
