@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
+import { defineComponent, ref, watch, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
