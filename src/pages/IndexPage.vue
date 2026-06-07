@@ -372,12 +372,13 @@ export default defineComponent({
     <!-- Hero Result Display -->
     <div id="result-display" class="rr-hero-display q-mt-md">
       <template v-if="lastRoll">
-        <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="idx">
+        <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="lastRoll.time.getTime() + '-' + idx">
           <roll-display
             :value="v"
             :index="idx"
             :display="MODE[lastRoll.mode].displayValue(lastRoll.die.getThrow()[idx], lastRoll.die.max)"
             :roll="lastRoll"
+            :sparkle="options?.sparkleMode"
             @on-roll-display-click="bigButtonClick"
           ></roll-display>
         </div>

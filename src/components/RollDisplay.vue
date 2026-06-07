@@ -17,6 +17,7 @@ export default defineComponent({
     display: String,
     roll: { type: Object as PropType<rollHistoryType | null>, default: null },
     index: { type: Number, default: 0 },
+    sparkle: { type: Boolean, default: false },
   },
   components: { SvgDie6, SvgDie10, SvgDie12, SvgDie20, SvgDie100 },
   emits: ['onRollDisplayClick'],
@@ -31,6 +32,34 @@ export default defineComponent({
       if (props.roll && props.roll.mode === MODE_ID.dice)
         padding = '1em 1em 1em 1em';
       return props.display;
+    });
+
+    const sparkleBg = computed(() => {
+      if (!props.sparkle || !props.roll) return undefined;
+      const isDark = $q.dark.isActive;
+      const h = Math.floor(Math.random() * 360);
+      const s = isDark ? 60 + Math.floor(Math.random() * 30) : 50 + Math.floor(Math.random() * 30);
+      const l = isDark ? 25 + Math.floor(Math.random() * 20) : 70 + Math.floor(Math.random() * 20);
+      return `hsl(${h} ${s}% ${l}%) !important`;
+    });
+
+    const sparkleGlow = computed(() => {
+      if (!props.sparkle || !props.roll) return undefined;
+      const isDark = $q.dark.isActive;
+      const h = Math.floor(Math.random() * 360);
+      const alpha = isDark ? 0.8 : 0.6;
+      return `hsla(${h}, 80%, 60%, ${alpha})`;
+    });
+
+    const sparkleEmojis = computed(() => {
+      if (!props.sparkle || !props.roll) return [];
+      const emojis = ['✨', '🎲', '🌈', '🔥', '⭐', '🎉', '💫', '🌟', '👏', '🐕', '🐈', '🐋', '🌸', '😊', '🦄', '🍀', '🌺', '🎈', '🌙', '☀️'];
+      const count = 2 + Math.floor(Math.random() * 4);
+      const result = [];
+      for (let i = 0; i < count; i++) {
+        result.push(emojis[Math.floor(Math.random() * emojis.length)]);
+      }
+      return result;
     });
 
     function handleLongPress() {
@@ -67,6 +96,9 @@ export default defineComponent({
     return {
       btn_ref,
       displayValue,
+      sparkleBg,
+      sparkleGlow,
+      sparkleEmojis,
       handleLongPress,
       inLongPress,
       MODE_ID,
@@ -84,8 +116,8 @@ export default defineComponent({
     :outline="roll?.mode !== MODE_ID.dice"
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
     class="q-pa-lg rr-big-btn"
-    :class="roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3'"
-    style="min-height: 9rem; border-radius: 1rem"
+    :class="[roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '']"
+    :style="{ minHeight: '9rem', borderRadius: '1rem', backgroundColor: sparkleBg, '--rr-glow-color': sparkleGlow || 'transparent' }"
   >
     <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
       <SvgDie6
@@ -130,6 +162,22 @@ export default defineComponent({
     <template v-else>
       <span v-html="displayValue"></span>
     </template>
+    <!-- sparkle emojis - disabled for now
+    <template v-for="(emoji, idx) in sparkleEmojis" :key="idx">
+      <div
+        class="rr-sparkle-emoji"
+        :style="{
+          left: (35 + Math.random() * 30) + '%',
+          top: (35 + Math.random() * 30) + '%',
+          '--rr-float-x': (Math.random() * 10 - 5) + 'rem',
+          '--rr-float-y': (Math.random() * 10 - 5) + 'rem',
+          animationDelay: (Math.random() * 0.3) + 's'
+        }"
+      >
+        {{ emoji }}
+      </div>
+    </template>
+    -->
   </q-btn>
 </template>
 

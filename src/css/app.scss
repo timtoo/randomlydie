@@ -202,6 +202,34 @@ body.body--light .rr-big-btn.q-btn--outline::before {
   color: $primary;
 }
 
+.rr-sparkle-glow {
+  animation: rr-pulse-glow 2s ease-out forwards;
+}
+
+@keyframes rr-pulse-glow {
+  0% { opacity: 1; box-shadow: 0 0 30px 14px var(--rr-glow-color, transparent); }
+  100% { opacity: 0.6; box-shadow: 0 0 4px 2px var(--rr-glow-color, transparent); }
+}
+
+.rr-sparkle-emoji {
+  position: absolute;
+  font-size: 1.2rem;
+  pointer-events: none;
+  animation: rr-sparkle-float 1.2s ease-out forwards;
+}
+
+@keyframes rr-sparkle-float {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--rr-float-x, 0), var(--rr-float-y, -3rem)) scale(1.5); }
+}
+
+.rr-sparkle-emoji {
+  position: absolute;
+  font-size: 1.2rem;
+  pointer-events: none;
+  animation: rr-sparkle-float 3s ease-out forwards;
+}
+
 .desktop-only {
   @media (hover: none) and (pointer: coarse) {
     display: none;

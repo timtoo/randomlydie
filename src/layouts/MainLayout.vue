@@ -16,6 +16,7 @@ export default defineComponent({
       hidePrevious: false,
       hideQuick: false,
       enableDebug: false,
+      sparkleMode: false,
       default_roll: '1d10',
       slideshow_delay: 5,
       fab_position: 'bottom-right',
@@ -153,6 +154,12 @@ export default defineComponent({
                   <q-toggle v-model="options.hideHistory" color="primary" />
                 </q-item-section>
                 <q-item-section>Hide roll history toggle</q-item-section>
+              </q-item>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.sparkleMode" color="primary" />
+                </q-item-section>
+                <q-item-section>Sparkle mode</q-item-section>
               </q-item>
               <q-separator spaced style="background: var(--rr-border)" />
 
