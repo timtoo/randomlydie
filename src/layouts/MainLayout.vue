@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useLastRoll } from 'src/composables/useLastRoll';
+import { useClearHistory } from 'src/composables/useClearHistory';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -63,8 +64,10 @@ export default defineComponent({
       showSettingsMenu.value = false;
     }
 
+    const { clearHistoryTrigger } = useClearHistory();
+
     function handleClearHistory() {
-      ctx.emit('clear-history');
+      clearHistoryTrigger.value++;
       showSettingsMenu.value = false;
     }
 
@@ -270,7 +273,7 @@ export default defineComponent({
     </q-header>
 
     <q-page-container>
-      <router-view :options="options" @clear-history="(v: unknown) => $emit('clear-history', v)" />
+      <router-view :options="options" />
     </q-page-container>
   </q-layout>
 </template>

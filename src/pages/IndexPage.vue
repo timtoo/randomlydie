@@ -15,6 +15,7 @@ import DebugDie from 'components/DebugDie.vue';
 import TimerBar from 'components/TimerBar.vue';
 import { onKeyStroke, useStorage } from '@vueuse/core';
 import { useLastRoll } from 'src/composables/useLastRoll';
+import { useClearHistory } from 'src/composables/useClearHistory';
 import { version } from '../../package.json';
 
 const DEFAULT_QUANTITY = 2;
@@ -63,7 +64,7 @@ export default defineComponent({
   props: {
     options: Object,
   },
-  emits: ['clear-history'],
+
   components: {
     QuickButtons,
     RollDisplay,
@@ -589,7 +590,6 @@ export default defineComponent({
       @exclusive-toggle="() => (die.exclusive = !die.exclusive)"
       @mode-change="(m:number) => handleModeChange(m, false)"
       @close="bigButtonClick"
-      @clear-history="rolls.value = []"
     ></GeneratorSettingsDialog>
 
     <!-- Mode Picker Dialog -->
