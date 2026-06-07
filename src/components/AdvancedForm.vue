@@ -32,6 +32,7 @@ export default defineComponent({
     const min = ref(props.die.min);
     const max = ref(props.die.max);
     const dice = ref(props.die.dice);
+    const modeDropdownOpen = ref(false);
 
     watch(
       () => props.die,
@@ -95,7 +96,7 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, handleMinMaxDice };
+    return { min, max, dice, MODE, handleMinMaxDice, modeDropdownOpen };
   },
 });
 </script>
@@ -144,6 +145,7 @@ export default defineComponent({
     </div>
     <div>
       <q-btn-dropdown
+        v-model="modeDropdownOpen"
         class="full-width"
         dense
         outline
@@ -159,7 +161,7 @@ export default defineComponent({
               .map((m) => m.id)"
             :key="m"
           >
-            <q-item clickable @click="$emit('mode-change', m)">
+            <q-item clickable @click="modeDropdownOpen = false; $emit('mode-change', m)">
               <q-item-section>
                 <q-item-label>
                   <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{ MODE[m].name }}
