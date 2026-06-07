@@ -124,22 +124,24 @@ export default defineComponent({
 
     function handleURLChange() {
       console.log('route params', route.params);
-      if (route.params.mode) {
-        const new_mode = mode_by_name(route.params.mode[0]);
+      const modeParam = Array.isArray(route.params.mode)
+        ? route.params.mode[0]
+        : route.params.mode;
+      if (modeParam) {
+        const new_mode = mode_by_name(modeParam);
         if (new_mode) {
           mode.value = new_mode.id;
         }
       }
-      if (route.params.die) {
+      const dieParam = Array.isArray(route.params.die)
+        ? route.params.die[0]
+        : route.params.die;
+      if (dieParam) {
         try {
-          const new_die = new Die(
-            typeof route.params.die === 'string'
-              ? route.params.die
-              : route.params.die[0]
-          );
+          const new_die = new Die(dieParam);
           die.value = new_die;
         } catch {
-          console.log('Could not parse die: ', route.params.die[0]);
+          console.log('Could not parse die: ', dieParam);
         }
       }
     }
