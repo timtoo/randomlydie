@@ -10,7 +10,7 @@ export default defineComponent({
 
   components: {},
 
-  setup() {
+  setup(props, ctx) {
     const options_default = {
       hideHistory: false,
       hidePrevious: false,
@@ -61,6 +61,11 @@ export default defineComponent({
       showSettingsMenu.value = false;
     }
 
+    function handleClearHistory() {
+      ctx.emit('clear-history');
+      showSettingsMenu.value = false;
+    }
+
     function handleCopy() {
       if (!lastRollDisplay.value) return;
       copyToClipboard(lastRollDisplay.value)
@@ -91,6 +96,7 @@ export default defineComponent({
       showSettingsMenu,
       toggleDark,
       handleReset,
+      handleClearHistory,
       handleCopy,
       lastRollDisplay,
       router,
@@ -240,6 +246,12 @@ export default defineComponent({
                 </q-item-section>
                 <q-item-section>Reset preferences</q-item-section>
               </q-item>
+              <q-item clickable @click="handleClearHistory">
+                <q-item-section avatar>
+                  <q-icon name="delete" size="xs" />
+                </q-item-section>
+                <q-item-section>Clear history</q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
         </q-btn>
@@ -256,7 +268,7 @@ export default defineComponent({
     </q-header>
 
     <q-page-container>
-      <router-view :options="options" />
+      <router-view :options="options" @clear-history="(v: unknown) => $emit('clear-history', v)" />
     </q-page-container>
   </q-layout>
 </template>

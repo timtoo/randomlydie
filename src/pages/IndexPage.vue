@@ -63,6 +63,7 @@ export default defineComponent({
   props: {
     options: Object,
   },
+  emits: ['clear-history'],
   components: {
     QuickButtons,
     RollDisplay,
@@ -375,6 +376,7 @@ export default defineComponent({
       decrementDice,
       fabClick,
       fabStyle,
+      clearHistory: () => { rolls.value = []; },
     };
   },
 });
