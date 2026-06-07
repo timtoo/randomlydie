@@ -24,6 +24,7 @@ const DEFAULT_MAX = 6;
 const MAX_QUANTITY = 100;
 const MAX_HISTORY = MAX_QUANTITY * 5;
 const { lastRollDisplay } = useLastRoll();
+const { clearHistoryTrigger } = useClearHistory();
 
 function letsroll(
   die: Die,
@@ -94,6 +95,10 @@ export default defineComponent({
     const modeDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
+
+    watch(clearHistoryTrigger, () => {
+      rolls.value = [];
+    });
 
     const slideshow_delay = computed(() => {
       return (props.options?.slideshow_delay || 5) * 1000;
