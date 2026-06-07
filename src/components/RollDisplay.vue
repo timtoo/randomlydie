@@ -118,6 +118,7 @@ export default defineComponent({
     class="q-pa-lg rr-big-btn"
     :class="[roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '']"
     :style="{ minHeight: '9rem', borderRadius: '1rem', backgroundColor: sparkleBg, '--rr-glow-color': sparkleGlow || 'transparent' }"
+    :aria-label="roll ? 'Random result: ' + displayValue : 'Tap to roll'"
   >
     <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
       <SvgDie6

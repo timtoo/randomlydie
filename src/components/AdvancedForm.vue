@@ -105,6 +105,7 @@ export default defineComponent({
   <div class="q-gutter-y-md">
     <div class="row q-col-gutter-sm">
       <div class="col-6">
+        <label id="min-label" class="sr-only">Minimum value</label>
         <InputNumber
           dense
           label="Min"
@@ -115,9 +116,11 @@ export default defineComponent({
           @update:model-value="handleMinMaxDice('min')"
           :min="0"
           :max="max - 1"
+          aria-labelledby="min-label"
         ></InputNumber>
       </div>
       <div class="col-6">
+        <label id="max-label" class="sr-only">Maximum value</label>
         <InputNumber
           dense
           label="Max"
@@ -127,10 +130,12 @@ export default defineComponent({
           label-color="primary"
           @update:model-value="handleMinMaxDice('max')"
           :min="min + 1"
+          aria-labelledby="max-label"
         ></InputNumber>
       </div>
     </div>
     <div>
+      <label id="dice-label" class="sr-only">Number of dice</label>
       <InputNumber
         dense
         label="Number of values"
@@ -141,9 +146,11 @@ export default defineComponent({
         @update:model-value="handleMinMaxDice('dice')"
         :min="1"
         :max="10"
+        aria-labelledby="dice-label"
       ></InputNumber>
     </div>
     <div>
+      <label id="mode-label" class="sr-only">Generator mode</label>
       <q-btn-dropdown
         v-model="modeDropdownOpen"
         class="full-width"
@@ -153,15 +160,18 @@ export default defineComponent({
         color="primary"
         :label="MODE[mode].name"
         :icon="MODE[mode].material_icon"
+        aria-haspopup="listbox"
+        :aria-expanded="modeDropdownOpen"
+        aria-labelledby="mode-label"
       >
-        <q-list bordered dense class="bg-rrinput">
+        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select generator mode">
           <template
             v-for="m of Object.values(MODE)
               .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
               .map((m) => m.id)"
             :key="m"
           >
-            <q-item clickable @click="modeDropdownOpen = false; $emit('mode-change', m)">
+            <q-item clickable @click="modeDropdownOpen = false; $emit('mode-change', m)" role="option" :aria-selected="mode === m">
               <q-item-section>
                 <q-item-label>
                   <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{ MODE[m].name }}
@@ -182,6 +192,7 @@ export default defineComponent({
           color="primary"
           :class="die.zerobase ? 'rr-active-button' : ''"
           @click="$emit('base-toggle')"
+          :aria-pressed="die.zerobase"
         >
           {{ die.zerobase ? 'Zero-based' : 'One-based' }}
         </q-btn>
@@ -195,6 +206,7 @@ export default defineComponent({
           color="primary"
           :class="die.exclusive ? 'rr-active-button' : ''"
           @click="$emit('exclusive-toggle')"
+          :aria-pressed="die.exclusive"
         >
           {{ die.exclusive ? 'Exclusive' : 'Inclusive' }}
         </q-btn>

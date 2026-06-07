@@ -280,10 +280,10 @@ export default defineComponent({
       bigButtonClick();
     }
 
-    onKeyStroke([' ', 'Enter'], (e) => {
+    onKeyStroke([' ', 'r', 'R'], (e) => {
       if (console_active.value) {
         console.log('console open: no enter');
-      } else {
+      } else if (!shouldIgnoreHotkey()) {
         e.preventDefault();
         bigButtonClick();
       }
@@ -295,9 +295,18 @@ export default defineComponent({
     function shouldIgnoreHotkey() {
       if (console_active.value || settingsDialogOpen.value) return true;
       const active = document.activeElement;
-      if (!active) return false;
+      if (!active || active === document.body) return false;
       const tag = active.tagName.toLowerCase();
-      return tag === 'input' || tag === 'textarea' || (active as HTMLElement).isContentEditable;
+      const role = active.getAttribute('role');
+      return (
+        tag === 'input' ||
+        tag === 'textarea' ||
+        tag === 'button' ||
+        tag === 'a' ||
+        role === 'button' ||
+        role === 'link' ||
+        (active as HTMLElement).isContentEditable
+      );
     }
 
     onKeyStroke('n', () => {
@@ -369,8 +378,9 @@ export default defineComponent({
 
 <template>
   <q-page class="rr-page-container q-pb-xl">
+    <main role="main">
     <!-- Hero Result Display -->
-    <div id="result-display" class="rr-hero-display q-mt-md">
+    <div id="result-display" class="rr-hero-display q-mt-md" role="region" aria-label="Roll result">
       <template v-if="lastRoll">
         <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="lastRoll.time.getTime() + '-' + idx">
           <roll-display
@@ -399,7 +409,12 @@ export default defineComponent({
     >
       <span
         class="rr-settings-item cursor-pointer"
+        tabindex="0"
+        role="button"
+        aria-label="Open generator settings"
         @click="settingsDialogOpen = true"
+        @keydown.enter="settingsDialogOpen = true"
+        @keydown.space.prevent="settingsDialogOpen = true"
       >
         <q-icon name="expand_more" size="xs" class="q-mr-xs" style="opacity: 0.6" />
         {{ die.getRangeString(true, ' to ') }}
@@ -407,7 +422,12 @@ export default defineComponent({
       <span style="color: var(--rr-text-muted)">·</span>
       <span
         class="rr-settings-item cursor-pointer"
+        tabindex="0"
+        role="button"
+        aria-label="Open mode picker"
         @click="modeDialogOpen = true"
+        @keydown.enter="modeDialogOpen = true"
+        @keydown.space.prevent="modeDialogOpen = true"
       >
         <q-icon :name="MODE[mode].material_icon" size="sm" />
         <span class="q-ml-xs">{{ MODE[mode].name }}</span>
@@ -422,9 +442,9 @@ export default defineComponent({
 
     <!-- Dice Quantity Stepper -->
     <div class="row justify-center q-mt-lg rr-quantity-stepper">
-      <q-btn flat dense color="primary" icon="remove" class="text-h6" @click="decrementDice" />
+      <q-btn flat dense color="primary" icon="remove" class="text-h6" aria-label="Decrease number of values" @click="decrementDice" />
       <div class="rr-quantity-value text-h5 self-center">{{ die.dice }}</div>
-      <q-btn flat dense color="primary" icon="add" class="text-h6" @click="incrementDice" />
+      <q-btn flat dense color="primary" icon="add" class="text-h6" aria-label="Increase number of values" @click="incrementDice" />
     </div>
     <div class="text-center text-body2" style="color: var(--rr-text-muted)">
       Number of values
@@ -491,6 +511,7 @@ export default defineComponent({
         round
         color="primary"
         icon="help_outline"
+        aria-label="Tips and tricks"
         @click="ttopen = !ttopen"
       >
         <q-tooltip v-model="ttopen" :hide-delay="1550">
@@ -528,6 +549,7 @@ export default defineComponent({
         round
         color="primary"
         icon="computer"
+        aria-label="Toggle console"
         @click="console_active = !console_active"
       />
       <q-btn
@@ -535,6 +557,7 @@ export default defineComponent({
         round
         color="primary"
         icon="refresh"
+        aria-label="Reset to defaults"
         @click="reset_confirm_dialog = true"
       >
         <q-tooltip :delay="1000">Reset to defaults</q-tooltip>
@@ -544,6 +567,7 @@ export default defineComponent({
         round
         color="primary"
         :icon="slideshow ? 'pause' : 'play_arrow'"
+        :aria-label="slideshow ? 'Stop slideshow' : 'Start slideshow'"
         @click="toggleSlideshow"
       >
         <q-tooltip :delay="1000">Toggle automatic random numbers every few seconds</q-tooltip>
@@ -594,7 +618,7 @@ export default defineComponent({
     </div>
 
     <!-- Reset Dialog -->
-    <q-dialog v-model="reset_confirm_dialog">
+    <q-dialog v-model="reset_confirm_dialog" role="alertdialog" aria-label="Confirm reset">
       <q-card class="reset-card outlined">
         <q-card-section class="row items-center">
           <q-avatar icon="warning" color="primary" text-color="white" />
@@ -618,6 +642,7 @@ export default defineComponent({
       :active="options?.enableDebug"
       bg-color="#d5c396"
     ></DebugDie>
+    </main>
   </q-page>
 </template>
 

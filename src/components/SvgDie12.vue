@@ -12,7 +12,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="12 14 76 74" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="12 14 76 74" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die12-desc">
+    <desc id="die12-desc">Twelve-sided die showing {{ value }}</desc>
     <g :stroke-width="strokeWidth">
       <!--
         D12 face: a regular pentagon (flat base, pointed top).

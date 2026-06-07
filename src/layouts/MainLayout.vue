@@ -101,20 +101,24 @@ export default defineComponent({
 
 <template>
   <q-layout view="hHh lpR lFf">
-    <q-header class="bg-transparent shadow-none" style="border-bottom: 1px solid var(--rr-border)">
+    <q-header class="bg-transparent shadow-none" style="border-bottom: 1px solid var(--rr-border)" role="banner">
       <q-toolbar class="q-px-md" style="min-height: 44px; max-width: 720px; margin: 0 auto;">
-        <q-toolbar-title
-          class="text-subtitle1 cursor-pointer"
-          style="color: var(--rr-text-muted)"
+        <q-btn
+          flat
+          no-caps
+          dense
+          class="text-subtitle1"
+          style="color: var(--rr-text-muted); padding: 0"
+          label="Randomly/Die"
           @click="router.push('/')"
-        >
-          Randomly/Die
-        </q-toolbar-title>
+        />
+        <q-space />
         <q-btn
           flat
           round
           dense
           icon="content_copy"
+          aria-label="Copy last roll to clipboard"
           style="color: var(--rr-text-muted)"
           class="q-mr-sm"
           :disable="!lastRollDisplay"
@@ -125,6 +129,7 @@ export default defineComponent({
           round
           dense
           icon="settings"
+          aria-label="Settings menu"
           style="color: var(--rr-text-muted)"
           class="q-mr-sm"
         >
@@ -243,6 +248,7 @@ export default defineComponent({
           round
           dense
           :icon="darkIcon"
+          :aria-label="darkMode === 'auto' ? 'Dark mode: auto' : darkMode ? 'Dark mode: on' : 'Dark mode: off'"
           style="color: var(--rr-text-muted)"
           @click="toggleDark"
         />

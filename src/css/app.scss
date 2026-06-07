@@ -118,8 +118,11 @@ body.body--light .rr-qb {
   padding: 0.15rem 0.4rem;
   border-radius: 6px;
   transition: background 0.15s;
-  &:hover {
+  &:hover,
+  &:focus-visible {
     background: var(--rr-border);
+    outline: 2px solid $primary;
+    outline-offset: 2px;
   }
 }
 
@@ -157,6 +160,14 @@ body.body--light .rr-qb {
   }
 }
 
+.cursor-pointer[role="button"] {
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
 .grad {
   color: black;
   -webkit-text-fill-color: transparent;
@@ -188,6 +199,12 @@ body.body--light .rr-qb {
   color: var(--rr-text);
   min-width: 2.6em;
   text-transform: none;
+}
+
+.rr-big-btn:focus-visible,
+.q-btn:focus-visible {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
 }
 
 body.body--dark .rr-big-btn.q-btn--outline::before {

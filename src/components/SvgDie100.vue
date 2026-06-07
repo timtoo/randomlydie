@@ -12,7 +12,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="13 18 74 64" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="13 18 74 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die100-desc">
+    <desc id="die100-desc">Hundred-sided die showing {{ value }}</desc>
     <g :stroke-width="strokeWidth">
       <!--
         D100 face: a regular hexagon.

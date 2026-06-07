@@ -47,7 +47,12 @@ export default defineComponent({
         dense
         :color="currentKey === makeKey(r) ? 'secondary' : 'primary'"
         clickable
+        tabindex="0"
+        role="button"
+        :aria-label="'Roll ' + r.label + ' in ' + MODE[r.mode].name + ' mode'"
         @click="$emit('onDieChip', r)"
+        @keydown.enter="$emit('onDieChip', r)"
+        @keydown.space.prevent="$emit('onDieChip', r)"
         :icon="MODE[r.mode].material_icon"
         text-color="white"
       >{{ r.label }}</q-chip>

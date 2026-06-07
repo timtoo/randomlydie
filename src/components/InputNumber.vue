@@ -83,6 +83,8 @@ export default defineComponent({
     :max="max"
     @update:model-value="(v) => emitUpdate(v as string)"
     :dense="dense"
+    inputmode="numeric"
+    aria-live="polite"
   >
     <template v-slot:prepend>
       <q-btn

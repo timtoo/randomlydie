@@ -71,13 +71,23 @@ export default defineComponent({
     <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px; scrollbar-width: none">
       <span
         class="rr-pr-label text-body1 cursor-pointer"
+        tabindex="0"
+        role="button"
+        :aria-label="'Copy all ' + label + ' to clipboard'"
         @click="copyAll"
+        @keydown.enter="copyAll"
+        @keydown.space.prevent="copyAll"
       >{{ label }}</span>
       <span class="grad">
         <template v-for="(r, idx) in previousRolls" :key="idx">
           <span
             class="cursor-pointer"
+            tabindex="0"
+            role="button"
+            :aria-label="'Copy ' + r.text + ' to clipboard'"
             @click="copySingle(r.text)"
+            @keydown.enter="copySingle(r.text)"
+            @keydown.space.prevent="copySingle(r.text)"
           >{{ r.text }}</span>
           <span v-if="idx < previousRolls.length - 1" style="opacity: 0.6"> … </span>
         </template>

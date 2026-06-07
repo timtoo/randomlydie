@@ -13,7 +13,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die6-desc">
+    <desc id="die6-desc">Die face showing {{ value }}</desc>
     <g stroke="#000" class="die6">
       <rect
         class="die"

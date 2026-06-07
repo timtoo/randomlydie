@@ -12,7 +12,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="4 10 92 80" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="4 10 92 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die20-desc">
+    <desc id="die20-desc">Twenty-sided die showing {{ value }}</desc>
     <g :stroke-width="strokeWidth">
       <!--
         D20 face: an equilateral triangle (flat base, pointed top).

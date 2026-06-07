@@ -12,7 +12,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="18 15 64 70" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="18 15 64 70" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die10-desc">
+    <desc id="die10-desc">Ten-sided die showing {{ value }}</desc>
     <g :stroke-width="strokeWidth">
       <!--
         D10 face: a symmetric kite (convex quadrilateral).

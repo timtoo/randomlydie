@@ -37,7 +37,7 @@ export default defineComponent({
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">Choose Mode</div>
         <q-space />
-        <q-btn icon="close" flat round dense v-close-popup />
+        <q-btn icon="close" flat round dense v-close-popup aria-label="Close mode picker" />
       </q-card-section>
       <q-card-section>
         <div class="row q-col-gutter-sm">
