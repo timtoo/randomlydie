@@ -10,6 +10,8 @@ export default defineComponent({
 
   components: {},
 
+  emits: ['clear-history'],
+
   setup(props, ctx) {
     const options_default = {
       hideHistory: false,
