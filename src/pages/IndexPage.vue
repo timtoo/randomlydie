@@ -17,9 +17,9 @@ import { onKeyStroke, useStorage } from '@vueuse/core';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { version } from '../../package.json';
 
-const DEFAULT_QUANTITY = 1;
+const DEFAULT_QUANTITY = 2;
 const DEFAULT_MIN = 1;
-const DEFAULT_MAX = 10;
+const DEFAULT_MAX = 6;
 const MAX_QUANTITY = 100;
 const MAX_HISTORY = MAX_QUANTITY * 5;
 const { lastRollDisplay } = useLastRoll();
@@ -79,7 +79,7 @@ export default defineComponent({
     const die = ref(new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY));
     const rolls = ref(_rolls);
     const lastUpdate = ref(new Date());
-    const mode = ref(MODE_ID.default);
+    const mode = ref(MODE_ID.dice);
     const console_active = ref(false);
     const console_error = ref('');
     const ttopen = ref(false);
@@ -271,7 +271,7 @@ export default defineComponent({
       }
       console_active.value = false;
       die.value = new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY);
-      mode.value = MODE_ID.default;
+      mode.value = MODE_ID.dice;
       rolls.value = [];
       reset_confirm_dialog.value = false;
       router.push({ path: '/' });

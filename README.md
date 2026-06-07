@@ -1,9 +1,17 @@
 # Randomly/Die
 
-I just wanted some random numbers and all the web sites offering them seemed
-awkward to me, so...
+I just wanted some random numbers the way I wanted random numbers, so...
+*[here we are](http://timtoo.github.io/rapidly-random)*.
+
+This is the only random number app that has Sparkle Mode.
+
+The app installable via browsers that fully support PWA (Chrome, Edge, Safari, etc), 
+and able to be cached and run offline by others, via this url:
 
 http://timtoo.github.io/rapidly-random
+
+Have fun. Use randomness for good. Below are just some silly details 
+you need not worry about.
 
 ## About the console
 

@@ -108,7 +108,6 @@ export default defineComponent({
         <label id="min-label" class="sr-only">Minimum value</label>
         <InputNumber
           dense
-          label="Min"
           v-model="min"
           input-class="text-rrinput text-rrinput-center"
           class="bg-rrinput"
@@ -123,7 +122,6 @@ export default defineComponent({
         <label id="max-label" class="sr-only">Maximum value</label>
         <InputNumber
           dense
-          label="Max"
           v-model="max"
           input-class="text-rrinput text-rrinput-center"
           class="bg-rrinput"
@@ -138,7 +136,6 @@ export default defineComponent({
       <label id="dice-label" class="sr-only">Number of dice</label>
       <InputNumber
         dense
-        label="Number of values"
         v-model="dice"
         input-class="text-rrinput text-rrinput-center"
         class="bg-rrinput full-width"
