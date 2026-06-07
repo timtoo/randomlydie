@@ -43,6 +43,9 @@ export default defineComponent({
           @mode-change="(m:number) => $emit('mode-change', m)"
         ></AdvancedForm>
       </q-card-section>
+      <q-card-actions align="center" class="q-px-md q-pb-md">
+        <q-btn label="Close" color="primary" v-close-popup style="min-width: 120px" />
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
