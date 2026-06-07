@@ -10,7 +10,7 @@ export default defineComponent({
     die: { type: Die, required: true },
     mode: { type: Number, required: true },
   },
-  emits: ['update:modelValue', 'advanced-update', 'base-toggle', 'exclusive-toggle', 'mode-change', 'close'],
+  emits: ['update:modelValue', 'advanced-update', 'base-toggle', 'exclusive-toggle', 'mode-change', 'close', 'clear-history'],
   components: { AdvancedForm },
   setup(props, ctx) {
     const localOpen = ref(props.modelValue);
@@ -43,7 +43,8 @@ export default defineComponent({
           @mode-change="(m:number) => $emit('mode-change', m)"
         ></AdvancedForm>
       </q-card-section>
-      <q-card-actions align="center" class="q-px-md q-pb-md">
+      <q-card-actions align="center" class="q-px-md q-pb-md q-gutter-sm">
+        <q-btn label="Clear history" color="primary" outline @click="$emit('clear-history')" />
         <q-btn label="Close" color="primary" style="min-width: 120px" @click="$emit('close'); localOpen = false" />
       </q-card-actions>
     </q-card>

@@ -588,6 +588,7 @@ export default defineComponent({
       @exclusive-toggle="() => (die.exclusive = !die.exclusive)"
       @mode-change="(m:number) => handleModeChange(m, false)"
       @close="bigButtonClick"
+      @clear-history="rolls.value = []"
     ></SettingsDialog>
 
     <!-- Mode Picker Dialog -->
