@@ -29,9 +29,16 @@ export default defineComponent({
     const showSettingsMenu = ref(false);
     const { lastRollDisplay } = useLastRoll();
 
-    onMounted(() => {
-      $q.dark.set(darkMode.value);
-    });
+    watch(
+      darkMode,
+      (v) => {
+        if (v !== 'auto' && v !== true && v !== false) {
+          darkMode.value = 'auto';
+        }
+        $q.dark.set(darkMode.value);
+      },
+      { immediate: true }
+    );
 
     function toggleDark() {
       if (darkMode.value === 'auto') {
