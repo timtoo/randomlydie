@@ -37,11 +37,16 @@ export default defineComponent({
     const modDropdownOpen = ref(false);
 
     const isSetBasedMode = computed(() => {
-      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games;
+      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games || props.mode === MODE_ID.note;
     });
 
     const hasModDropdown = computed(() => {
       return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games || props.mode === MODE_ID.note;
+    });
+
+    const showRawModInput = computed(() => {
+      // Only show raw modifier for numerical modes where mod is an arithmetic modifier
+      return MODE[props.mode].number_base !== 0 && !hasModDropdown.value;
     });
 
     const modOptions = computed(() => {
@@ -169,59 +174,13 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, modDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, modOptions, currentModLabel, handleModChange, handleRawModChange };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, modDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, showRawModInput, modOptions, currentModLabel, handleModChange, handleRawModChange };
   },
 });
 </script>
 
 <template>
   <div class="q-gutter-y-md">
-
-    <div class="row q-col-gutter-sm">
-      <div class="col-6">
-        <label id="min-label" class="sr-only">Minimum value</label>
-        <InputNumber
-          dense
-          v-model="min"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput"
-          label-color="primary"
-          @update:model-value="handleMinMaxDice('min')"
-          :min="0"
-          :max="max - 1"
-          :disable="isSetBasedMode"
-          aria-labelledby="min-label"
-        ></InputNumber>
-      </div>
-      <div class="col-6">
-        <label id="max-label" class="sr-only">Maximum value</label>
-        <InputNumber
-          dense
-          v-model="max"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput"
-          label-color="primary"
-          @update:model-value="handleMinMaxDice('max')"
-          :min="min + 1"
-          :disable="isSetBasedMode"
-          aria-labelledby="max-label"
-        ></InputNumber>
-      </div>
-    </div>
-    <div>
-      <label id="dice-label" class="sr-only">Number of dice</label>
-      <InputNumber
-        dense
-        v-model="dice"
-        input-class="text-rrinput text-rrinput-center"
-        class="bg-rrinput full-width"
-        label-color="primary"
-        @update:model-value="handleMinMaxDice('dice')"
-        :min="1"
-        :max="10"
-        aria-labelledby="dice-label"
-      ></InputNumber>
-    </div>
     <div>
       <label id="mode-label" class="sr-only">Generator mode</label>
       <q-btn-dropdown
@@ -255,7 +214,7 @@ export default defineComponent({
         </q-list>
       </q-btn-dropdown>
     </div>
-    <div v-if="hasModDropdown">
+    <div v-if="hasModDropdown" class="full-width">
       <label id="mod-select-label" class="sr-only">Set or key selection</label>
       <q-btn-dropdown
         v-model="modDropdownOpen"
@@ -280,19 +239,64 @@ export default defineComponent({
         </q-list>
       </q-btn-dropdown>
     </div>
-    <div v-else>
-      <label id="mod-label" class="sr-only">Bonus</label>
-      <InputNumber
-        dense
-        :model-value="die.mod"
-        input-class="text-rrinput text-rrinput-center"
-        class="bg-rrinput full-width"
-        label-color="primary"
-        @update:model-value="handleRawModChange"
-        aria-labelledby="mod-label"
-      ></InputNumber>
+    <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
+      <div class="col-6">
+        <label id="min-label" class="sr-only">Minimum value</label>
+        <InputNumber
+          dense
+          v-model="min"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput"
+          label-color="primary"
+          @update:model-value="handleMinMaxDice('min')"
+          :min="0"
+          :max="max - 1"
+          aria-labelledby="min-label"
+        ></InputNumber>
+      </div>
+      <div class="col-6">
+        <label id="max-label" class="sr-only">Maximum value</label>
+        <InputNumber
+          dense
+          v-model="max"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput"
+          label-color="primary"
+          @update:model-value="handleMinMaxDice('max')"
+          :min="min + 1"
+          aria-labelledby="max-label"
+        ></InputNumber>
+      </div>
     </div>
     <div class="row q-col-gutter-sm">
+      <div class="col-6">
+        <label id="dice-label" class="sr-only">Number of dice</label>
+        <InputNumber
+          dense
+          v-model="dice"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput full-width"
+          label-color="primary"
+          @update:model-value="handleMinMaxDice('dice')"
+          :min="1"
+          :max="10"
+          aria-labelledby="dice-label"
+        ></InputNumber>
+      </div>
+      <div v-if="showRawModInput" class="col-6">
+        <label id="mod-label" class="sr-only">Minus/Plus Modifier</label>
+        <InputNumber
+          dense
+          :model-value="die.mod"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput full-width"
+          label-color="primary"
+          @update:model-value="handleRawModChange"
+          aria-labelledby="mod-label"
+        ></InputNumber>
+      </div>
+    </div>
+    <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
       <div class="col-6">
         <q-btn
           dense
@@ -303,7 +307,6 @@ export default defineComponent({
           :class="die.zerobase ? 'rr-active-button' : ''"
           @click="$emit('base-toggle')"
           :aria-pressed="die.zerobase"
-          :disable="isSetBasedMode"
         >
           {{ die.zerobase ? 'Zero-based' : 'One-based' }}
         </q-btn>
@@ -318,7 +321,6 @@ export default defineComponent({
           :class="die.exclusive ? 'rr-active-button' : ''"
           @click="$emit('exclusive-toggle')"
           :aria-pressed="die.exclusive"
-          :disable="isSetBasedMode"
         >
           {{ die.exclusive ? 'Exclusive' : 'Inclusive' }}
         </q-btn>

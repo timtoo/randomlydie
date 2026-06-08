@@ -212,6 +212,10 @@ export default defineComponent({
       bigButtonClick();
     }
 
+    function isSetBasedMode() {
+      return mode.value === MODE_ID.emoji || mode.value === MODE_ID.games || mode.value === MODE_ID.note;
+    }
+
     function advancedUpdate(v: number[]) {
       if (die.value.min == 0 && v[0] > 0) {
         die.value.zerobase = false;
@@ -219,10 +223,9 @@ export default defineComponent({
       if (die.value.min > 0 && v[0] == 0) {
         die.value.zerobase = true;
       }
-      // For set-based modes (Emoji, Games), min/max are determined by the set
+      // For set-based modes (Emoji, Games, Note), min/max are determined by the set/scale
       // and should not be changed via the settings dialog
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (!isSetBased) {
+      if (!isSetBasedMode()) {
         die.value.min = v[0];
         die.value.max = v[1];
       }
@@ -285,8 +288,7 @@ export default defineComponent({
     }
 
     function handleZeroBaseToggle() {
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (isSetBased) return;
+      if (isSetBasedMode()) return;
       die.value = die.value.clone();
       die.value.zerobase = !die.value.zerobase;
       die.value.min = die.value.zerobase ? 0 : 1;
@@ -342,29 +344,25 @@ export default defineComponent({
 
     onKeyStroke('n', () => {
       if (shouldIgnoreHotkey()) return;
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (isSetBased) return;
+      if (isSetBasedMode()) return;
       die.value.min = Math.max(0, die.value.min - 1);
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('N', () => {
       if (shouldIgnoreHotkey()) return;
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (isSetBased) return;
+      if (isSetBasedMode()) return;
       if (die.value.min < die.value.max - 1) die.value.min++;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('x', () => {
       if (shouldIgnoreHotkey()) return;
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (isSetBased) return;
+      if (isSetBasedMode()) return;
       if (die.value.max > die.value.min + 1) die.value.max--;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('X', () => {
       if (shouldIgnoreHotkey()) return;
-      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
-      if (isSetBased) return;
+      if (isSetBasedMode()) return;
       die.value.max++;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
