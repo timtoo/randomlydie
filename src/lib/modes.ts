@@ -338,9 +338,9 @@ class ModeEmoji extends ModeBase {
     exclusive: false,
     min: 0,
   };
-  quick = [-1, ...EMOJI_SETS.map((_r, i) => i)];
-  _quick_label = ['All', ...EMOJI_SETS.map((r) => r.name)];
-  default_max = -1;
+  quick = [...EMOJI_SETS.map((_r, i) => i), -2];
+  _quick_label = [...EMOJI_SETS.map((r) => r.name), 'Unicode'];
+  default_max = 0;
   number_base = 0;
 
   private _findSetByIndex(index: number): EmojiSet | undefined {
@@ -352,7 +352,7 @@ class ModeEmoji extends ModeBase {
   }
 
   configureDie(die: Die, quickValue: number): void {
-    if (quickValue === -1) {
+    if (quickValue === -2) {
       die.min = 0x21;
       die.max = 0x1f9ff;
       die.zerobase = false;
@@ -373,7 +373,7 @@ class ModeEmoji extends ModeBase {
 
   getQuickValue(die: Die): number {
     if (die.min === 0x21 && die.max === 0x1f9ff) {
-      return -1;
+      return -2;
     }
     const set = EMOJI_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
     if (set) {
