@@ -250,13 +250,14 @@ interface EmojiRange {
 }
 
 const EMOJI_RANGES: EmojiRange[] = [
-  { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
-  { start: 0x1f680, end: 0x1f6ff, name: 'Transport/Map' },
-  { start: 0x1f300, end: 0x1f5ff, name: 'Misc Symbols' },
-  { start: 0x2700, end: 0x27bf, name: 'Dingbats' },
-  { start: 0x25a0, end: 0x25ff, name: 'Shapes' },
   { start: 0x1f0a0, end: 0x1f0ff, name: 'Cards' },
   { start: 0x2654, end: 0x265f, name: 'Chess' },
+  { start: 0x2700, end: 0x27bf, name: 'Dingbats' },
+  { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
+  { start: 0x1f300, end: 0x1f5ff, name: 'Misc Symbols' },
+  { start: 0x25a0, end: 0x25ff, name: 'Shapes' },
+  { start: 0x1f680, end: 0x1f6ff, name: 'Transport/Map' },
+  { start: 0x1f700, end: 0x1f77f, name: 'Alchemy' },
 ];
 
 function countEmojiRange(range: EmojiRange): number {
@@ -277,9 +278,9 @@ class ModeEmoji extends ModeBase {
     exclusive: false,
     min: 0,
   };
-  quick = EMOJI_RANGES.map((_r, i) => i);
-  _quick_label = EMOJI_RANGES.map((r) => r.name);
-  default_max = 0;
+  quick = [-1, ...EMOJI_RANGES.map((_r, i) => i)];
+  _quick_label = ['All', ...EMOJI_RANGES.map((r) => r.name)];
+  default_max = -1;
   number_base = 0;
 
   private _findRangeByIndex(index: number): EmojiRange | undefined {
@@ -291,6 +292,13 @@ class ModeEmoji extends ModeBase {
   }
 
   configureDie(die: Die, quickValue: number): void {
+    if (quickValue === -1) {
+      die.min = 0x21;
+      die.max = 0x1f9ff;
+      die.zerobase = false;
+      die.exclusive = false;
+      return;
+    }
     const range = this._findRangeByIndex(quickValue);
     if (range) {
       die.min = range.start;
@@ -304,6 +312,9 @@ class ModeEmoji extends ModeBase {
   }
 
   getQuickValue(die: Die): number {
+    if (die.min === 0x21 && die.max === 0x1f9ff) {
+      return -1;
+    }
     const range = this._findRangeByBounds(die.min, die.max);
     if (range) {
       return EMOJI_RANGES.indexOf(range);
