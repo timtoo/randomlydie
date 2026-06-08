@@ -427,7 +427,7 @@ class ModeEmoji extends ModeBase {
   };
   quick = [...EMOJI_SETS.map((_r, i) => i), -2];
   _quick_label = [...EMOJI_SETS.map((r) => r.name), 'Unicode'];
-  default_max = 0;
+  default_max = EMOJI_SETS.findIndex((s) => s.name === 'Emoticons');
   number_base = 0;
 
   private _findSetByIndex(index: number): EmojiSet | undefined {
