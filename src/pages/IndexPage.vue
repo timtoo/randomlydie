@@ -257,9 +257,8 @@ export default defineComponent({
             die.value.zerobase = false;
             die.value.exclusive = false;
           }
-          if (!new_mode.quick.includes(die.value.max)) {
-            die.value.max = new_mode.default_max;
-            die.value.min = die.value.zerobase ? 0 : 1;
+          if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
+            new_mode.configureDie(die.value, new_mode.default_max);
           }
           mode.value = m;
           if (reroll) bigButtonClick();

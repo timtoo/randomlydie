@@ -277,13 +277,13 @@ class ModeEmoji extends ModeBase {
     exclusive: false,
     min: 0,
   };
-  quick = EMOJI_RANGES.map((r) => countEmojiRange(r));
+  quick = EMOJI_RANGES.map((_r, i) => i);
   _quick_label = EMOJI_RANGES.map((r) => r.name);
-  default_max = countEmojiRange(EMOJI_RANGES[0]);
+  default_max = 0;
   number_base = 0;
 
-  private _findRangeByCount(count: number): EmojiRange | undefined {
-    return EMOJI_RANGES.find((r) => countEmojiRange(r) === count);
+  private _findRangeByIndex(index: number): EmojiRange | undefined {
+    return EMOJI_RANGES[index];
   }
 
   private _findRangeByBounds(min: number, max: number): EmojiRange | undefined {
@@ -291,7 +291,7 @@ class ModeEmoji extends ModeBase {
   }
 
   configureDie(die: Die, quickValue: number): void {
-    const range = this._findRangeByCount(quickValue);
+    const range = this._findRangeByIndex(quickValue);
     if (range) {
       die.min = range.start;
       die.max = range.end;
@@ -306,7 +306,7 @@ class ModeEmoji extends ModeBase {
   getQuickValue(die: Die): number {
     const range = this._findRangeByBounds(die.min, die.max);
     if (range) {
-      return countEmojiRange(range);
+      return EMOJI_RANGES.indexOf(range);
     }
     return die.max;
   }
