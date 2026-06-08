@@ -355,6 +355,7 @@ class ModeEmoji extends ModeBase {
     if (quickValue === -2) {
       die.min = 0x21;
       die.max = 0x1f9ff;
+      die.mod = -2;
       die.zerobase = false;
       die.exclusive = false;
       return;
@@ -363,17 +364,22 @@ class ModeEmoji extends ModeBase {
     if (set) {
       die.min = 0;
       die.max = set.codePoints.length - 1;
+      die.mod = quickValue;
       die.zerobase = false;
       die.exclusive = false;
     } else {
       die.max = quickValue;
       die.min = 0;
+      die.mod = 0;
     }
   }
 
   getQuickValue(die: Die): number {
-    if (die.min === 0x21 && die.max === 0x1f9ff) {
+    if (die.mod === -2) {
       return -2;
+    }
+    if (die.mod >= 0 && die.mod < EMOJI_SETS.length) {
+      return die.mod;
     }
     const set = EMOJI_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
     if (set) {
