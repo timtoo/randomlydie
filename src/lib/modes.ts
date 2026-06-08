@@ -70,7 +70,7 @@ class ModeBase {
   }
 
   // Figure out if there are mappings and use those if they exist
-  displayValue(v: number, max?: number): string {
+  displayValue(v: number, max?: number, mod?: number): string {
     if (
       this.mappings &&
       max !== undefined &&
@@ -96,8 +96,8 @@ class ModeBase {
   }
 
   // override in case history string should be different from displayValue()
-  historyValue(v: number, max?: number): string {
-    return this.quick_label_prefix + this.displayValue(v, max);
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.quick_label_prefix + this.displayValue(v, max, mod);
   }
 
   // if given multiple values, how to display them? depends on if they have a number_base != 0
@@ -118,7 +118,7 @@ class ModeBase {
 
   // alternate display without total
   _displayMultiValsOnly(die: Die): string {
-    return die.getThrow().map((s) => this.historyValue(s, die.max)).join('/');
+    return die.getThrow().map((s) => this.historyValue(s, die.max, die.mod)).join('/');
   }
 }
 
@@ -392,7 +392,16 @@ class ModeEmoji extends ModeBase {
     return String.fromCodePoint(v);
   }
 
-  displayValue(v: number, max?: number): string {
+  displayValue(v: number, max?: number, mod?: number): string {
+    // mod is the authoritative set index for Emoji mode
+    if (mod !== undefined && mod >= 0 && mod < EMOJI_SETS.length) {
+      const set = EMOJI_SETS[mod];
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    if (mod === -2) {
+      return this.formatValue(v); // Unicode mode
+    }
+    // Fallback: try to find set by length (legacy/URL parsing compatibility)
     const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
     if (set) {
       return this.formatValue(set.codePoints[v % set.codePoints.length]);
@@ -400,12 +409,8 @@ class ModeEmoji extends ModeBase {
     return this.formatValue(v);
   }
 
-  historyValue(v: number, max?: number): string {
-    const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
-    if (set) {
-      return this.formatValue(set.codePoints[v % set.codePoints.length]);
-    }
-    return this.formatValue(v);
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.displayValue(v, max, mod);
   }
 }
 
@@ -498,7 +503,13 @@ class ModeGames extends ModeBase {
     return String.fromCodePoint(v);
   }
 
-  displayValue(v: number, max?: number): string {
+  displayValue(v: number, max?: number, mod?: number): string {
+    // mod is the authoritative set index for Games mode
+    if (mod !== undefined && mod >= 0 && mod < GAME_SETS.length) {
+      const set = GAME_SETS[mod];
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    // Fallback: try to find set by length (legacy/URL parsing compatibility)
     const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
     if (set) {
       return this.formatValue(set.codePoints[v % set.codePoints.length]);
@@ -506,12 +517,8 @@ class ModeGames extends ModeBase {
     return this.formatValue(v);
   }
 
-  historyValue(v: number, max?: number): string {
-    const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
-    if (set) {
-      return this.formatValue(set.codePoints[v % set.codePoints.length]);
-    }
-    return this.formatValue(v);
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.displayValue(v, max, mod);
   }
 }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref, watch, computed } from 'vue';
 import { Die } from 'src/lib/die';
-import { MODE } from 'src/lib/modes';
+import { MODE, MODE_ID } from 'src/lib/modes';
 import InputNumber from 'src/components/InputNumber.vue';
 import { onKeyStroke } from '@vueuse/core';
 
@@ -33,6 +33,10 @@ export default defineComponent({
     const max = ref(props.die.max);
     const dice = ref(props.die.dice);
     const modeDropdownOpen = ref(false);
+
+    const isSetBasedMode = computed(() => {
+      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games;
+    });
 
     watch(
       () => props.die,
@@ -72,31 +76,31 @@ export default defineComponent({
       }
     });
     onKeyStroke('x', () => {
-      if (!props.ignore_hotkeys) {
+      if (!props.ignore_hotkeys && !isSetBasedMode.value) {
         max.value = max.value + 1;
         handleMinMaxDice('max');
       }
     });
     onKeyStroke('X', () => {
-      if (!props.ignore_hotkeys) {
+      if (!props.ignore_hotkeys && !isSetBasedMode.value) {
         max.value = max.value - 1;
         handleMinMaxDice('max');
       }
     });
     onKeyStroke('n', () => {
-      if (!props.ignore_hotkeys) {
+      if (!props.ignore_hotkeys && !isSetBasedMode.value) {
         min.value = min.value + 1;
         handleMinMaxDice('min');
       }
     });
     onKeyStroke('N', () => {
-      if (!props.ignore_hotkeys) {
+      if (!props.ignore_hotkeys && !isSetBasedMode.value) {
         min.value = min.value - 1;
         handleMinMaxDice('min');
       }
     });
 
-    return { min, max, dice, MODE, handleMinMaxDice, modeDropdownOpen };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode };
   },
 });
 </script>
@@ -115,6 +119,7 @@ export default defineComponent({
           @update:model-value="handleMinMaxDice('min')"
           :min="0"
           :max="max - 1"
+          :disable="isSetBasedMode"
           aria-labelledby="min-label"
         ></InputNumber>
       </div>
@@ -128,6 +133,7 @@ export default defineComponent({
           label-color="primary"
           @update:model-value="handleMinMaxDice('max')"
           :min="min + 1"
+          :disable="isSetBasedMode"
           aria-labelledby="max-label"
         ></InputNumber>
       </div>
@@ -190,6 +196,7 @@ export default defineComponent({
           :class="die.zerobase ? 'rr-active-button' : ''"
           @click="$emit('base-toggle')"
           :aria-pressed="die.zerobase"
+          :disable="isSetBasedMode"
         >
           {{ die.zerobase ? 'Zero-based' : 'One-based' }}
         </q-btn>
@@ -204,6 +211,7 @@ export default defineComponent({
           :class="die.exclusive ? 'rr-active-button' : ''"
           @click="$emit('exclusive-toggle')"
           :aria-pressed="die.exclusive"
+          :disable="isSetBasedMode"
         >
           {{ die.exclusive ? 'Exclusive' : 'Inclusive' }}
         </q-btn>
