@@ -256,7 +256,9 @@ const EMOJI_RANGES: EmojiRange[] = [
   { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
   { start: 0x2200, end: 0x22ff, name: 'Math' },
   { start: 0x1f300, end: 0x1f5ff, name: 'Misc Symbols' },
+  { start: 0x1d100, end: 0x1d1ff, name: 'Musical Symbols' },
   { start: 0x25a0, end: 0x25ff, name: 'Shapes' },
+  { start: 0x2600, end: 0x26ff, name: 'Weather/Stars' },
   { start: 0x1f680, end: 0x1f6ff, name: 'Transport/Map' },
 ];
 
