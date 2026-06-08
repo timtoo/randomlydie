@@ -373,6 +373,10 @@ const GAME_SETS: GameSet[] = [
     name: 'Xiangqi',
     codePoints: Array.from({ length: 14 }, (_, i) => 0x1FA60 + i),
   },
+  {
+    name: 'I Ching',
+    codePoints: Array.from({ length: 64 }, (_, i) => 0x4DC0 + i),
+  },
 ];
 
 class ModeGames extends ModeBase {
