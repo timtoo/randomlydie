@@ -38,6 +38,28 @@ export default defineComponent({
       return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games;
     });
 
+    const notationDisplay = computed(() => {
+      const d = props.die;
+      if (isSetBasedMode.value) {
+        // For Emoji/Games, show set name and count instead of dice notation
+        const mode = MODE[props.mode];
+        const qv = mode.getQuickValue(d);
+        const label = mode.quick_label[mode.quick.indexOf(qv)] || 'Custom';
+        return `${d.dice}× ${label} (${d.max + 1})`;
+      }
+      // Standard dice notation, but hide mod if it's just the default 0
+      let value = `${d.dice}d${d.max}`;
+      if (d.min !== 1 && !(d.min === 0 && d.zerobase)) {
+        value += '>' + d.min;
+      }
+      if (d.mult > 1) value += 'x' + d.mult;
+      if (d.mult > 0 && d.mult < 1) value += '/' + Math.round(1 / d.mult);
+      if (d.repeat > 1) value = `${d.repeat}x(${value})`;
+      if (d.exclusive) value += 'x';
+      if (d.min === 0 && d.zerobase) value += 'z';
+      return value;
+    });
+
     watch(
       () => props.die,
       () => {
@@ -100,13 +122,16 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay };
   },
 });
 </script>
 
 <template>
   <div class="q-gutter-y-md">
+    <div class="text-center text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
+      {{ notationDisplay }}
+    </div>
     <div class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="min-label" class="sr-only">Minimum value</label>
