@@ -208,6 +208,44 @@ class ModeDecision extends ModeBase {
   number_base = 0;
 }
 
+const NOTE_KEYS = [
+  'C', 'D♭', 'D', 'E♭', 'E', 'F',
+  'G♭', 'G', 'A♭', 'A', 'B♭', 'B',
+];
+
+const CHROMATIC_NOTES = [
+  'C', 'C♯//D♭', 'D', 'D♯//E♭', 'E', 'F',
+  'F♯//G♭', 'G', 'G♯//A♭', 'A', 'A♯//B♭', 'B',
+];
+
+// Scale intervals (semitones from root)
+const SCALE_INTERVALS: { [size: number]: number[] } = {
+  5: [0, 2, 4, 7, 9],       // Major pentatonic
+  7: [0, 2, 4, 5, 7, 9, 11], // Major diatonic (heptatonic)
+  12: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // Chromatic
+};
+
+function buildScaleMapping(size: number, keyIndex: number): string[] {
+  const intervals = SCALE_INTERVALS[size];
+  if (!intervals) return [];
+  return intervals.map((interval) => {
+    const noteIndex = (keyIndex + interval) % 12;
+    return CHROMATIC_NOTES[noteIndex];
+  });
+}
+
+// Encode scale size and key index into a single quick value
+function encodeNoteQuick(scaleSize: number, keyIndex: number): number {
+  return scaleSize * 100 + keyIndex;
+}
+
+function decodeNoteQuick(quickValue: number): { scaleSize: number; keyIndex: number } {
+  return {
+    scaleSize: Math.floor(quickValue / 100),
+    keyIndex: quickValue % 100,
+  };
+}
+
 class ModeNote extends ModeBase {
   id = MODE_ID.note;
   name = 'Musical Note';
@@ -218,28 +256,52 @@ class ModeNote extends ModeBase {
     min: 1,
     max: 12,
   };
-  mappings = {
-    [5]: ['A', 'C', 'D', 'E', 'G'],
-    [7]: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
-    [12]: [
-      'A',
-      'A♯//B♭',
-      'B',
-      'C',
-      'C♯//D♭',
-      'D',
-      'D♯//E♭',
-      'E',
-      'F',
-      'F♯//G♭',
-      'G',
-      'G♯//A♭',
-    ],
-  };
-  quick = [5, 7, 12];
-  _quick_label = ['Pentatonic', 'Heptatonic', 'Chromatic'];
+  quick: number[] = [];
+  _quick_label: string[] = [];
   default_max = 2;
   number_base = 0;
+
+  constructor() {
+    super();
+    // Generate quick buttons for all key + scale combinations
+    const scales = [5, 7, 12];
+    const scaleNames = ['Pentatonic', 'Heptatonic', 'Chromatic'];
+    for (let s = 0; s < scales.length; s++) {
+      const size = scales[s];
+      for (let k = 0; k < NOTE_KEYS.length; k++) {
+        // Chromatic is key-agnostic, only add it once
+        if (size === 12 && k > 0) continue;
+        this.quick.push(encodeNoteQuick(size, k));
+        this._quick_label.push(`${NOTE_KEYS[k]} ${scaleNames[s]}`);
+      }
+    }
+  }
+
+  configureDie(die: Die, quickValue: number): void {
+    const { scaleSize, keyIndex } = decodeNoteQuick(quickValue);
+    die.max = scaleSize;
+    die.min = 1;
+    die.mod = keyIndex;
+    die.zerobase = false;
+    die.exclusive = false;
+  }
+
+  getQuickValue(die: Die): number {
+    return encodeNoteQuick(die.max, die.mod);
+  }
+
+  displayValue(v: number, max?: number, mod?: number): string {
+    const scaleSize = max ?? 12;
+    const keyIndex = mod ?? 0;
+    const mapping = buildScaleMapping(scaleSize, keyIndex);
+    if (!this.override.zerobase && v > 0) v--;
+    if (v >= scaleSize) v = v % scaleSize;
+    return this.mappingChoice(mapping[v]);
+  }
+
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.displayValue(v, max, mod);
+  }
 }
 // &#x266d; - flat
 // &#x266f; - sharp
