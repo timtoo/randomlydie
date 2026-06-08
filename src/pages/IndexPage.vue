@@ -229,6 +229,17 @@ export default defineComponent({
       die.value.dice = v[2];
     }
 
+    function handleModUpdate(newMod: number) {
+      const currentMode = MODE[mode.value];
+      if (mode.value === MODE_ID.emoji || mode.value === MODE_ID.games || mode.value === MODE_ID.note) {
+        // For set/key-based modes, use configureDie to properly set min/max/mod
+        currentMode.configureDie(die.value, newMod);
+      } else {
+        // For other modes, just set the raw mod value
+        die.value.mod = newMod;
+      }
+    }
+
     function incrementDice() {
       if (die.value.dice < 10) {
         die.value.dice++;
@@ -391,6 +402,7 @@ export default defineComponent({
       handleModeChange,
       handleReset,
       advancedUpdate,
+      handleModUpdate,
       handleConsoleSubmit,
       toggleSlideshow,
       incrementDice,
@@ -610,6 +622,7 @@ export default defineComponent({
       @base-toggle="handleZeroBaseToggle"
       @exclusive-toggle="() => { if (mode !== MODE_ID.emoji && mode !== MODE_ID.games) die.exclusive = !die.exclusive; }"
       @mode-change="(m:number) => handleModeChange(m, false)"
+      @mod-update="(v:number) => handleModUpdate(v)"
       @close="bigButtonClick"
     ></GeneratorSettingsDialog>
 

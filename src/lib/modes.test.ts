@@ -303,7 +303,7 @@ describe('ModeNote', () => {
 
   test('quick labels include key names', () => {
     expect(note.quick_label).toContain('C Scale');
-    expect(note.quick_label).toContain('D♭/C♯ Scale');
+    expect(note.quick_label).toContain('C♯/D♭ Scale');
     expect(note.quick_label).toContain('G Scale');
     expect(note.quick_label).toContain('C Pentatonic');
     expect(note.quick_label).toContain('Chromatic');
@@ -319,11 +319,11 @@ describe('ModeNote', () => {
     expect(scaleLabels[4]).toBe('G Scale');
     expect(scaleLabels[5]).toBe('A Scale');
     expect(scaleLabels[6]).toBe('B Scale');
-    expect(scaleLabels[7]).toBe('D♭/C♯ Scale');
-    expect(scaleLabels[8]).toBe('E♭/D♯ Scale');
-    expect(scaleLabels[9]).toBe('G♭/F♯ Scale');
-    expect(scaleLabels[10]).toBe('A♭/G♯ Scale');
-    expect(scaleLabels[11]).toBe('B♭/A♯ Scale');
+    expect(scaleLabels[7]).toBe('C♯/D♭ Scale');
+    expect(scaleLabels[8]).toBe('D♯/E♭ Scale');
+    expect(scaleLabels[9]).toBe('F♯/G♭ Scale');
+    expect(scaleLabels[10]).toBe('G♯/A♭ Scale');
+    expect(scaleLabels[11]).toBe('A♯/B♭ Scale');
   });
 
   test('configureDie encodes scale and key in max and mod', () => {

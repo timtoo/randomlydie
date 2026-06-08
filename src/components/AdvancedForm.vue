@@ -26,6 +26,7 @@ export default defineComponent({
     'base-toggle',
     'exclusive-toggle',
     'mode-change',
+    'mod-update',
   ],
   components: { InputNumber },
   setup(props, ctx) {
@@ -36,6 +37,51 @@ export default defineComponent({
 
     const isSetBasedMode = computed(() => {
       return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games;
+    });
+
+    const hasModDropdown = computed(() => {
+      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games || props.mode === MODE_ID.note;
+    });
+
+    const modOptions = computed(() => {
+      const mode = MODE[props.mode];
+      if (props.mode === MODE_ID.note) {
+        // For Note mode, show keys based on current scale size
+        const scaleSize = props.die.max;
+        return [
+          { label: 'C', value: 0 },
+          { label: 'D', value: 2 },
+          { label: 'E', value: 4 },
+          { label: 'F', value: 5 },
+          { label: 'G', value: 7 },
+          { label: 'A', value: 9 },
+          { label: 'B', value: 11 },
+          { label: 'C♯/D♭', value: 1 },
+          { label: 'D♯/E♭', value: 3 },
+          { label: 'F♯/G♭', value: 6 },
+          { label: 'G♯/A♭', value: 8 },
+          { label: 'A♯/B♭', value: 10 },
+        ].map((opt) => ({
+          ...opt,
+          label: scaleSize === 12 ? opt.label : `${opt.label} ${scaleSize === 5 ? 'Pentatonic' : 'Scale'}`,
+        }));
+      }
+      // Emoji / Games: use quick buttons (skip Unicode -2 for emoji dropdown? include it)
+      return mode.quick.map((qv, idx) => ({
+        label: mode.quick_label[idx],
+        value: qv,
+      }));
+    });
+
+    const currentModLabel = computed(() => {
+      const mode = MODE[props.mode];
+      if (props.mode === MODE_ID.note) {
+        const found = modOptions.value.find((o) => o.value === props.die.mod);
+        return found?.label ?? `Key ${props.die.mod}`;
+      }
+      const qv = mode.getQuickValue(props.die);
+      const idx = mode.quick.indexOf(qv);
+      return mode.quick_label[idx] ?? `Set ${props.die.mod}`;
     });
 
     const notationDisplay = computed(() => {
@@ -71,6 +117,17 @@ export default defineComponent({
         ctx.emit('input', dice.value, v);
       }
       ctx.emit('advanced-update', [min.value, max.value, dice.value]);
+    }
+
+    function handleModChange(newMod: number) {
+      ctx.emit('mod-update', newMod);
+    }
+
+    function handleRawModChange(rawMod: number | string | null) {
+      const val = typeof rawMod === 'string' ? parseInt(rawMod, 10) : rawMod;
+      if (val !== null && !isNaN(val)) {
+        ctx.emit('mod-update', val);
+      }
     }
 
     onKeyStroke('d', () => {
@@ -110,7 +167,7 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay, copyNotation };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, modOptions, currentModLabel, handleModChange, handleRawModChange };
   },
 });
 </script>
@@ -194,6 +251,41 @@ export default defineComponent({
           </template>
         </q-list>
       </q-btn-dropdown>
+    </div>
+    <div v-if="hasModDropdown">
+      <label id="mod-select-label" class="sr-only">Set or key selection</label>
+      <q-btn-dropdown
+        class="full-width"
+        dense
+        outline
+        no-caps
+        color="primary"
+        :label="currentModLabel"
+        aria-haspopup="listbox"
+        aria-labelledby="mod-select-label"
+      >
+        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select set or key">
+          <template v-for="opt of modOptions" :key="opt.value">
+            <q-item clickable @click="handleModChange(opt.value)" role="option">
+              <q-item-section>
+                <q-item-label>{{ opt.label }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
+    <div v-else>
+      <label id="mod-label" class="sr-only">Modifier</label>
+      <InputNumber
+        dense
+        :model-value="die.mod"
+        input-class="text-rrinput text-rrinput-center"
+        class="bg-rrinput full-width"
+        label-color="primary"
+        @update:model-value="handleRawModChange"
+        aria-labelledby="mod-label"
+      ></InputNumber>
     </div>
     <div class="row q-col-gutter-sm">
       <div class="col-6">
