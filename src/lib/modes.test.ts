@@ -135,10 +135,15 @@ describe('ModeEmoji', () => {
     expect(cp).toBeLessThanOrEqual(0x1f9ff);
   });
 
-  test('Unicode mode remapping is deterministic', () => {
-    const result1 = emoji.displayValue(0xE000, 0x1f9ff, -2);
-    const result2 = emoji.displayValue(0xE000, 0x1f9ff, -2);
-    expect(result1).toBe(result2);
+  test('Unicode mode remapping produces printable output', () => {
+    // Run multiple times to verify we always get printable results
+    for (let i = 0; i < 20; i++) {
+      const result = emoji.displayValue(0xE000, 0x1f9ff, -2);
+      const cp = result.codePointAt(0) ?? 0;
+      expect(cp).toBeGreaterThanOrEqual(0x21);
+      expect(cp).toBeLessThanOrEqual(0x1f9ff);
+      expect(cp).not.toBe(0xE000); // should not be the original unprintable
+    }
   });
 
   test('rolling and displaying through full flow works', () => {

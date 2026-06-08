@@ -496,15 +496,12 @@ class ModeEmoji extends ModeBase {
   private _getPrintableUnicode(v: number): number {
     // For Unicode mode: if the rolled code point is unprintable,
     // re-roll within the same range until we find a printable one.
-    // We use the rolled value as a seed for deterministic "re-rolling"
-    // so the same input always produces the same output.
     let cp = v;
     let attempts = 0;
     const min = 0x21;
     const max = 0x1f9ff;
     while (!this._isPrintableCodePoint(cp) && attempts < 100) {
-      // Simple LCG for deterministic pseudo-random from seed
-      cp = ((cp * 1103515245 + 12345) >>> 0) % (max - min + 1) + min;
+      cp = Math.floor(Math.random() * (max - min + 1)) + min;
       attempts++;
     }
     return cp;
