@@ -176,6 +176,7 @@ export default defineComponent({
 
 <template>
   <div class="q-gutter-y-md">
+
     <div class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="min-label" class="sr-only">Minimum value</label>
@@ -280,7 +281,7 @@ export default defineComponent({
       </q-btn-dropdown>
     </div>
     <div v-else>
-      <label id="mod-label" class="sr-only">Modifier</label>
+      <label id="mod-label" class="sr-only">Bonus</label>
       <InputNumber
         dense
         :model-value="die.mod"
