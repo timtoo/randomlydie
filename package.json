@@ -10,7 +10,7 @@
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "vitest run",
-    "deploy": "push-dir --dir=dist/pwa --remote=gh-pages --branch=gh-pages",
+    "deploy": "pnpm quasar build -m pwa && git subtree push --prefix dist/pwa origin gh-pages",
     "postinstall": "quasar prepare"
   },
   "dependencies": {
@@ -32,7 +32,6 @@
     "eslint-plugin-vue": "^10.9.2",
     "globals": "^17.6.0",
     "prettier": "^3.0.3",
-    "push-dir": "^0.4.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.1",
     "vitest": "^4.1.8",
