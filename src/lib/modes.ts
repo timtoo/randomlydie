@@ -273,32 +273,30 @@ class ModeEmoji extends ModeBase {
   default_max = countEmojiRange(EMOJI_RANGES[0]);
   number_base = 0;
 
+  private _findRange(max: number): EmojiRange | undefined {
+    return EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
+  }
+
+  private _toCodePoint(v: number, max: number): number {
+    const range = this._findRange(max);
+    if (range) {
+      return range.start + (v % countEmojiRange(range));
+    }
+    return v;
+  }
+
   formatValue(v: number): string {
     return String.fromCodePoint(v);
   }
 
   displayValue(v: number, max?: number): string {
-    if (max === undefined) {
-      return this.formatValue(v);
-    }
-    // Find which range this max corresponds to
-    const range = EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
-    if (range) {
-      return getEmojiFromRange(range, v);
-    }
-    return this.formatValue(v);
+    const codePoint = max !== undefined ? this._toCodePoint(v, max) : v;
+    return this.formatValue(codePoint);
   }
 
   historyValue(v: number, max?: number): string {
-    if (max === undefined) {
-      return 'U+' + v.toString(16).toUpperCase();
-    }
-    const range = EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
-    if (range) {
-      const codePoint = range.start + (v % countEmojiRange(range));
-      return 'U+' + codePoint.toString(16).toUpperCase();
-    }
-    return 'U+' + v.toString(16).toUpperCase();
+    const codePoint = max !== undefined ? this._toCodePoint(v, max) : v;
+    return 'U+' + codePoint.toString(16).toUpperCase();
   }
 }
 
