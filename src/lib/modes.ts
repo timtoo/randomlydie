@@ -479,6 +479,37 @@ class ModeEmoji extends ModeBase {
     return String.fromCodePoint(v);
   }
 
+  private _isPrintableCodePoint(cp: number): boolean {
+    try {
+      const char = String.fromCodePoint(cp);
+      if (/\p{Control}/u.test(char)) return false;
+      if (/\p{Format}/u.test(char)) return false;
+      if (/\p{Surrogate}/u.test(char)) return false;
+      if (/\p{Private_Use}/u.test(char)) return false;
+      if (/\p{Unassigned}/u.test(char)) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private _getPrintableUnicode(v: number): number {
+    // For Unicode mode: if the rolled code point is unprintable,
+    // re-roll within the same range until we find a printable one.
+    // We use the rolled value as a seed for deterministic "re-rolling"
+    // so the same input always produces the same output.
+    let cp = v;
+    let attempts = 0;
+    const min = 0x21;
+    const max = 0x1f9ff;
+    while (!this._isPrintableCodePoint(cp) && attempts < 100) {
+      // Simple LCG for deterministic pseudo-random from seed
+      cp = ((cp * 1103515245 + 12345) >>> 0) % (max - min + 1) + min;
+      attempts++;
+    }
+    return cp;
+  }
+
   displayValue(v: number, max?: number, mod?: number): string {
     // mod is the authoritative set index for Emoji mode
     if (mod !== undefined && mod >= 0 && mod < EMOJI_SETS.length) {
@@ -486,14 +517,14 @@ class ModeEmoji extends ModeBase {
       return this.formatValue(set.codePoints[v % set.codePoints.length]);
     }
     if (mod === -2) {
-      return this.formatValue(v); // Unicode mode
+      return this.formatValue(this._getPrintableUnicode(v));
     }
     // Fallback: try to find set by length (legacy/URL parsing compatibility)
     const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
     if (set) {
       return this.formatValue(set.codePoints[v % set.codePoints.length]);
     }
-    return this.formatValue(v);
+    return this.formatValue(this._getPrintableUnicode(v));
   }
 
   historyValue(v: number, max?: number, mod?: number): string {

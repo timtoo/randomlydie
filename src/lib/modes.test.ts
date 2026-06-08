@@ -125,6 +125,22 @@ describe('ModeEmoji', () => {
     expect(result).toBe('🐀');
   });
 
+  test('Unicode mode remaps unprintable code points to printable ones', () => {
+    // 0x80 is a C1 control character (unprintable)
+    const result = emoji.displayValue(0x80, 0x1f9ff, -2);
+    expect(result.codePointAt(0)).not.toBe(0x80);
+    // Result should be printable (not control, surrogate, private use, unassigned)
+    const cp = result.codePointAt(0) ?? 0;
+    expect(cp).toBeGreaterThanOrEqual(0x21);
+    expect(cp).toBeLessThanOrEqual(0x1f9ff);
+  });
+
+  test('Unicode mode remapping is deterministic', () => {
+    const result1 = emoji.displayValue(0xE000, 0x1f9ff, -2);
+    const result2 = emoji.displayValue(0xE000, 0x1f9ff, -2);
+    expect(result1).toBe(result2);
+  });
+
   test('rolling and displaying through full flow works', () => {
     const d = new Die();
     emoji.configureDie(d, 7); // Plants set
