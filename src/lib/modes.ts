@@ -372,7 +372,7 @@ const GAME_SETS: GameSet[] = [
 class ModeGames extends ModeBase {
   id = MODE_ID.games;
   name = 'Games';
-  material_icon = 'chess';
+  material_icon = 'interests';
   override = {
     zerobase: false,
     exclusive: false,
