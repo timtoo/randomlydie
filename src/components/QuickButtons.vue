@@ -31,7 +31,7 @@ export default defineComponent({
 
 <template>
   <template v-if="button_set">
-    <div class="rr-qb-grid q-py-sm">
+    <div class="row justify-center q-py-sm" style="flex-wrap: wrap">
       <template v-for="v in button_set" :key="v[0]">
         <q-btn
           unelevated
