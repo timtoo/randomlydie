@@ -111,9 +111,6 @@ export default defineComponent({
 
 <template>
   <div class="q-gutter-y-md">
-    <div class="text-center text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
-      {{ notationDisplay }}
-    </div>
     <div class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="min-label" class="sr-only">Minimum value</label>
@@ -223,6 +220,9 @@ export default defineComponent({
           {{ die.exclusive ? 'Exclusive' : 'Inclusive' }}
         </q-btn>
       </div>
+    </div>
+    <div class="text-center text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
+      {{ notationDisplay }}
     </div>
   </div>
 </template>
