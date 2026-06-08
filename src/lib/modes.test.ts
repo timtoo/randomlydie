@@ -148,7 +148,7 @@ describe('ModeEmoji', () => {
 
   test('rolling and displaying through full flow works', () => {
     const d = new Die();
-    emoji.configureDie(d, 7); // Plants set
+    emoji.configureDie(d, 8); // Plants set
     d.roll();
     const throwVal = d.getThrow()[0];
     const displayed = emoji.displayValue(throwVal, d.max, d.mod);
