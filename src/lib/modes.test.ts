@@ -275,16 +275,18 @@ describe('set length uniqueness', () => {
 describe('ModeNote', () => {
   const note = MODE[MODE_ID.note];
 
-  test('has 25 quick buttons (12 pentatonic + 12 heptatonic + 1 chromatic)', () => {
-    expect(note.quick.length).toBe(25);
-    expect(note.quick_label.length).toBe(25);
+  test('has 14 quick buttons (1 pentatonic + 12 scale + 1 chromatic)', () => {
+    expect(note.quick.length).toBe(14);
+    expect(note.quick_label.length).toBe(14);
   });
 
   test('quick labels include key names', () => {
-    expect(note.quick_label).toContain('C Heptatonic');
-    expect(note.quick_label).toContain('D♭ Heptatonic');
-    expect(note.quick_label).toContain('G Pentatonic');
-    expect(note.quick_label).toContain('C Chromatic');
+    expect(note.quick_label).toContain('C Scale');
+    expect(note.quick_label).toContain('D♭ Scale');
+    expect(note.quick_label).toContain('G Scale');
+    expect(note.quick_label).toContain('C Pentatonic');
+    expect(note.quick_label).toContain('Chromatic');
+    expect(note.quick_label).not.toContain('C Chromatic');
   });
 
   test('configureDie encodes scale and key in max and mod', () => {
@@ -318,8 +320,8 @@ describe('ModeNote', () => {
     expect(note.displayValue(7, 7, 0)).toBe('B');
   });
 
-  test('displayValue returns correct notes for D Heptatonic', () => {
-    // D Heptatonic: D, E, F♯//G♭, G, A, B, C♯//D♭
+  test('displayValue returns correct notes for D Scale', () => {
+    // D Scale: D, E, F♯//G♭, G, A, B, C♯//D♭
     expect(note.displayValue(1, 7, 2)).toBe('D');
     expect(note.displayValue(2, 7, 2)).toBe('E');
     const note3 = note.displayValue(3, 7, 2);

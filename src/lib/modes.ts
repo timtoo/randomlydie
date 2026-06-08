@@ -263,18 +263,17 @@ class ModeNote extends ModeBase {
 
   constructor() {
     super();
-    // Generate quick buttons for all key + scale combinations
-    const scales = [5, 7, 12];
-    const scaleNames = ['Pentatonic', 'Heptatonic', 'Chromatic'];
-    for (let s = 0; s < scales.length; s++) {
-      const size = scales[s];
-      for (let k = 0; k < NOTE_KEYS.length; k++) {
-        // Chromatic is key-agnostic, only add it once
-        if (size === 12 && k > 0) continue;
-        this.quick.push(encodeNoteQuick(size, k));
-        this._quick_label.push(`${NOTE_KEYS[k]} ${scaleNames[s]}`);
-      }
+    // Pentatonic: only C
+    this.quick.push(encodeNoteQuick(5, 0));
+    this._quick_label.push('C Pentatonic');
+    // Heptatonic (Scale): all 12 keys
+    for (let k = 0; k < NOTE_KEYS.length; k++) {
+      this.quick.push(encodeNoteQuick(7, k));
+      this._quick_label.push(`${NOTE_KEYS[k]} Scale`);
     }
+    // Chromatic: key-agnostic, just one
+    this.quick.push(encodeNoteQuick(12, 0));
+    this._quick_label.push('Chromatic');
   }
 
   configureDie(die: Die, quickValue: number): void {
