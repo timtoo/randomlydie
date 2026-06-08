@@ -182,31 +182,23 @@ body.body--light .rr-qb {
   }
 }
 
-.grad {
-  color: black;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-image: linear-gradient(
-    225deg,
-    var(--rr-grad-start) 0%,
-    var(--rr-grad-end) 50%,
-    var(--rr-grad-end) 100%
-  );
+.rr-pr-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-// Fade at right edge for scrollable text
-.rr-fade-right {
-  position: relative;
-  &::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 2rem;
-    background: linear-gradient(to right, transparent, var(--rr-paper));
-    pointer-events: none;
-  }
+.rr-pr-text {
+  color: var(--rr-text);
+}
+
+.rr-pr-sep {
+  opacity: 0.6;
 }
 
 .rr-big-btn {
