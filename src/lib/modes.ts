@@ -8,6 +8,7 @@ export enum MODE_ID {
   decision = 4,
   note = 5,
   emoji = 6,
+  games = 7,
 }
 
 interface override_interface {
@@ -336,6 +337,105 @@ class ModeEmoji extends ModeBase {
   }
 }
 
+interface GameSet {
+  name: string;
+  codePoints: number[];
+}
+
+const GAME_SETS: GameSet[] = [
+  {
+    name: 'Playing Cards',
+    codePoints: (() => {
+      const points: number[] = [];
+      const suits = [0xA, 0xB, 0xC, 0xD];
+      const ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14];
+      for (const suit of suits) {
+        for (const rank of ranks) {
+          points.push(0x1F000 + suit * 16 + rank);
+        }
+      }
+      return points;
+    })(),
+  },
+  {
+    name: 'Mahjong',
+    codePoints: Array.from({ length: 34 }, (_, i) => 0x1F000 + i),
+  },
+  {
+    name: 'Dominoes',
+    codePoints: Array.from({ length: 100 }, (_, i) => 0x1F030 + i),
+  },
+  {
+    name: 'Chess',
+    codePoints: Array.from({ length: 12 }, (_, i) => 0x2654 + i),
+  },
+];
+
+class ModeGames extends ModeBase {
+  id = MODE_ID.games;
+  name = 'Games';
+  material_icon = 'sports_esports';
+  override = {
+    zerobase: false,
+    exclusive: false,
+    min: 0,
+  };
+  quick = GAME_SETS.map((_r, i) => i);
+  _quick_label = GAME_SETS.map((r) => r.name);
+  default_max = 0;
+  number_base = 0;
+
+  private _findSetByIndex(index: number): GameSet | undefined {
+    return GAME_SETS[index];
+  }
+
+  private _findSetByBounds(min: number, max: number): GameSet | undefined {
+    return GAME_SETS.find((s) => s.codePoints[0] === min && s.codePoints[s.codePoints.length - 1] === max);
+  }
+
+  configureDie(die: Die, quickValue: number): void {
+    const set = this._findSetByIndex(quickValue);
+    if (set) {
+      die.min = 0;
+      die.max = set.codePoints.length - 1;
+      die.zerobase = false;
+      die.exclusive = false;
+    } else {
+      die.max = quickValue;
+      die.min = 0;
+    }
+  }
+
+  getQuickValue(die: Die): number {
+    const set = GAME_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
+    if (set) {
+      return GAME_SETS.indexOf(set);
+    }
+    return die.max;
+  }
+
+  formatValue(v: number): string {
+    return String.fromCodePoint(v);
+  }
+
+  displayValue(v: number, max?: number): string {
+    const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    return this.formatValue(v);
+  }
+
+  historyValue(v: number, max?: number): string {
+    const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      const codePoint = set.codePoints[v % set.codePoints.length];
+      return 'U+' + codePoint.toString(16).toUpperCase();
+    }
+    return 'U+' + v.toString(16).toUpperCase();
+  }
+}
+
 const all_modes = [
   new ModeNormal(),
   new ModeBinary(),
@@ -344,6 +444,7 @@ const all_modes = [
   new ModeNote(),
   new ModeDecision(),
   new ModeEmoji(),
+  new ModeGames(),
 ];
 
 export const MODE: { [mode: number]: ModeBase } = Object.fromEntries(
