@@ -244,32 +244,45 @@ class ModeNote extends ModeBase {
 // &#x266d; - flat
 // &#x266f; - sharp
 
-interface EmojiRange {
-  start: number;
-  end: number;
+interface EmojiSet {
   name: string;
+  codePoints: number[];
 }
 
-const EMOJI_RANGES: EmojiRange[] = [
-  { start: 0x1f700, end: 0x1f77f, name: 'Alchemy' },
-  { start: 0x2700, end: 0x27bf, name: 'Dingbats' },
-  { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
-  { start: 0x2200, end: 0x22ff, name: 'Math' },
-  { start: 0x1f300, end: 0x1f5ff, name: 'Misc Symbols' },
-  { start: 0x1d100, end: 0x1d1ff, name: 'Musical Symbols' },
-  { start: 0x25a0, end: 0x25ff, name: 'Shapes' },
-  { start: 0x2600, end: 0x26ff, name: 'Weather/Stars' },
-  { start: 0x1f680, end: 0x1f6ff, name: 'Transport/Map' },
+const EMOJI_SETS: EmojiSet[] = [
+  {
+    name: 'Alchemy',
+    codePoints: Array.from({ length: 0x1f77f - 0x1f700 + 1 }, (_, i) => 0x1f700 + i),
+  },
+  {
+    name: 'Dingbats',
+    codePoints: Array.from({ length: 0x27bf - 0x2700 + 1 }, (_, i) => 0x2700 + i),
+  },
+  {
+    name: 'Emoticons',
+    codePoints: Array.from({ length: 0x1f64f - 0x1f600 + 1 }, (_, i) => 0x1f600 + i),
+  },
+  {
+    name: 'Math',
+    codePoints: Array.from({ length: 0x22ff - 0x2200 + 1 }, (_, i) => 0x2200 + i),
+  },
+  {
+    name: 'Misc Symbols',
+    codePoints: Array.from({ length: 0x1f5ff - 0x1f300 + 1 }, (_, i) => 0x1f300 + i),
+  },
+  {
+    name: 'Musical Symbols',
+    codePoints: Array.from({ length: 0x1d1ff - 0x1d100 + 1 }, (_, i) => 0x1d100 + i),
+  },
+  {
+    name: 'Shapes',
+    codePoints: Array.from({ length: 0x25ff - 0x25a0 + 1 }, (_, i) => 0x25a0 + i),
+  },
+  {
+    name: 'Transport/Map',
+    codePoints: Array.from({ length: 0x1f6ff - 0x1f680 + 1 }, (_, i) => 0x1f680 + i),
+  },
 ];
-
-function countEmojiRange(range: EmojiRange): number {
-  return range.end - range.start + 1;
-}
-
-function getEmojiFromRange(range: EmojiRange, index: number): string {
-  const codePoint = range.start + (index % countEmojiRange(range));
-  return String.fromCodePoint(codePoint);
-}
 
 class ModeEmoji extends ModeBase {
   id = MODE_ID.emoji;
@@ -280,17 +293,17 @@ class ModeEmoji extends ModeBase {
     exclusive: false,
     min: 0,
   };
-  quick = [-1, ...EMOJI_RANGES.map((_r, i) => i)];
-  _quick_label = ['All', ...EMOJI_RANGES.map((r) => r.name)];
+  quick = [-1, ...EMOJI_SETS.map((_r, i) => i)];
+  _quick_label = ['All', ...EMOJI_SETS.map((r) => r.name)];
   default_max = -1;
   number_base = 0;
 
-  private _findRangeByIndex(index: number): EmojiRange | undefined {
-    return EMOJI_RANGES[index];
+  private _findSetByIndex(index: number): EmojiSet | undefined {
+    return EMOJI_SETS[index];
   }
 
-  private _findRangeByBounds(min: number, max: number): EmojiRange | undefined {
-    return EMOJI_RANGES.find((r) => r.start === min && r.end === max);
+  private _findSetByBounds(min: number, max: number): EmojiSet | undefined {
+    return EMOJI_SETS.find((s) => s.codePoints[0] === min && s.codePoints[s.codePoints.length - 1] === max);
   }
 
   configureDie(die: Die, quickValue: number): void {
@@ -301,10 +314,10 @@ class ModeEmoji extends ModeBase {
       die.exclusive = false;
       return;
     }
-    const range = this._findRangeByIndex(quickValue);
-    if (range) {
-      die.min = range.start;
-      die.max = range.end;
+    const set = this._findSetByIndex(quickValue);
+    if (set) {
+      die.min = 0;
+      die.max = set.codePoints.length - 1;
       die.zerobase = false;
       die.exclusive = false;
     } else {
@@ -317,9 +330,9 @@ class ModeEmoji extends ModeBase {
     if (die.min === 0x21 && die.max === 0x1f9ff) {
       return -1;
     }
-    const range = this._findRangeByBounds(die.min, die.max);
-    if (range) {
-      return EMOJI_RANGES.indexOf(range);
+    const set = EMOJI_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
+    if (set) {
+      return EMOJI_SETS.indexOf(set);
     }
     return die.max;
   }
@@ -328,11 +341,19 @@ class ModeEmoji extends ModeBase {
     return String.fromCodePoint(v);
   }
 
-  displayValue(v: number): string {
+  displayValue(v: number, max?: number): string {
+    const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
     return this.formatValue(v);
   }
 
-  historyValue(v: number): string {
+  historyValue(v: number, max?: number): string {
+    const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
     return this.formatValue(v);
   }
 }
