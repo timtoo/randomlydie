@@ -106,6 +106,9 @@ export default defineComponent({
 
     const fabStyle = computed(() => {
       const pos = props.options?.fab_position || 'bottom-right';
+      if (pos === 'none') {
+        return { display: 'none' };
+      }
       const base = { position: 'fixed' as const, zIndex: 1000 };
       const maxW = 720;
       const pad = 16;

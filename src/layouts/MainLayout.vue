@@ -209,9 +209,10 @@ export default defineComponent({
                     v-model="options.fab_position"
                     :options="[
                       { label: 'Bottom right', value: 'bottom-right' },
-                      { label: 'Bottom left', value: 'bottom-left' },
                       { label: 'Top right', value: 'top-right' },
+                      { label: 'Bottom left', value: 'bottom-left' },
                       { label: 'Top left', value: 'top-left' },
+                      { label: 'None', value: 'none' },
                     ]"
                     option-value="value"
                     option-label="label"
