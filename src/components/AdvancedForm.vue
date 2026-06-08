@@ -39,25 +39,7 @@ export default defineComponent({
     });
 
     const notationDisplay = computed(() => {
-      const d = props.die;
-      if (isSetBasedMode.value) {
-        // For Emoji/Games, show set name and count instead of dice notation
-        const mode = MODE[props.mode];
-        const qv = mode.getQuickValue(d);
-        const label = mode.quick_label[mode.quick.indexOf(qv)] || 'Custom';
-        return `${d.dice}× ${label} (${d.max + 1})`;
-      }
-      // Standard dice notation, but hide mod if it's just the default 0
-      let value = `${d.dice}d${d.max}`;
-      if (d.min !== 1 && !(d.min === 0 && d.zerobase)) {
-        value += '>' + d.min;
-      }
-      if (d.mult > 1) value += 'x' + d.mult;
-      if (d.mult > 0 && d.mult < 1) value += '/' + Math.round(1 / d.mult);
-      if (d.repeat > 1) value = `${d.repeat}x(${value})`;
-      if (d.exclusive) value += 'x';
-      if (d.min === 0 && d.zerobase) value += 'z';
-      return value;
+      return props.die.toString();
     });
 
     watch(
