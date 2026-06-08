@@ -282,11 +282,27 @@ describe('ModeNote', () => {
 
   test('quick labels include key names', () => {
     expect(note.quick_label).toContain('C Scale');
-    expect(note.quick_label).toContain('D♭ Scale');
+    expect(note.quick_label).toContain('D♭/C♯ Scale');
     expect(note.quick_label).toContain('G Scale');
     expect(note.quick_label).toContain('C Pentatonic');
     expect(note.quick_label).toContain('Chromatic');
     expect(note.quick_label).not.toContain('C Chromatic');
+  });
+
+  test('natural keys come before enharmonic pairs in quick buttons', () => {
+    const scaleLabels = note.quick_label.filter((l) => l.endsWith(' Scale'));
+    expect(scaleLabels[0]).toBe('C Scale');
+    expect(scaleLabels[1]).toBe('D Scale');
+    expect(scaleLabels[2]).toBe('E Scale');
+    expect(scaleLabels[3]).toBe('F Scale');
+    expect(scaleLabels[4]).toBe('G Scale');
+    expect(scaleLabels[5]).toBe('A Scale');
+    expect(scaleLabels[6]).toBe('B Scale');
+    expect(scaleLabels[7]).toBe('D♭/C♯ Scale');
+    expect(scaleLabels[8]).toBe('E♭/D♯ Scale');
+    expect(scaleLabels[9]).toBe('G♭/F♯ Scale');
+    expect(scaleLabels[10]).toBe('A♭/G♯ Scale');
+    expect(scaleLabels[11]).toBe('B♭/A♯ Scale');
   });
 
   test('configureDie encodes scale and key in max and mod', () => {

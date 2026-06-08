@@ -208,10 +208,24 @@ class ModeDecision extends ModeBase {
   number_base = 0;
 }
 
-const NOTE_KEYS = [
-  'C', 'D♭', 'D', 'E♭', 'E', 'F',
-  'G♭', 'G', 'A♭', 'A', 'B♭', 'B',
-];
+// Key labels with enharmonic equivalents for flat keys
+const NOTE_KEY_LABELS: { [keyIndex: number]: string } = {
+  0: 'C',
+  2: 'D',
+  4: 'E',
+  5: 'F',
+  7: 'G',
+  9: 'A',
+  11: 'B',
+  1: 'D♭/C♯',
+  3: 'E♭/D♯',
+  6: 'G♭/F♯',
+  8: 'A♭/G♯',
+  10: 'B♭/A♯',
+};
+
+// Order: natural keys first, then enharmonic flat/sharp pairs
+const NOTE_KEY_ORDER = [0, 2, 4, 5, 7, 9, 11, 1, 3, 6, 8, 10];
 
 const CHROMATIC_NOTES = [
   'C', 'C♯//D♭', 'D', 'D♯//E♭', 'E', 'F',
@@ -266,10 +280,10 @@ class ModeNote extends ModeBase {
     // Pentatonic: only C
     this.quick.push(encodeNoteQuick(5, 0));
     this._quick_label.push('C Pentatonic');
-    // Heptatonic (Scale): all 12 keys
-    for (let k = 0; k < NOTE_KEYS.length; k++) {
+    // Scale: natural keys first, then enharmonic pairs
+    for (const k of NOTE_KEY_ORDER) {
       this.quick.push(encodeNoteQuick(7, k));
-      this._quick_label.push(`${NOTE_KEYS[k]} Scale`);
+      this._quick_label.push(`${NOTE_KEY_LABELS[k]} Scale`);
     }
     // Chromatic: key-agnostic, just one
     this.quick.push(encodeNoteQuick(12, 0));
