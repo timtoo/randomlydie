@@ -427,10 +427,9 @@ class ModeGames extends ModeBase {
   historyValue(v: number, max?: number): string {
     const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
     if (set) {
-      const codePoint = set.codePoints[v % set.codePoints.length];
-      return 'U+' + codePoint.toString(16).toUpperCase();
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
     }
-    return 'U+' + v.toString(16).toUpperCase();
+    return this.formatValue(v);
   }
 }
 
