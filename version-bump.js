@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 // utility script to bump version numbers in package.json - run without args for help.
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Get command line arguments
 const args = process.argv.slice(2);
