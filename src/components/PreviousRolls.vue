@@ -1,6 +1,6 @@
 <!-- Display list of previous roll results, as a string. -->
 <script lang="ts">
-import { defineComponent, computed, PropType } from 'vue';
+import { defineComponent, computed, PropType, ref, onMounted } from 'vue';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'components/models';
 import { MODE } from 'src/lib/modes';
@@ -15,6 +15,9 @@ export default defineComponent({
   },
   setup(props) {
     const $q = useQuasar();
+    const scrollRef = ref<HTMLDivElement | null>(null);
+    const canScrollLeft = ref(false);
+    const canScrollRight = ref(false);
 
     const previousRolls = computed((): { text: string; html: string }[] => {
       const result: { text: string; html: string }[] = [];
@@ -33,6 +36,26 @@ export default defineComponent({
     const fullString = computed(() =>
       previousRolls.value.map((r) => r.text).join(' … ')
     );
+
+    function updateScrollState() {
+      const el = scrollRef.value;
+      if (!el) return;
+      canScrollLeft.value = el.scrollLeft > 0;
+      canScrollRight.value = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+    }
+
+    function scrollLeft() {
+      scrollRef.value?.scrollBy({ left: -100, behavior: 'smooth' });
+    }
+
+    function scrollRight() {
+      scrollRef.value?.scrollBy({ left: 100, behavior: 'smooth' });
+    }
+
+    onMounted(() => {
+      updateScrollState();
+      scrollRef.value?.addEventListener('scroll', updateScrollState, { passive: true });
+    });
 
     function copySingle(text: string) {
       copyToClipboard(text)
@@ -61,14 +84,25 @@ export default defineComponent({
       copySingle(fullString.value);
     }
 
-    return { previousRolls, fullString, copySingle, copyAll };
+    return { previousRolls, fullString, copySingle, copyAll, scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight };
   },
 });
 </script>
 
 <template>
-  <div v-if="previousRolls.length" class="rr-fade-right overflow-hidden">
-    <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px; scrollbar-width: none">
+  <div v-if="previousRolls.length" class="row items-center no-wrap">
+    <q-btn
+      v-if="canScrollLeft"
+      flat
+      dense
+      round
+      icon="chevron_left"
+      color="primary"
+      @click="scrollLeft"
+      class="q-mr-xs"
+      aria-label="Scroll previous rolls left"
+    />
+    <div ref="scrollRef" class="col rr-pr-scroll">
       <span
         class="rr-pr-label text-body1 cursor-pointer"
         tabindex="0"
@@ -78,7 +112,7 @@ export default defineComponent({
         @keydown.enter="copyAll"
         @keydown.space.prevent="copyAll"
       >{{ label }}</span>
-      <span class="grad">
+      <span class="rr-pr-text">
         <template v-for="(r, idx) in previousRolls" :key="idx">
           <span
             class="cursor-pointer"
@@ -89,10 +123,21 @@ export default defineComponent({
             @keydown.enter="copySingle(r.text)"
             @keydown.space.prevent="copySingle(r.text)"
           >{{ r.text }}</span>
-          <span v-if="idx < previousRolls.length - 1" style="opacity: 0.6"> … </span>
+          <span v-if="idx < previousRolls.length - 1" class="rr-pr-sep"> … </span>
         </template>
       </span>
     </div>
+    <q-btn
+      v-if="canScrollRight"
+      flat
+      dense
+      round
+      icon="chevron_right"
+      color="primary"
+      @click="scrollRight"
+      class="q-ml-xs"
+      aria-label="Scroll previous rolls right"
+    />
   </div>
   <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">
     No rolls yet

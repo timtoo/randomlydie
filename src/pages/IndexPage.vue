@@ -208,8 +208,7 @@ export default defineComponent({
     }
 
     function handleQuickButton(v: number) {
-      die.value.max = v;
-      die.value.min = die.value.zerobase ? 0 : 1;
+      MODE[mode.value].configureDie(die.value, v);
       bigButtonClick();
     }
 
@@ -220,8 +219,13 @@ export default defineComponent({
       if (die.value.min > 0 && v[0] == 0) {
         die.value.zerobase = true;
       }
-      die.value.min = v[0];
-      die.value.max = v[1];
+      // For set-based modes (Emoji, Games), min/max are determined by the set
+      // and should not be changed via the settings dialog
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (!isSetBased) {
+        die.value.min = v[0];
+        die.value.max = v[1];
+      }
       die.value.dice = v[2];
     }
 
@@ -258,9 +262,8 @@ export default defineComponent({
             die.value.zerobase = false;
             die.value.exclusive = false;
           }
-          if (!new_mode.quick.includes(die.value.max)) {
-            die.value.max = new_mode.default_max;
-            die.value.min = die.value.zerobase ? 0 : 1;
+          if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
+            new_mode.configureDie(die.value, new_mode.default_max);
           }
           mode.value = m;
           if (reroll) bigButtonClick();
@@ -269,6 +272,8 @@ export default defineComponent({
     }
 
     function handleZeroBaseToggle() {
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (isSetBased) return;
       die.value = die.value.clone();
       die.value.zerobase = !die.value.zerobase;
       die.value.min = die.value.zerobase ? 0 : 1;
@@ -324,21 +329,29 @@ export default defineComponent({
 
     onKeyStroke('n', () => {
       if (shouldIgnoreHotkey()) return;
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (isSetBased) return;
       die.value.min = Math.max(0, die.value.min - 1);
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('N', () => {
       if (shouldIgnoreHotkey()) return;
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (isSetBased) return;
       if (die.value.min < die.value.max - 1) die.value.min++;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('x', () => {
       if (shouldIgnoreHotkey()) return;
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (isSetBased) return;
       if (die.value.max > die.value.min + 1) die.value.max--;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
     onKeyStroke('X', () => {
       if (shouldIgnoreHotkey()) return;
+      const isSetBased = mode.value === MODE_ID.emoji || mode.value === MODE_ID.games;
+      if (isSetBased) return;
       die.value.max++;
       advancedUpdate([die.value.min, die.value.max, die.value.dice]);
     });
@@ -400,7 +413,7 @@ export default defineComponent({
           <roll-display
             :value="v"
             :index="idx"
-            :display="MODE[lastRoll.mode].displayValue(lastRoll.die.getThrow()[idx], lastRoll.die.max)"
+            :display="MODE[lastRoll.mode].displayValue(lastRoll.die.getThrow()[idx], lastRoll.die.max, lastRoll.die.mod)"
             :roll="lastRoll"
             :sparkle="options?.sparkleMode"
             @on-roll-display-click="bigButtonClick"
@@ -468,7 +481,7 @@ export default defineComponent({
     <div id="quick-roll" class="q-mt-md" v-if="!options?.hideQuick">
       <quick-buttons
         :mode="mode"
-        :current="die.max"
+        :current="MODE[mode].getQuickValue(die)"
         @on-quick-button="(v:number) => handleQuickButton(v)"
       ></quick-buttons>
     </div>
@@ -595,7 +608,7 @@ export default defineComponent({
       :mode="mode"
       @advanced-update="(v:number[]) => advancedUpdate(v)"
       @base-toggle="handleZeroBaseToggle"
-      @exclusive-toggle="() => (die.exclusive = !die.exclusive)"
+      @exclusive-toggle="() => { if (mode !== MODE_ID.emoji && mode !== MODE_ID.games) die.exclusive = !die.exclusive; }"
       @mode-change="(m:number) => handleModeChange(m, false)"
       @close="bigButtonClick"
     ></GeneratorSettingsDialog>

@@ -7,6 +7,8 @@ export enum MODE_ID {
   hex = 3,
   decision = 4,
   note = 5,
+  emoji = 6,
+  games = 7,
 }
 
 interface override_interface {
@@ -27,6 +29,15 @@ class ModeBase {
   readonly mappings?: { [max: number]: string[] }; // results to display rather than numbers
   readonly quick_label_prefix: string = ''; // used for hex/binary
   _quick_label: string[] = []; // optional labels to use instead of numbers on quick buttons
+
+  configureDie(die: Die, quickValue: number): void {
+    die.max = quickValue;
+    die.min = die.zerobase ? 0 : 1;
+  }
+
+  getQuickValue(die: Die): number {
+    return die.max;
+  }
 
   // generate quick_label as needed
   get quick_label() {
@@ -59,7 +70,7 @@ class ModeBase {
   }
 
   // Figure out if there are mappings and use those if they exist
-  displayValue(v: number, max?: number): string {
+  displayValue(v: number, max?: number, mod?: number): string {
     if (
       this.mappings &&
       max !== undefined &&
@@ -85,8 +96,8 @@ class ModeBase {
   }
 
   // override in case history string should be different from displayValue()
-  historyValue(v: number, max?: number): string {
-    return this.quick_label_prefix + this.displayValue(v, max);
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.quick_label_prefix + this.displayValue(v, max, mod);
   }
 
   // if given multiple values, how to display them? depends on if they have a number_base != 0
@@ -107,7 +118,7 @@ class ModeBase {
 
   // alternate display without total
   _displayMultiValsOnly(die: Die): string {
-    return die.getThrow().map((s) => this.historyValue(s, die.max)).join('/');
+    return die.getThrow().map((s) => this.historyValue(s, die.max, die.mod)).join('/');
   }
 }
 
@@ -233,6 +244,296 @@ class ModeNote extends ModeBase {
 // &#x266d; - flat
 // &#x266f; - sharp
 
+interface EmojiSet {
+  name: string;
+  codePoints: number[];
+}
+
+const EMOJI_SETS: EmojiSet[] = [
+  {
+    name: 'Alchemy',
+    codePoints: Array.from({ length: 0x1f77f - 0x1f700 + 1 }, (_, i) => 0x1f700 + i),
+  },
+  {
+    name: 'Animals',
+    codePoints: [
+      0x1F400, 0x1F401, 0x1F402, 0x1F403, 0x1F404, 0x1F405, 0x1F406,
+      0x1F407, 0x1F408, 0x1F409, 0x1F40A, 0x1F40B, 0x1F40C, 0x1F40D,
+      0x1F40E, 0x1F40F, 0x1F410, 0x1F411, 0x1F412, 0x1F413, 0x1F414,
+      0x1F415, 0x1F416, 0x1F417, 0x1F418, 0x1F419, 0x1F41A, 0x1F41B,
+      0x1F41C, 0x1F41D, 0x1F41E, 0x1F41F, 0x1F420, 0x1F421, 0x1F422,
+      0x1F423, 0x1F424, 0x1F425, 0x1F426, 0x1F427, 0x1F428, 0x1F429,
+      0x1F42A, 0x1F42B, 0x1F42C, 0x1F42D, 0x1F42E, 0x1F42F, 0x1F430,
+      0x1F431, 0x1F432, 0x1F433, 0x1F434, 0x1F435, 0x1F436, 0x1F437,
+      0x1F438, 0x1F439, 0x1F43A, 0x1F43B, 0x1F43C, 0x1F43D, 0x1F43E,
+      0x1F43F, 0x1F54A, 0x1F577, 0x1F578, 0x1F648, 0x1F649, 0x1F64A,
+      0x1F980, 0x1F981, 0x1F982, 0x1F983, 0x1F984, 0x1F985, 0x1F986,
+      0x1F987, 0x1F988, 0x1F989, 0x1F98A, 0x1F98B, 0x1F98C, 0x1F98D,
+      0x1F98E, 0x1F98F, 0x1F990, 0x1F991, 0x1F992, 0x1F993, 0x1F994,
+      0x1F995, 0x1F996, 0x1F997, 0x1F998, 0x1F999, 0x1F99A, 0x1F99B,
+      0x1F99C, 0x1F99D, 0x1F99E, 0x1F99F, 0x1F9A0, 0x1F9A1, 0x1F9A2,
+      0x1F9A3, 0x1F9A4, 0x1F9A5, 0x1F9A6, 0x1F9A7, 0x1F9A8, 0x1F9A9,
+      0x1F9AA, 0x1F9AB, 0x1F9AC, 0x1F9AD, 0x1F9AE, 0x1FAB0, 0x1FAB1,
+      0x1FAB2, 0x1FAB3, 0x1FABC, 0x1FABD, 0x1FABE, 0x1FABF, 0x1FACE,
+      0x1FACF,
+    ],
+  },
+  {
+    name: 'Dingbats',
+    codePoints: Array.from({ length: 0x27bf - 0x2700 + 1 }, (_, i) => 0x2700 + i),
+  },
+  {
+    name: 'Emoticons',
+    codePoints: Array.from({ length: 0x1f64f - 0x1f600 + 1 }, (_, i) => 0x1f600 + i),
+  },
+  {
+    name: 'Math',
+    codePoints: Array.from({ length: 0x22ff - 0x2200 + 1 }, (_, i) => 0x2200 + i),
+  },
+  {
+    name: 'Misc Symbols',
+    codePoints: Array.from({ length: 0x1f5ff - 0x1f300 + 1 }, (_, i) => 0x1f300 + i),
+  },
+  {
+    name: 'Musical Symbols',
+    codePoints: Array.from({ length: 0x1d1ff - 0x1d100 + 1 }, (_, i) => 0x1d100 + i),
+  },
+  {
+    name: 'Plants',
+    codePoints: [
+      0x1F331, 0x1F332, 0x1F333, 0x1F334, 0x1F335,
+      0x1F33A, 0x1F33B, 0x1F33C, 0x1F33E, 0x1F33F,
+      0x1F340, 0x1F341, 0x1F342, 0x1F343, 0x1F344,
+      0x1F384, 0x1F38B, 0x1F38D, 0x1F3F5,
+      0x1F490, 0x1F4AE, 0x1F940,
+      0x1F952, 0x1F954, 0x1F955, 0x1F96C, 0x1F96D,
+    ],
+  },
+  {
+    name: 'Religion',
+    codePoints: [
+      0x0FD5, 0x0FD6, 0x0FD7, 0x0FD8, 0x2625,
+      0x2626, 0x2627, 0x262A, 0x262F, 0x2638, 0x2670,
+      0x2671, 0x269C, 0x26E4, 0x26E7, 0x26E9,
+      0x26EA, 0x2719, 0x271D, 0x2720, 0x2721,
+      0x1F47C, 0x1F4FF, 0x1F52E, 0x1F549, 0x1F54B,
+      0x1F54C, 0x1F54D, 0x1F54E, 0x1F6D0, 0x1F9FF,
+      0x1FA94, 0x1FAAC,
+    ],
+  },
+  {
+    name: 'Shapes',
+    codePoints: Array.from({ length: 0x25ff - 0x25a0 + 1 }, (_, i) => 0x25a0 + i),
+  },
+  {
+    name: 'Transport/Map',
+    codePoints: Array.from({ length: 0x1f6ff - 0x1f680 + 1 }, (_, i) => 0x1f680 + i),
+  },
+  {
+    name: 'Weather',
+    codePoints: [
+      0x2600, 0x2601, 0x2602, 0x2603, 0x2608, 0x2614, 0x2615,
+      0x26A1, 0x26C4, 0x26C5, 0x26C8, 0x26F1,
+      0x1F308, 0x1F30A, 0x1F324, 0x1F325, 0x1F326, 0x1F327,
+      0x1F328, 0x1F329, 0x1F32A, 0x1F32B, 0x1F32C,
+      0x1F4A6, 0x1F4A7, 0x1F4A8, 0x1F505, 0x1F506, 0x1F525, 0x1F9CA,
+    ],
+  },
+];
+
+class ModeEmoji extends ModeBase {
+  id = MODE_ID.emoji;
+  name = 'Emoji';
+  material_icon = 'emoji_emotions';
+  override = {
+    zerobase: false,
+    exclusive: false,
+    min: 0,
+  };
+  quick = [...EMOJI_SETS.map((_r, i) => i), -2];
+  _quick_label = [...EMOJI_SETS.map((r) => r.name), 'Unicode'];
+  default_max = 0;
+  number_base = 0;
+
+  private _findSetByIndex(index: number): EmojiSet | undefined {
+    return EMOJI_SETS[index];
+  }
+
+  private _findSetByBounds(min: number, max: number): EmojiSet | undefined {
+    return EMOJI_SETS.find((s) => s.codePoints[0] === min && s.codePoints[s.codePoints.length - 1] === max);
+  }
+
+  configureDie(die: Die, quickValue: number): void {
+    if (quickValue === -2) {
+      die.min = 0x21;
+      die.max = 0x1f9ff;
+      die.mod = -2;
+      die.zerobase = false;
+      die.exclusive = false;
+      return;
+    }
+    const set = this._findSetByIndex(quickValue);
+    if (set) {
+      die.min = 0;
+      die.max = set.codePoints.length - 1;
+      die.mod = quickValue;
+      die.zerobase = false;
+      die.exclusive = false;
+    } else {
+      die.max = quickValue;
+      die.min = 0;
+      die.mod = 0;
+    }
+  }
+
+  getQuickValue(die: Die): number {
+    if (die.mod === -2) {
+      return -2;
+    }
+    if (die.mod >= 0 && die.mod < EMOJI_SETS.length) {
+      return die.mod;
+    }
+    const set = EMOJI_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
+    if (set) {
+      return EMOJI_SETS.indexOf(set);
+    }
+    return die.max;
+  }
+
+  formatValue(v: number): string {
+    return String.fromCodePoint(v);
+  }
+
+  displayValue(v: number, max?: number, mod?: number): string {
+    // mod is the authoritative set index for Emoji mode
+    if (mod !== undefined && mod >= 0 && mod < EMOJI_SETS.length) {
+      const set = EMOJI_SETS[mod];
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    if (mod === -2) {
+      return this.formatValue(v); // Unicode mode
+    }
+    // Fallback: try to find set by length (legacy/URL parsing compatibility)
+    const set = EMOJI_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    return this.formatValue(v);
+  }
+
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.displayValue(v, max, mod);
+  }
+}
+
+interface GameSet {
+  name: string;
+  codePoints: number[];
+}
+
+const GAME_SETS: GameSet[] = [
+  {
+    name: 'Playing Cards',
+    codePoints: (() => {
+      const points: number[] = [];
+      const suits = [0xA, 0xB, 0xC, 0xD];
+      const ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14];
+      for (const suit of suits) {
+        for (const rank of ranks) {
+          points.push(0x1F000 + suit * 16 + rank);
+        }
+      }
+      return points;
+    })(),
+  },
+  {
+    name: 'Mahjong',
+    codePoints: Array.from({ length: 34 }, (_, i) => 0x1F000 + i),
+  },
+  {
+    name: 'Dominoes',
+    codePoints: Array.from({ length: 100 }, (_, i) => 0x1F030 + i),
+  },
+  {
+    name: 'Chess',
+    codePoints: Array.from({ length: 12 }, (_, i) => 0x2654 + i),
+  },
+  {
+    name: 'Xiangqi',
+    codePoints: Array.from({ length: 14 }, (_, i) => 0x1FA60 + i),
+  },
+  {
+    name: 'I Ching',
+    codePoints: Array.from({ length: 64 }, (_, i) => 0x4DC0 + i),
+  },
+];
+
+class ModeGames extends ModeBase {
+  id = MODE_ID.games;
+  name = 'Games';
+  material_icon = 'interests';
+  override = {
+    zerobase: false,
+    exclusive: false,
+    min: 0,
+  };
+  quick = GAME_SETS.map((_r, i) => i);
+  _quick_label = GAME_SETS.map((r) => r.name);
+  default_max = 0;
+  number_base = 0;
+
+  private _findSetByIndex(index: number): GameSet | undefined {
+    return GAME_SETS[index];
+  }
+
+  private _findSetByBounds(min: number, max: number): GameSet | undefined {
+    return GAME_SETS.find((s) => s.codePoints[0] === min && s.codePoints[s.codePoints.length - 1] === max);
+  }
+
+  configureDie(die: Die, quickValue: number): void {
+    const set = this._findSetByIndex(quickValue);
+    if (set) {
+      die.min = 0;
+      die.max = set.codePoints.length - 1;
+      die.zerobase = false;
+      die.exclusive = false;
+    } else {
+      die.max = quickValue;
+      die.min = 0;
+    }
+  }
+
+  getQuickValue(die: Die): number {
+    const set = GAME_SETS.find((s) => s.codePoints.length === die.max + 1 && die.min === 0);
+    if (set) {
+      return GAME_SETS.indexOf(set);
+    }
+    return die.max;
+  }
+
+  formatValue(v: number): string {
+    return String.fromCodePoint(v);
+  }
+
+  displayValue(v: number, max?: number, mod?: number): string {
+    // mod is the authoritative set index for Games mode
+    if (mod !== undefined && mod >= 0 && mod < GAME_SETS.length) {
+      const set = GAME_SETS[mod];
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    // Fallback: try to find set by length (legacy/URL parsing compatibility)
+    const set = GAME_SETS.find((s) => s.codePoints.length === (max ?? 0) + 1);
+    if (set) {
+      return this.formatValue(set.codePoints[v % set.codePoints.length]);
+    }
+    return this.formatValue(v);
+  }
+
+  historyValue(v: number, max?: number, mod?: number): string {
+    return this.displayValue(v, max, mod);
+  }
+}
+
 const all_modes = [
   new ModeNormal(),
   new ModeBinary(),
@@ -240,6 +541,8 @@ const all_modes = [
   new ModeDice(),
   new ModeNote(),
   new ModeDecision(),
+  new ModeEmoji(),
+  new ModeGames(),
 ];
 
 export const MODE: { [mode: number]: ModeBase } = Object.fromEntries(
