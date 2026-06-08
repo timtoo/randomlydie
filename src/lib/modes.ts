@@ -296,7 +296,7 @@ class ModeEmoji extends ModeBase {
 
   historyValue(v: number, max?: number): string {
     const codePoint = max !== undefined ? this._toCodePoint(v, max) : v;
-    return 'U+' + codePoint.toString(16).toUpperCase();
+    return this.formatValue(codePoint);
   }
 }
 
