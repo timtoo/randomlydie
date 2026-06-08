@@ -29,6 +29,11 @@ class ModeBase {
   readonly quick_label_prefix: string = ''; // used for hex/binary
   _quick_label: string[] = []; // optional labels to use instead of numbers on quick buttons
 
+  configureDie(die: Die, quickValue: number): void {
+    die.max = quickValue;
+    die.min = die.zerobase ? 0 : 1;
+  }
+
   // generate quick_label as needed
   get quick_label() {
     const length_diff = this.quick.length - this._quick_label.length;
@@ -264,8 +269,8 @@ class ModeEmoji extends ModeBase {
   name = 'Emoji';
   material_icon = 'emoji_emotions';
   override = {
-    zerobase: true,
-    exclusive: true,
+    zerobase: false,
+    exclusive: false,
     min: 0,
   };
   quick = EMOJI_RANGES.map((r) => countEmojiRange(r));
@@ -273,30 +278,33 @@ class ModeEmoji extends ModeBase {
   default_max = countEmojiRange(EMOJI_RANGES[0]);
   number_base = 0;
 
-  private _findRange(max: number): EmojiRange | undefined {
-    return EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
+  private _findRangeByCount(count: number): EmojiRange | undefined {
+    return EMOJI_RANGES.find((r) => countEmojiRange(r) === count);
   }
 
-  private _toCodePoint(v: number, max: number): number {
-    const range = this._findRange(max);
+  configureDie(die: Die, quickValue: number): void {
+    const range = this._findRangeByCount(quickValue);
     if (range) {
-      return range.start + (v % countEmojiRange(range));
+      die.min = range.start;
+      die.max = range.end;
+      die.zerobase = false;
+      die.exclusive = false;
+    } else {
+      die.max = quickValue;
+      die.min = 0;
     }
-    return v;
   }
 
   formatValue(v: number): string {
     return String.fromCodePoint(v);
   }
 
-  displayValue(v: number, max?: number): string {
-    const codePoint = max !== undefined ? this._toCodePoint(v, max) : v;
-    return this.formatValue(codePoint);
+  displayValue(v: number): string {
+    return this.formatValue(v);
   }
 
-  historyValue(v: number, max?: number): string {
-    const codePoint = max !== undefined ? this._toCodePoint(v, max) : v;
-    return this.formatValue(codePoint);
+  historyValue(v: number): string {
+    return this.formatValue(v);
   }
 }
 

@@ -208,8 +208,7 @@ export default defineComponent({
     }
 
     function handleQuickButton(v: number) {
-      die.value.max = v;
-      die.value.min = die.value.zerobase ? 0 : 1;
+      MODE[mode.value].configureDie(die.value, v);
       bigButtonClick();
     }
 
