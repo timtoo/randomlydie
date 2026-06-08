@@ -7,6 +7,7 @@ export enum MODE_ID {
   hex = 3,
   decision = 4,
   note = 5,
+  emoji = 6,
 }
 
 interface override_interface {
@@ -233,6 +234,74 @@ class ModeNote extends ModeBase {
 // &#x266d; - flat
 // &#x266f; - sharp
 
+interface EmojiRange {
+  start: number;
+  end: number;
+  name: string;
+}
+
+const EMOJI_RANGES: EmojiRange[] = [
+  { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
+  { start: 0x1f680, end: 0x1f6ff, name: 'Transport/Map' },
+  { start: 0x1f300, end: 0x1f5ff, name: 'Misc Symbols' },
+  { start: 0x2700, end: 0x27bf, name: 'Dingbats' },
+  { start: 0x25a0, end: 0x25ff, name: 'Shapes' },
+  { start: 0x1f0a0, end: 0x1f0ff, name: 'Cards' },
+  { start: 0x2654, end: 0x265f, name: 'Chess' },
+];
+
+function countEmojiRange(range: EmojiRange): number {
+  return range.end - range.start + 1;
+}
+
+function getEmojiFromRange(range: EmojiRange, index: number): string {
+  const codePoint = range.start + (index % countEmojiRange(range));
+  return String.fromCodePoint(codePoint);
+}
+
+class ModeEmoji extends ModeBase {
+  id = MODE_ID.emoji;
+  name = 'Emoji';
+  material_icon = 'emoji_emotions';
+  override = {
+    zerobase: true,
+    exclusive: true,
+    min: 0,
+  };
+  quick = EMOJI_RANGES.map((r) => countEmojiRange(r));
+  _quick_label = EMOJI_RANGES.map((r) => r.name);
+  default_max = countEmojiRange(EMOJI_RANGES[0]);
+  number_base = 0;
+
+  formatValue(v: number): string {
+    return String.fromCodePoint(v);
+  }
+
+  displayValue(v: number, max?: number): string {
+    if (max === undefined) {
+      return this.formatValue(v);
+    }
+    // Find which range this max corresponds to
+    const range = EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
+    if (range) {
+      return getEmojiFromRange(range, v);
+    }
+    return this.formatValue(v);
+  }
+
+  historyValue(v: number, max?: number): string {
+    if (max === undefined) {
+      return 'U+' + v.toString(16).toUpperCase();
+    }
+    const range = EMOJI_RANGES.find((r) => countEmojiRange(r) === max);
+    if (range) {
+      const codePoint = range.start + (v % countEmojiRange(range));
+      return 'U+' + codePoint.toString(16).toUpperCase();
+    }
+    return 'U+' + v.toString(16).toUpperCase();
+  }
+}
+
 const all_modes = [
   new ModeNormal(),
   new ModeBinary(),
@@ -240,6 +309,7 @@ const all_modes = [
   new ModeDice(),
   new ModeNote(),
   new ModeDecision(),
+  new ModeEmoji(),
 ];
 
 export const MODE: { [mode: number]: ModeBase } = Object.fromEntries(
