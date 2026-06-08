@@ -252,8 +252,6 @@ interface EmojiRange {
 
 const EMOJI_RANGES: EmojiRange[] = [
   { start: 0x1f700, end: 0x1f77f, name: 'Alchemy' },
-  { start: 0x1f0a0, end: 0x1f0ff, name: 'Cards' },
-  { start: 0x2654, end: 0x265f, name: 'Chess' },
   { start: 0x2700, end: 0x27bf, name: 'Dingbats' },
   { start: 0x1f600, end: 0x1f64f, name: 'Emoticons' },
   { start: 0x2200, end: 0x22ff, name: 'Math' },
