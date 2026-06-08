@@ -54,13 +54,21 @@ body.body--dark {
   }
 }
 
+.rr-qb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+    gap: 0.3em;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
 .rr-qb {
     background: $primary;
     color: $background;
-    margin-right: 0.3em;
-    margin-bottom: 0.3em;
     border-radius: 0.5rem;
     padding: 0.3em 1em;
+    white-space: nowrap;
+    text-align: center;
     &-selected {
         background: $secondary;
         color: black;
