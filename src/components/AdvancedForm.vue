@@ -3,7 +3,7 @@ import { defineComponent, ref, watch, computed } from 'vue';
 import { Die } from 'src/lib/die';
 import { MODE, MODE_ID } from 'src/lib/modes';
 import InputNumber from 'src/components/InputNumber.vue';
-import { onKeyStroke } from '@vueuse/core';
+import { onKeyStroke, useClipboard } from '@vueuse/core';
 
 export default defineComponent({
   props: {
@@ -41,6 +41,12 @@ export default defineComponent({
     const notationDisplay = computed(() => {
       return props.die.toString();
     });
+
+    const { copy } = useClipboard();
+
+    function copyNotation() {
+      copy(notationDisplay.value);
+    }
 
     watch(
       () => props.die,
@@ -104,7 +110,7 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay, copyNotation };
   },
 });
 </script>
@@ -221,8 +227,19 @@ export default defineComponent({
         </q-btn>
       </div>
     </div>
-    <div class="text-center text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
-      {{ notationDisplay }}
+    <div class="row items-center justify-center q-gutter-x-sm">
+      <div class="text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
+        {{ notationDisplay }}
+      </div>
+      <q-btn
+        dense
+        flat
+        size="sm"
+        icon="content_copy"
+        color="grey-7"
+        @click="copyNotation"
+        aria-label="Copy dice notation"
+      />
     </div>
   </div>
 </template>
