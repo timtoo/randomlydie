@@ -598,6 +598,7 @@ class ModeGames extends ModeBase {
     if (set) {
       die.min = 0;
       die.max = set.codePoints.length - 1;
+      die.mod = quickValue;
       die.zerobase = false;
       die.exclusive = false;
     } else {
