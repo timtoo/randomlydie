@@ -217,11 +217,11 @@ const NOTE_KEY_LABELS: { [keyIndex: number]: string } = {
   7: 'G',
   9: 'A',
   11: 'B',
-  1: 'D♭/C♯',
-  3: 'E♭/D♯',
-  6: 'G♭/F♯',
-  8: 'A♭/G♯',
-  10: 'B♭/A♯',
+  1: 'C♯/D♭',
+  3: 'D♯/E♭',
+  6: 'F♯/G♭',
+  8: 'G♯/A♭',
+  10: 'A♯/B♭',
 };
 
 // Order: natural keys first, then enharmonic flat/sharp pairs
