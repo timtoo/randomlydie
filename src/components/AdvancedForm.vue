@@ -34,6 +34,7 @@ export default defineComponent({
     const max = ref(props.die.max);
     const dice = ref(props.die.dice);
     const modeDropdownOpen = ref(false);
+    const modDropdownOpen = ref(false);
 
     const isSetBasedMode = computed(() => {
       return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games;
@@ -120,6 +121,7 @@ export default defineComponent({
     }
 
     function handleModChange(newMod: number) {
+      modDropdownOpen.value = false;
       ctx.emit('mod-update', newMod);
     }
 
@@ -167,7 +169,7 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, modOptions, currentModLabel, handleModChange, handleRawModChange };
+    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, modDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, modOptions, currentModLabel, handleModChange, handleRawModChange };
   },
 });
 </script>
@@ -255,6 +257,7 @@ export default defineComponent({
     <div v-if="hasModDropdown">
       <label id="mod-select-label" class="sr-only">Set or key selection</label>
       <q-btn-dropdown
+        v-model="modDropdownOpen"
         class="full-width"
         dense
         outline
@@ -262,6 +265,7 @@ export default defineComponent({
         color="primary"
         :label="currentModLabel"
         aria-haspopup="listbox"
+        :aria-expanded="modDropdownOpen"
         aria-labelledby="mod-select-label"
       >
         <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select set or key">

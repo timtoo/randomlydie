@@ -273,6 +273,8 @@ export default defineComponent({
             die.value.zerobase = false;
             die.value.exclusive = false;
           }
+          // Reset modifier to default when switching modes
+          die.value.mod = 0;
           if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
             new_mode.configureDie(die.value, new_mode.default_max);
           }

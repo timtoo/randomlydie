@@ -272,7 +272,7 @@ class ModeNote extends ModeBase {
   };
   quick: number[] = [];
   _quick_label: string[] = [];
-  default_max = 2;
+  default_max = encodeNoteQuick(7, 0); // C Scale
   number_base = 0;
 
   constructor() {
