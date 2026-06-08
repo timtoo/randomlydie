@@ -34,6 +34,10 @@ class ModeBase {
     die.min = die.zerobase ? 0 : 1;
   }
 
+  getQuickValue(die: Die): number {
+    return die.max;
+  }
+
   // generate quick_label as needed
   get quick_label() {
     const length_diff = this.quick.length - this._quick_label.length;
@@ -282,6 +286,10 @@ class ModeEmoji extends ModeBase {
     return EMOJI_RANGES.find((r) => countEmojiRange(r) === count);
   }
 
+  private _findRangeByBounds(min: number, max: number): EmojiRange | undefined {
+    return EMOJI_RANGES.find((r) => r.start === min && r.end === max);
+  }
+
   configureDie(die: Die, quickValue: number): void {
     const range = this._findRangeByCount(quickValue);
     if (range) {
@@ -293,6 +301,14 @@ class ModeEmoji extends ModeBase {
       die.max = quickValue;
       die.min = 0;
     }
+  }
+
+  getQuickValue(die: Die): number {
+    const range = this._findRangeByBounds(die.min, die.max);
+    if (range) {
+      return countEmojiRange(range);
+    }
+    return die.max;
   }
 
   formatValue(v: number): string {

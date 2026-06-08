@@ -467,7 +467,7 @@ export default defineComponent({
     <div id="quick-roll" class="q-mt-md" v-if="!options?.hideQuick">
       <quick-buttons
         :mode="mode"
-        :current="die.max"
+        :current="MODE[mode].getQuickValue(die)"
         @on-quick-button="(v:number) => handleQuickButton(v)"
       ></quick-buttons>
     </div>
