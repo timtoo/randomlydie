@@ -42,6 +42,7 @@ function letsroll(
 
   rolls.unshift({
     label: die.toString(),
+    chipLabel: MODE[mode].chipLabel(die),
     display: MODE[mode].displayMulti(die),
     die: die,
     mode: mode,
@@ -99,6 +100,7 @@ export default defineComponent({
 
     watch(clearHistoryTrigger, () => {
       rolls.value = [];
+      lastQuickPerMode.value = {};
     });
 
     const slideshow_delay = computed(() => {
@@ -560,7 +562,7 @@ export default defineComponent({
         no-caps
         size="md"
         class="text-body1"
-        :label="'Roll history (' + new Set(rolls.map((r: rollHistoryType) => r.label + ':' + r.mode)).size + ')'"
+        :label="'Roll history (' + new Set(rolls.map((r: rollHistoryType) => r.chipLabel + ':' + r.mode)).size + ')'"
         @click="showHistory = !showHistory"
       />
     </div>

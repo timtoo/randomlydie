@@ -13,7 +13,7 @@ export default defineComponent({
   emits: ['onDieChip'],
   setup(props) {
     function makeKey(roll: rollHistoryType): string {
-      return roll.label + ':' + roll.mode;
+      return roll.chipLabel + ':' + roll.mode;
     }
 
     const filteredRolls = computed((): rollHistoryType[] => {
@@ -49,13 +49,13 @@ export default defineComponent({
         clickable
         tabindex="0"
         role="button"
-        :aria-label="'Roll ' + r.label + ' in ' + MODE[r.mode].name + ' mode'"
+        :aria-label="'Roll ' + r.chipLabel + ' in ' + MODE[r.mode].name + ' mode'"
         @click="$emit('onDieChip', r)"
         @keydown.enter="$emit('onDieChip', r)"
         @keydown.space.prevent="$emit('onDieChip', r)"
         :icon="MODE[r.mode].material_icon"
         text-color="white"
-      >{{ r.label }}</q-chip>
+      >{{ r.chipLabel }}</q-chip>
     </template>
   </div>
   <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">

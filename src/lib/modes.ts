@@ -11,6 +11,8 @@ export enum MODE_ID {
   games = 7,
 }
 
+const MULTI_VALUE_SEPARATOR = '·';
+
 interface override_interface {
   zerobase?: boolean;
   exclusive?: boolean;
@@ -100,6 +102,19 @@ class ModeBase {
     return this.quick_label_prefix + this.displayValue(v, max, mod);
   }
 
+  // label to show on history chips; falls back to die notation for numeric modes
+  chipLabel(die: Die): string {
+    if (this.number_base !== 0) {
+      return die.toString();
+    }
+    const quickValue = this.getQuickValue(die);
+    const index = this.quick.indexOf(quickValue);
+    if (index >= 0 && this._quick_label[index]) {
+      return this._quick_label[index];
+    }
+    return die.toString();
+  }
+
   // if given multiple values, how to display them? depends on if they have a number_base != 0
   displayMulti(die: Die): string {
     if (this.number_base && die.getThrow().length > 1) {
@@ -118,7 +133,7 @@ class ModeBase {
 
   // alternate display without total
   _displayMultiValsOnly(die: Die): string {
-    return die.getThrow().map((s) => this.historyValue(s, die.max, die.mod)).join('/');
+    return die.getThrow().map((s) => this.historyValue(s, die.max, die.mod)).join(MULTI_VALUE_SEPARATOR);
   }
 }
 
