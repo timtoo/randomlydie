@@ -32,7 +32,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <q-dialog v-model="localOpen">
+  <q-dialog v-model="localOpen" aria-label="Choose generator mode">
     <q-card style="min-width: 280px; max-width: 90vw">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">Choose Mode</div>
@@ -54,6 +54,8 @@ export default defineComponent({
               style="min-height: 5rem; border-radius: 0.5rem"
               :color="mode === m.id ? 'secondary' : 'primary'"
               @click="select(m.id)"
+              :aria-label="m.name"
+              :aria-pressed="mode === m.id"
             >
               <q-icon :name="m.material_icon" size="sm" />
               <div class="text-caption q-mt-xs">{{ m.name }}</div>
