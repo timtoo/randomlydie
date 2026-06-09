@@ -419,7 +419,7 @@ export default defineComponent({
   <q-page class="rr-page-container q-pb-xl">
     <main role="main">
     <!-- Hero Result Display -->
-    <div id="result-display" class="rr-hero-display q-mt-md" role="region" aria-label="Roll result">
+    <div id="result-display" class="rr-hero-display" role="region" aria-label="Roll result">
       <template v-if="lastRoll">
         <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="lastRoll.time.getTime() + '-' + idx">
           <roll-display
