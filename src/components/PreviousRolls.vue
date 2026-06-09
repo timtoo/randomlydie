@@ -1,6 +1,6 @@
 <!-- Display list of previous roll results, as a string. -->
 <script lang="ts">
-import { defineComponent, computed, PropType, ref, onMounted } from 'vue';
+import { defineComponent, computed, PropType, ref, onMounted, watch, nextTick } from 'vue';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'components/models';
 import { MODE } from 'src/lib/modes';
@@ -52,9 +52,22 @@ export default defineComponent({
       scrollRef.value?.scrollBy({ left: 100, behavior: 'smooth' });
     }
 
+    function scrollToStart() {
+      scrollRef.value?.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+
+    function scrollToEnd() {
+      const el = scrollRef.value;
+      if (el) el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+    }
+
     onMounted(() => {
       updateScrollState();
       scrollRef.value?.addEventListener('scroll', updateScrollState, { passive: true });
+    });
+
+    watch(previousRolls, () => {
+      nextTick(updateScrollState);
     });
 
     function copySingle(text: string) {
@@ -84,13 +97,24 @@ export default defineComponent({
       copySingle(fullString.value);
     }
 
-    return { previousRolls, fullString, copySingle, copyAll, scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight };
+    return { previousRolls, fullString, copySingle, copyAll, scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight, scrollToStart, scrollToEnd };
   },
 });
 </script>
 
 <template>
   <div v-if="previousRolls.length" class="row items-center no-wrap">
+    <q-btn
+      v-if="canScrollLeft"
+      flat
+      dense
+      round
+      icon="skip_previous"
+      color="primary"
+      @click="scrollToStart"
+      class="q-mr-xs"
+      aria-label="Skip to start of previous rolls"
+    />
     <q-btn
       v-if="canScrollLeft"
       flat
@@ -137,6 +161,17 @@ export default defineComponent({
       @click="scrollRight"
       class="q-ml-xs"
       aria-label="Scroll previous rolls right"
+    />
+    <q-btn
+      v-if="canScrollRight"
+      flat
+      dense
+      round
+      icon="skip_next"
+      color="primary"
+      @click="scrollToEnd"
+      class="q-ml-xs"
+      aria-label="Skip to end of previous rolls"
     />
   </div>
   <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">

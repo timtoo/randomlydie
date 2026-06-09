@@ -95,6 +95,7 @@ export default defineComponent({
     const modeDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
+    const lastQuickPerMode = useStorage<Record<string, number>>('rd-last-quick', {});
 
     watch(clearHistoryTrigger, () => {
       rolls.value = [];
@@ -226,6 +227,7 @@ export default defineComponent({
 
     function handleQuickButton(v: number) {
       MODE[mode.value].configureDie(die.value, v);
+      lastQuickPerMode.value[mode.value] = v;
       bigButtonClick();
     }
 
@@ -279,6 +281,7 @@ export default defineComponent({
     function handleChipClick(v: rollHistoryType) {
       die.value = v.die.clone();
       mode.value = v.mode;
+      lastQuickPerMode.value[v.mode] = MODE[v.mode].getQuickValue(v.die);
       bigButtonClick();
     }
 
@@ -295,8 +298,16 @@ export default defineComponent({
           }
           // Reset modifier to default when switching modes
           die.value.mod = 0;
-          if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
-            new_mode.configureDie(die.value, new_mode.default_max);
+          // For set-based modes, always reconfigure since previous mode's
+          // min/max values are not meaningful in the new mode's context.
+          const storedQuick = lastQuickPerMode.value[m];
+          const quickToUse = storedQuick !== undefined && new_mode.quick.includes(storedQuick)
+            ? storedQuick
+            : new_mode.default_max;
+          if (m === MODE_ID.emoji || m === MODE_ID.games || m === MODE_ID.note) {
+            new_mode.configureDie(die.value, quickToUse);
+          } else if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
+            new_mode.configureDie(die.value, quickToUse);
           }
           mode.value = m;
           if (reroll) bigButtonClick();
