@@ -138,6 +138,23 @@ export default defineComponent({
       return rolls.value.length > 0 ? rolls.value[0].die.dice : 0;
     });
 
+    const showRollTotal = computed(() => {
+      if (!lastRoll.value) return false;
+      const m = MODE[lastRoll.value.mode];
+      // Show total for numeric modes when there are multiple dice,
+      // or when modifiers/multipliers/repeats make the result differ from raw sum
+      if (!m.number_base) return false;
+      const d = lastRoll.value.die;
+      const throws = d.getThrow();
+      const rawSum = throws.reduce((a, b) => a + b, 0);
+      return throws.length > 1 || d.getResult() !== rawSum;
+    });
+
+    const rollTotal = computed(() => {
+      if (!lastRoll.value) return 0;
+      return lastRoll.value.die.getResult();
+    });
+
     function handleURLChange() {
       console.log('route params', route.params);
       const modeParam = Array.isArray(route.params.mode)
@@ -379,6 +396,8 @@ export default defineComponent({
       MODE,
       lastRoll,
       dice_count,
+      showRollTotal,
+      rollTotal,
       lastUpdate,
       mode,
       die,
@@ -442,9 +461,20 @@ export default defineComponent({
       </template>
     </div>
 
+    <!-- Roll Total -->
+    <div
+      v-if="showRollTotal"
+      class="text-center q-mt-sm text-h5"
+      style="color: var(--rr-text)"
+      aria-live="polite"
+    >
+      <span class="text-body1" style="color: var(--rr-text-muted)">Total:</span>
+      {{ rollTotal }}
+    </div>
+
     <!-- Settings Summary Bar -->
     <div
-      class="text-center q-mt-sm rr-settings-bar text-body1 row justify-center items-center q-gutter-x-sm"
+      class="text-center q-mt-sm rr-settings-bar row justify-center items-center q-gutter-x-sm"
     >
       <span
         class="rr-settings-item cursor-pointer"

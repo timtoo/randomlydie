@@ -126,6 +126,11 @@ body.body--light .rr-qb {
 
 .rr-settings-bar {
   user-select: none;
+  font-size: 1.125rem;
+
+  .q-icon {
+    font-size: 1em !important;
+  }
 }
 
 .rr-settings-item {
