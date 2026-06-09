@@ -213,6 +213,11 @@ body.body--light .rr-qb {
   outline-offset: 2px;
 }
 
+.q-field--outlined.q-field--focused .q-field__control {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
+}
+
 body.body--dark .rr-big-btn.q-btn--outline::before {
   border-color: $primary !important;
 }

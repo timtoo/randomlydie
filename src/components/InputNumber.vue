@@ -94,6 +94,7 @@ export default defineComponent({
         icon="remove"
         :dense="dense"
         @click="onDecrement"
+        aria-label="Decrease"
       />
     </template>
     <template v-slot:append>
@@ -104,6 +105,7 @@ export default defineComponent({
         icon="add"
         :dense="dense"
         @click="onIncrement"
+        aria-label="Increase"
       />
     </template>
   </q-input>
