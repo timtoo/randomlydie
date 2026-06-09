@@ -49,7 +49,7 @@ export default defineComponent({
         <q-btn icon="close" flat round dense v-close-popup aria-label="Close mode picker" />
       </q-card-section>
       <q-card-section>
-        <div class="text-subtitle2 text-grey-7 q-mb-sm">Numbers</div>
+        <div class="text-subtitle2 q-mb-sm" style="color: var(--rr-text-muted);">Numbers</div>
         <div class="row q-col-gutter-sm">
           <div
             v-for="m in numberModes"
@@ -72,8 +72,8 @@ export default defineComponent({
             </q-btn>
           </div>
         </div>
-        <q-separator class="q-my-md" />
-        <div class="text-subtitle2 text-grey-7 q-mb-sm">Things</div>
+        <br />
+        <div class="text-subtitle2 q-mb-sm" style="color: var(--rr-text-muted);">Things</div>
         <div class="row q-col-gutter-sm">
           <div
             v-for="m in thingModes"

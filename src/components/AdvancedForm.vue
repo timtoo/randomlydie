@@ -327,7 +327,7 @@ export default defineComponent({
       </div>
     </div>
     <div class="row items-center justify-center q-gutter-x-sm">
-      <div class="text-caption text-grey-7" style="font-family: monospace; letter-spacing: 0.05em;">
+      <div class="text-caption" style="font-family: monospace; letter-spacing: 0.05em; color: var(--rr-text-muted);">
         {{ notationDisplay }}
       </div>
       <q-btn
