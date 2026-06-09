@@ -85,7 +85,7 @@ export default defineComponent({
     const mode = ref(MODE_ID.dice);
     const console_active = ref(false);
     const console_error = ref('');
-    const ttopen = ref(false);
+    const aboutDialogOpen = ref(false);
     const afrender = ref(0);
     const slideshow = ref(false);
     const router = useRouter();
@@ -403,7 +403,7 @@ export default defineComponent({
       die,
       rolls,
       afrender,
-      ttopen,
+      aboutDialogOpen,
       console_active,
       console_error,
       slideshow,
@@ -580,39 +580,46 @@ export default defineComponent({
         round
         color="primary"
         icon="help_outline"
-        aria-label="Tips and tricks"
-        @click="ttopen = !ttopen"
-      >
-        <q-tooltip v-model="ttopen" :hide-delay="1550">
-          <div class="text-body1">
-            <b>Tips and tricks!</b>
-            <ul>
-              <li>
+        aria-label="About"
+        @click="aboutDialogOpen = true"
+      />
+      <q-dialog v-model="aboutDialogOpen" aria-label="About RandomlyDie">
+        <q-card style="min-width: 280px; max-width: 90vw">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Randomly/Die</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup aria-label="Close about dialog" />
+          </q-card-section>
+          <q-card-section>
+            <div class="text-body2 q-mb-md" style="color: var(--rr-text-muted)">Version {{ version }}</div>
+            <div class="text-body1 q-mb-md">
+              <b>Tips and tricks!</b>
+            </div>
+            <ul class="text-body2 q-pl-md" style="margin-top: 0">
+              <li class="q-mb-xs">
                 Click/tap the top box, or the bottom right button, for
-                <b>new number(s)</b>. Too obvious?
+                <b>new number(s)</b>.
               </li>
-              <li>
-                Long press (click and hold) random item to copy to
-                <b>clipboard</b> (or use the copy button, or click previous rolls!)
+              <li class="q-mb-xs">
+                Long press a random result to copy to <b>clipboard</b>.
               </li>
-              <li class="desktop-only">
-                Hot keys! Min: N/n, Max: X/x, # 'dice': D/d, roll: Enter/Space
+              <li class="q-mb-xs desktop-only">
+                Hot keys: N/n (min), X/x (max), D/d (dice), Space/Enter (roll).
               </li>
-              <li>
-                Use hex mode
-                <span style="font-family: monospace">x1000000</span> button for
-                random HTML colour codes (or
-                <span style="font-family: monospace">3d256xz</span> if you
-                prefer!)
+              <li class="q-mb-xs">
+                Use hex mode <code>x1000000</code> for random HTML colour codes.
               </li>
-              <li>Use five dice to play Yahtzee?</li>
-              <li class="desktop-only" >` for console. Is that crazy?</li>
+              <li class="q-mb-xs">Use five dice to play Yahtzee?</li>
+              <li class="desktop-only">Backtick <code>`</code> opens the console.</li>
             </ul>
-            <div style="float: right">v{{ version }}</div>
-            <i>Use your randomness for good.</i>
-          </div>
-        </q-tooltip>
-      </q-btn>
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="text-caption" style="color: var(--rr-text-muted)">
+            <div>Licensed under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" style="color: inherit; text-decoration: underline;">PolyForm Noncommercial License 1.0.0</a>.</div>
+            <div class="q-mt-xs"><i>Use your randomness for good.</i></div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
       <q-btn
         flat
         round

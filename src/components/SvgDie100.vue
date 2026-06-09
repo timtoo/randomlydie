@@ -12,16 +12,17 @@ export default defineComponent({
 </script>
 
 <template>
-  <svg viewBox="13 18 74 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die100-desc">
+  <svg viewBox="8 8 84 84" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="die100-desc">
     <desc id="die100-desc">Hundred-sided die showing {{ value }}</desc>
     <g :stroke-width="strokeWidth">
       <!--
         D100 face: a regular hexagon.
         Corners rounded with r≈4.
         Even values: flat top/bottom. Odd values: rotated 30°.
+        Scaled to match d12/d20 size, with padding for rotation.
       -->
       <path
-        d="M 70.0,23.5 L 83.0,46.5 Q 85,50 83.0,53.5 L 70.0,76.5 Q 68,80 64,80 L 36,80 Q 32,80 30.0,76.5 L 17.0,53.5 Q 15,50 17.0,46.5 L 30.0,23.5 Q 32,20 36,20 L 64,20 Q 68,20 70.0,23.5 Z"
+        d="M 72,16 L 88,44 Q 90,50 88,56 L 72,84 Q 68,88 62,88 L 38,88 Q 32,88 28,84 L 12,56 Q 10,50 12,44 L 28,16 Q 32,12 38,12 L 62,12 Q 68,12 72,16 Z"
         fill="#fff"
         stroke="#000"
         stroke-linejoin="round"
