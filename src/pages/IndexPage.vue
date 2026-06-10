@@ -22,6 +22,7 @@ const DEFAULT_QUANTITY = 2;
 const DEFAULT_MIN = 1;
 const DEFAULT_MAX = 6;
 const MAX_QUANTITY = 100;
+const MAX_DICE = 12;
 const MAX_HISTORY = MAX_QUANTITY * 5;
 const { lastRollDisplay } = useLastRoll();
 const { clearHistoryTrigger } = useClearHistory();
@@ -265,7 +266,7 @@ export default defineComponent({
     }
 
     function incrementDice() {
-      if (die.value.dice < 10) {
+      if (die.value.dice < MAX_DICE) {
         die.value.dice++;
         advancedUpdate([die.value.min, die.value.max, die.value.dice]);
         bigButtonClick();
