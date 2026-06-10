@@ -180,7 +180,7 @@ class ModeDice extends ModeBase {
     exclusive: false,
     min: 1,
   };
-  quick = [2, 4, 6, 8, 10, 12, 20, 100];
+  quick = [2, 4, 6, 8, 10, 12, 20, 30, 100];
   default_max = 6;
 }
 
