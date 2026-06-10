@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
 import { Die } from 'src/lib/die';
 import { rollHistoryType } from './models';
 import { MODE_ID, mode_by_name } from 'src/lib/modes';
@@ -22,6 +22,8 @@ const console_active = ref(props.active);
 const console_input = ref('');
 const error_status = ref(false);
 const console_error = ref('');
+const consoleRef = ref<HTMLDivElement | null>(null);
+const keyboardOffset = ref(0);
 
 watch(console_error, () => {
   error_status.value = console_error.value !== '';
@@ -85,6 +87,31 @@ function onSubmit() {
     });
   }
 }
+
+// Visual Viewport API to handle virtual keyboard on mobile
+function updateKeyboardOffset() {
+  if (!window.visualViewport) return;
+  const vv = window.visualViewport;
+  const layoutHeight = window.innerHeight;
+  const visualHeight = vv.height;
+  const offset = layoutHeight - visualHeight - vv.offsetTop;
+  keyboardOffset.value = Math.max(0, offset);
+}
+
+onMounted(() => {
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateKeyboardOffset);
+    window.visualViewport.addEventListener('scroll', updateKeyboardOffset);
+    updateKeyboardOffset();
+  }
+});
+
+onUnmounted(() => {
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener('resize', updateKeyboardOffset);
+    window.visualViewport.removeEventListener('scroll', updateKeyboardOffset);
+  }
+});
 </script>
 
 <template>
@@ -94,7 +121,10 @@ function onSubmit() {
     position="bottom"
     ref="console_ref"
   >
-    <div class="row console justify-center items-center">
+    <div
+      class="row console justify-center items-center"
+      :style="{ marginBottom: keyboardOffset + 'px' }"
+    >
       <div class="col-grow">
         <q-input
           placeholder="Dice hacking mode enabled..."
