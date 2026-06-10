@@ -5,6 +5,7 @@ import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'components/models';
 import { MODE_ID } from 'src/lib/modes';
 import SvgDie6 from 'components/SvgDie6.vue';
+import SvgDie8 from 'components/SvgDie8.vue';
 import SvgDie10 from 'components/SvgDie10.vue';
 import SvgDie12 from 'components/SvgDie12.vue';
 import SvgDie20 from 'components/SvgDie20.vue';
@@ -20,7 +21,7 @@ export default defineComponent({
     index: { type: Number, default: 0 },
     sparkle: { type: Boolean, default: false },
   },
-  components: { SvgDie6, SvgDie10, SvgDie12, SvgDie20, SvgDie30, SvgDie100 },
+  components: { SvgDie6, SvgDie8, SvgDie10, SvgDie12, SvgDie20, SvgDie30, SvgDie100 },
   emits: ['onRollDisplayClick'],
   setup(props) {
     const $q = useQuasar();
@@ -121,7 +122,15 @@ export default defineComponent({
     :style="{ minHeight: '9rem', borderRadius: '1rem', backgroundColor: sparkleBg, '--rr-glow-color': sparkleGlow || 'transparent' }"
     :aria-label="roll ? 'Random result: ' + displayValue : 'Tap to roll'"
   >
-    <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
+    <template v-if="roll && roll.mode === MODE_ID.dice && roll.die.max === 8">
+      <SvgDie8
+        height="6rem"
+        :value="value"
+        :alt="value + ' die'"
+        :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
+      ></SvgDie8>
+    </template>
+    <template v-else-if="roll && roll.mode === MODE_ID.dice && roll.die.max <= 9">
       <SvgDie6
         height="6rem"
         :value="value"
