@@ -97,11 +97,17 @@ export default defineComponent({
     const modeDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
-    const lastQuickPerMode = useStorage<Record<string, number>>('rd-last-quick', {});
+    const lastNotationPerMode = useStorage<Record<string, string>>('rd-last-notation', {});
+
+    function saveModeNotation(m = mode.value) {
+      if (die.value) {
+        lastNotationPerMode.value[m] = die.value.toString();
+      }
+    }
 
     watch(clearHistoryTrigger, () => {
       rolls.value = [];
-      lastQuickPerMode.value = {};
+      lastNotationPerMode.value = {};
     });
 
     const slideshow_delay = computed(() => {
@@ -230,7 +236,7 @@ export default defineComponent({
 
     function handleQuickButton(v: number) {
       MODE[mode.value].configureDie(die.value, v);
-      lastQuickPerMode.value[mode.value] = v;
+      saveModeNotation();
       bigButtonClick();
     }
 
@@ -252,6 +258,7 @@ export default defineComponent({
         die.value.max = v[1];
       }
       die.value.dice = v[2];
+      saveModeNotation();
     }
 
     function handleModUpdate(newMod: number) {
@@ -263,6 +270,7 @@ export default defineComponent({
         // For other modes, just set the raw mod value
         die.value.mod = newMod;
       }
+      saveModeNotation();
     }
 
     function incrementDice() {
@@ -284,7 +292,7 @@ export default defineComponent({
     function handleChipClick(v: rollHistoryType) {
       die.value = v.die.clone();
       mode.value = v.mode;
-      lastQuickPerMode.value[v.mode] = MODE[v.mode].getQuickValue(v.die);
+      saveModeNotation();
       bigButtonClick();
     }
 
@@ -292,25 +300,34 @@ export default defineComponent({
       if (m != mode.value) {
         const new_mode = MODE[m];
         if (new_mode) {
-          die.value = die.value.clone();
-          if (new_mode.override) {
-            Object.assign(die.value, new_mode.override);
-          } else {
-            die.value.zerobase = false;
-            die.value.exclusive = false;
+          const storedNotation = lastNotationPerMode.value[m];
+          let restored = false;
+          if (storedNotation) {
+            try {
+              die.value = new Die(storedNotation);
+              restored = true;
+            } catch {
+              // fall through to default initialization
+            }
           }
-          // Reset modifier to default when switching modes
-          die.value.mod = 0;
-          // For set-based modes, always reconfigure since previous mode's
-          // min/max values are not meaningful in the new mode's context.
-          const storedQuick = lastQuickPerMode.value[m];
-          const quickToUse = storedQuick !== undefined && new_mode.quick.includes(storedQuick)
-            ? storedQuick
-            : new_mode.default_max;
-          if (m === MODE_ID.emoji || m === MODE_ID.games || m === MODE_ID.note) {
-            new_mode.configureDie(die.value, quickToUse);
-          } else if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
-            new_mode.configureDie(die.value, quickToUse);
+          if (!restored) {
+            die.value = die.value.clone();
+            if (new_mode.override) {
+              Object.assign(die.value, new_mode.override);
+            } else {
+              die.value.zerobase = false;
+              die.value.exclusive = false;
+            }
+            // Reset modifier to default when switching modes
+            die.value.mod = 0;
+            // For set-based modes, always reconfigure since previous mode's
+            // min/max values are not meaningful in the new mode's context.
+            const quickToUse = new_mode.default_max;
+            if (m === MODE_ID.emoji || m === MODE_ID.games || m === MODE_ID.note) {
+              new_mode.configureDie(die.value, quickToUse);
+            } else if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
+              new_mode.configureDie(die.value, quickToUse);
+            }
           }
           mode.value = m;
           if (reroll) bigButtonClick();
@@ -324,6 +341,13 @@ export default defineComponent({
       die.value.zerobase = !die.value.zerobase;
       die.value.min = die.value.zerobase ? 0 : 1;
       if (die.value.max <= die.value.min) die.value.max = die.value.min + 1;
+      saveModeNotation();
+    }
+
+    function handleExclusiveToggle() {
+      if (mode.value === MODE_ID.emoji || mode.value === MODE_ID.games) return;
+      die.value.exclusive = !die.value.exclusive;
+      saveModeNotation();
     }
 
     function handleReset() {
@@ -340,6 +364,7 @@ export default defineComponent({
     function handleConsoleSubmit(data: rollHistoryType) {
       if (data.die !== undefined) die.value = data.die as Die;
       if (data.mode !== undefined) mode.value = data.mode as number;
+      saveModeNotation();
       bigButtonClick();
     }
 
@@ -432,6 +457,7 @@ export default defineComponent({
       handleQuickButton,
       handleChipClick,
       handleZeroBaseToggle,
+      handleExclusiveToggle,
       handleModeChange,
       handleReset,
       advancedUpdate,
@@ -671,7 +697,7 @@ export default defineComponent({
       :mode="mode"
       @advanced-update="(v:number[]) => advancedUpdate(v)"
       @base-toggle="handleZeroBaseToggle"
-      @exclusive-toggle="() => { if (mode !== MODE_ID.emoji && mode !== MODE_ID.games) die.exclusive = !die.exclusive; }"
+      @exclusive-toggle="handleExclusiveToggle"
       @mode-change="(m:number) => handleModeChange(m, false)"
       @mod-update="(v:number) => handleModUpdate(v)"
       @close="bigButtonClick"
