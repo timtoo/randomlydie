@@ -356,10 +356,10 @@ export default defineComponent({
         toggleSlideshow();
       }
       console_active.value = false;
-      die.value = new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY);
-      mode.value = MODE_ID.dice;
+      rolls.value = [];
+      lastNotationPerMode.value = {};
       reset_confirm_dialog.value = false;
-      router.push({ path: '/' });
+      window.location.href = router.resolve({ path: '/' }).href;
     }
 
     function handleConsoleSubmit(data: rollHistoryType) {
