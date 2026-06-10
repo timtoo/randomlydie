@@ -161,8 +161,9 @@ export default defineComponent({
     });
 
     const rollTotal = computed(() => {
-      if (!lastRoll.value) return 0;
-      return lastRoll.value.die.getResult();
+      if (!lastRoll.value) return '';
+      const m = MODE[lastRoll.value.mode];
+      return m.formatValue(lastRoll.value.die.getResult());
     });
 
     function handleURLChange() {
