@@ -361,7 +361,19 @@ export default defineComponent({
       lastNotationPerMode.value = {};
       reset_confirm_dialog.value = false;
       const targetMode = props.options?.default_mode ?? MODE_ID.dice;
-      handleModeChange(targetMode, false);
+      // Force reset by temporarily switching away and back, or directly reset die
+      const targetModeObj = MODE[targetMode];
+      die.value = new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY);
+      if (targetModeObj.override) {
+        Object.assign(die.value, targetModeObj.override);
+      }
+      const quickToUse = targetModeObj.default_max;
+      if (targetMode === MODE_ID.emoji || targetMode === MODE_ID.games || targetMode === MODE_ID.note) {
+        targetModeObj.configureDie(die.value, quickToUse);
+      } else {
+        targetModeObj.configureDie(die.value, quickToUse);
+      }
+      mode.value = targetMode;
       router.push({ path: '/' });
     }
 
