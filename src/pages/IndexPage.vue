@@ -84,9 +84,10 @@ export default defineComponent({
     const die = ref(new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY));
     const rolls = ref(_rolls);
     const lastUpdate = ref(new Date());
-    const mode = ref(MODE_ID.dice);
+    const mode = ref(props.options?.default_mode ?? MODE_ID.dice);
     const console_active = ref(false);
     const console_error = ref('');
+    const preConsoleMode = ref(MODE_ID.default);
     const aboutDialogOpen = ref(false);
     const afrender = ref(0);
     const slideshow = ref(false);
@@ -359,7 +360,9 @@ export default defineComponent({
       rolls.value = [];
       lastNotationPerMode.value = {};
       reset_confirm_dialog.value = false;
-      window.location.href = router.resolve({ path: '/' }).href;
+      const targetMode = props.options?.default_mode ?? MODE_ID.dice;
+      handleModeChange(targetMode, false);
+      router.push({ path: '/' });
     }
 
     function handleConsoleSubmit(data: rollHistoryType) {
@@ -379,8 +382,19 @@ export default defineComponent({
       }
     });
 
-    onKeyStroke('`', () => (console_active.value = true));
-    onKeyStroke('Escape', () => (console_active.value = false));
+    onKeyStroke('`', () => {
+      if (!console_active.value) {
+        preConsoleMode.value = mode.value;
+        handleModeChange(MODE_ID.default, false);
+        console_active.value = true;
+      }
+    });
+    onKeyStroke('Escape', () => {
+      if (console_active.value) {
+        console_active.value = false;
+        handleModeChange(preConsoleMode.value, false);
+      }
+    });
 
     function shouldIgnoreHotkey() {
       if (console_active.value || settingsDialogOpen.value) return true;
@@ -434,6 +448,7 @@ export default defineComponent({
 
     return {
       MODE,
+      MODE_ID,
       lastRoll,
       dice_count,
       showRollTotal,
@@ -446,6 +461,7 @@ export default defineComponent({
       aboutDialogOpen,
       console_active,
       console_error,
+      preConsoleMode,
       slideshow,
       slideshow_delay,
       version,
@@ -456,6 +472,7 @@ export default defineComponent({
       showHistory,
       bigButtonClick,
       handleQuickButton,
+      matrixRainActive: true,
       handleChipClick,
       handleZeroBaseToggle,
       handleExclusiveToggle,
@@ -667,7 +684,7 @@ export default defineComponent({
         color="primary"
         icon="computer"
         aria-label="Toggle console"
-        @click="console_active = !console_active"
+        @click="console_active ? (console_active = false, handleModeChange(preConsoleMode, false)) : (preConsoleMode = mode, handleModeChange(MODE_ID.default, false), console_active = true)"
       />
       <q-btn
         flat
@@ -717,12 +734,12 @@ export default defineComponent({
       :history="rolls"
       :die="die"
       :mode="mode"
-      @console-close="console_active = false"
+      @console-close="console_active = false; handleModeChange(preConsoleMode, false)"
       @submit="handleConsoleSubmit"
     ></DieConsole>
 
     <!-- FAB -->
-    <div :style="fabStyle">
+    <div v-if="!console_active" :style="fabStyle">
       <q-btn
         fab
         :icon="slideshow ? 'stop' : MODE[mode].material_icon"

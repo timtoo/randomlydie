@@ -137,12 +137,13 @@ function onSubmit() {
 
 <style lang="scss">
 .console {
-  color: $text-default;
-  background-color: $paper;
+  color: var(--rr-text);
+  background-color: var(--rr-paper);
   border-radius: 4px;
   margin: 1em;
   padding: 1em;
   width: 80vw;
-  border: 1px solid $background;
+  border: 1px solid var(--rr-border);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
 }
 </style>
