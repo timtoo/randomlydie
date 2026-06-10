@@ -225,6 +225,7 @@ export default defineComponent({
       ) {
         updateURL(false);
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function fabClick() {
@@ -232,7 +233,6 @@ export default defineComponent({
         toggleSlideshow();
       } else {
         bigButtonClick();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
