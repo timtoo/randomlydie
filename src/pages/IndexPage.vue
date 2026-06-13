@@ -84,7 +84,6 @@ export default defineComponent({
     const die = ref(new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY));
     const rolls = ref(_rolls);
     const lastUpdate = ref(new Date());
-    const mode = ref(props.options?.default_mode ?? MODE_ID.dice);
     const console_active = ref(false);
     const console_error = ref('');
     const preConsoleMode = ref(MODE_ID.default);
@@ -98,17 +97,21 @@ export default defineComponent({
     const modeDialogOpen = ref(false);
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
+    const lastMode = useStorage<number>('rd-last-mode', MODE_ID.dice);
     const lastNotationPerMode = useStorage<Record<string, string>>('rd-last-notation', {});
+    const mode = ref(lastMode.value);
 
     function saveModeNotation(m = mode.value) {
       if (die.value) {
         lastNotationPerMode.value[m] = die.value.toString();
       }
+      lastMode.value = m;
     }
 
     watch(clearHistoryTrigger, () => {
       rolls.value = [];
       lastNotationPerMode.value = {};
+      lastMode.value = MODE_ID.dice;
     });
 
     const slideshow_delay = computed(() => {
@@ -193,6 +196,17 @@ export default defineComponent({
 
     onMounted(() => {
       handleURLChange();
+      const storedNotation = lastNotationPerMode.value[mode.value];
+      if (storedNotation) {
+        try {
+          die.value = new Die(storedNotation);
+        } catch {
+          // fall through to default
+        }
+      }
+      if (props.options?.rollOnStart) {
+        bigButtonClick();
+      }
     });
 
     function updateURL(replace = true) {
@@ -217,6 +231,7 @@ export default defineComponent({
     function bigButtonClick() {
       die.value = letsroll(die.value, mode.value, rolls.value);
       lastUpdate.value = rolls.value[0].time;
+      saveModeNotation();
       if (
         rolls.value.length == 1 ||
         (rolls.value.length > 1 &&
@@ -332,6 +347,7 @@ export default defineComponent({
             }
           }
           mode.value = m;
+          saveModeNotation();
           if (reroll) bigButtonClick();
         }
       }
@@ -360,7 +376,8 @@ export default defineComponent({
       rolls.value = [];
       lastNotationPerMode.value = {};
       reset_confirm_dialog.value = false;
-      const targetMode = props.options?.default_mode ?? MODE_ID.dice;
+      const targetMode = MODE_ID.dice;
+      lastMode.value = targetMode;
       // Force reset by temporarily switching away and back, or directly reset die
       const targetModeObj = MODE[targetMode];
       die.value = new Die(DEFAULT_MIN, DEFAULT_MAX, DEFAULT_QUANTITY);
@@ -374,6 +391,9 @@ export default defineComponent({
         targetModeObj.configureDie(die.value, quickToUse);
       }
       mode.value = targetMode;
+      if (props.options?.rollOnStart) {
+        bigButtonClick();
+      }
       router.push({ path: '/' });
     }
 

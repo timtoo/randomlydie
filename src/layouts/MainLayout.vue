@@ -21,7 +21,7 @@ export default defineComponent({
       enableDebug: false,
       sparkleMode: false,
       slideshow_delay: 5,
-      fab_position: 'bottom-right',
+      rollOnStart: false,
     };
     const options = useStorage('options', options_default);
     // Merge with defaults so new fields are populated on old stored data
@@ -170,6 +170,12 @@ export default defineComponent({
                   <q-toggle v-model="options.hideHistory" color="primary" />
                 </q-item-section>
                 <q-item-section>Hide roll history toggle</q-item-section>
+              </q-item>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.rollOnStart" color="primary" />
+                </q-item-section>
+                <q-item-section>Roll when app starts</q-item-section>
               </q-item>
               <q-item tag="label" v-ripple>
                 <q-item-section side>
