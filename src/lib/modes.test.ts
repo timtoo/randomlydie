@@ -53,7 +53,7 @@ describe('ModeEmoji', () => {
     expect(emoji.quick_label).toContain('Plants');
     expect(emoji.quick_label).toContain('Religion');
     expect(emoji.quick_label).toContain('Shapes');
-    expect(emoji.quick_label).toContain('Transport/Map');
+    expect(emoji.quick_label).toContain('Sports');
     expect(emoji.quick_label).toContain('Weather');
     expect(emoji.quick_label).toContain('Unicode');
   });
@@ -243,7 +243,6 @@ describe('set length uniqueness', () => {
     }
     // Document known collisions — if this changes, the fallback logic may need review
     expect(collisions.sort()).toEqual([
-      'Alchemy & Transport/Map = 128',
       'Math & Musical Symbols = 256',
     ]);
   });
