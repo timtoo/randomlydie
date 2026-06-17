@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
 import { Die } from 'src/lib/die';
-import { rollHistoryType } from './models';
+import { rollHistoryType } from '../lib/models';
 import { MODE_ID, mode_by_name } from 'src/lib/modes';
 
 interface Props {

@@ -2,7 +2,7 @@
 <script lang="ts">
 import { defineComponent, computed, PropType, ref, onMounted, watch, nextTick } from 'vue';
 import { useQuasar, copyToClipboard } from 'quasar';
-import { rollHistoryType } from 'components/models';
+import { rollHistoryType } from 'src/lib/models';
 import { MODE } from 'src/lib/modes';
 
 export default defineComponent({

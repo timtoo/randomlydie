@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, computed, PropType } from 'vue';
-import { rollHistoryType } from 'components/models';
+import { rollHistoryType } from 'src/lib/models';
 import { MODE } from 'src/lib/modes'
 
 export default defineComponent({

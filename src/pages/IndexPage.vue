@@ -1,7 +1,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { rollHistoryType } from 'components/models';
+import { rollHistoryType } from 'src/lib/models';
 import { MODE_ID, MODE, mode_by_name } from 'src/lib/modes';
 import { Die } from 'src/lib/die';
 import GeneratorSettingsDialog from 'components/GeneratorSettingsDialog.vue';
