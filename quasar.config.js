@@ -56,7 +56,8 @@ export default defineConfig(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/randomly-die',
+      //publicPath: '/randomly-die',
+      publicPath: process.env.APP_PUBLIC_PATH || '/randomly-die',
       // analyze: true,
       // env: {},
       // rawDefine: {}
