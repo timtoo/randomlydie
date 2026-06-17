@@ -1,6 +1,6 @@
-[build]
-command = "quasar build"
-cwd = "./"
+name = "randomly-die"
+pages_build_output_dir = "dist/pwa"
 
-[build.upload]
-dir = "dist/pwa"
+[site]
+bucket = "./dist/pwa"
+
