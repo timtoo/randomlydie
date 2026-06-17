@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unicode Character Parser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .display-section {
+            margin-top: 30px;
+        }
+
+        .display-label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            min-height: 80px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .character-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 32px;
+            line-height: 1;
+            user-select: none;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .character-box:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .character-box.error {
+            background: #ffebee;
+            border-color: #ef5350;
+            font-size: 12px;
+            color: #c62828;
+            cursor: not-allowed;
+        }
+
+        .character-box.error:hover {
+            border-color: #ef5350;
+            box-shadow: 0 4px 12px rgba(239, 83, 80, 0.2);
+            transform: none;
+        }
+
+        .empty-message {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            }
+
+            .character-box {
+                font-size: 24px;
+                min-height: 50px;
+            }
+
+            .label-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Unicode Character Parser</h1>
+        <p class="subtitle">Enter hexadecimal code points (e.g., 0x1FA82, 0x1F600)</p>
+
+        <div class="label-row">
+        <label for="codepoints">Hexadecimal Code Points (comma-separated):</label>
+        </div>
+        <textarea id="codepoints" placeholder="0x1FA82, 0x1F600, 0x41, 0x2764"></textarea>
+        <div>
+            <button id="randomBtn">Add Random</button>
+            <button id="clearBtn">Reset</button>
+        </div>
+
+        <div class="display-section">
+            <div class="display-label">Unicode Characters:</div>
+            <div class="characters-grid" id="charactersGrid">
+                <div class="empty-message">Enter code points above to display characters</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple Unicode name database for common characters
+        // This is a subset - you can expand it as needed
+        const unicodeNames = {
+            0x0041: 'LATIN CAPITAL LETTER A',
+            0x0061: 'LATIN SMALL LETTER A',
+            0x0030: 'DIGIT ZERO',
+            0x0020: 'SPACE',
+            0x2764: 'HEAVY BLACK HEART',
+            0x1F600: 'GRINNING FACE',
+            0x1F601: 'BEAMING FACE WITH SMILING EYES',
+            0x1F602: 'FACE WITH JOY',
+            0x1F603: 'SMILING FACE WITH OPEN MOUTH',
+            0x1F604: 'SMILING FACE WITH OPEN MOUTH AND COLD SWEAT',
+            0x1F605: 'SMILING FACE WITH OPEN MOUTH AND COLD SWEAT',
+            0x1FA82: 'MIRROR BALL',
+            0x1F4A9: 'PILE OF POO',
+            0x1F355: 'SLICE OF PIZZA',
+            0x1F36D: 'LOLLIPOP',
+            0x1F382: 'BIRTHDAY CAKE',
+            0x1F389: 'PARTY POPPER',
+            0x1F3A8: 'ARTIST PALETTE',
+        };
+
+        const textarea = document.getElementById('codepoints');
+        const charactersGrid = document.getElementById('charactersGrid');
+        const randomBtn = document.getElementById('randomBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Generate a random valid Unicode code point
+        function generateRandomCodePoint() {
+            let codePoint;
+            // Generate random code point, avoiding surrogate pair range
+            do {
+                codePoint = Math.floor(Math.random() * 0x110000);
+            } while (codePoint >= 0xD800 && codePoint <= 0xDFFF);
+
+            return '0x' + codePoint.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        // Add 20 random code points
+        function addRandomCodePoints() {
+            const randomCodePoints = [];
+            for (let i = 0; i < 100; i++) {
+                randomCodePoints.push(generateRandomCodePoint());
+            }
+
+            const currentValue = textarea.value.trim();
+            if (currentValue) {
+                textarea.value = currentValue + ', ' + randomCodePoints.join(', ');
+            } else {
+                textarea.value = randomCodePoints.join(', ');
+            }
+
+            updateDisplay();
+        }
+
+        // Fetch Unicode name from Unicode.org API
+        async function getUnicodeName(codePoint) {
+            // First check local database
+            if (unicodeNames[codePoint]) {
+                return unicodeNames[codePoint];
+            }
+
+            try {
+                const hex = codePoint.toString(16).toUpperCase().padStart(4, '0');
+                const response = await fetch(`/api/info?q=${hex}`);
+                const data = JSON.parse(await response.text());
+                return data
+            } catch (error) {
+                // Fall back if API fails
+            }
+
+            return {};
+        }
+
+        // Parse and display characters
+        function updateDisplay() {
+            const text = textarea.value.trim();
+            charactersGrid.innerHTML = '';
+
+            if (!text) {
+                charactersGrid.innerHTML = '<div class="empty-message">Enter code points above to display characters</div>';
+                return;
+            }
+
+            const codePoints = text.split(',').map(cp => cp.trim()).filter(cp => cp.length > 0);
+
+            if (codePoints.length === 0) {
+                charactersGrid.innerHTML = '<div class="empty-message">Enter code points above to display characters</div>';
+                return;
+            }
+
+            codePoints.forEach((codePointStr, index) => {
+                const box = document.createElement('div');
+                box.className = 'character-box';
+
+                try {
+                    // Parse hex code point
+                    let codePoint;
+                    if (codePointStr.toLowerCase().startsWith('0x')) {
+                        codePoint = parseInt(codePointStr.substring(2), 16);
+                    } else {
+                        codePoint = parseInt(codePointStr, 16);
+                    }
+
+                    // Validate code point
+                    if (isNaN(codePoint) || codePoint < 0 || codePoint > 0x10FFFF) {
+                        throw new Error('Invalid code point');
+                    }
+
+                    // Handle surrogate pairs and invalid ranges
+                    if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+                        throw new Error('Surrogate pair');
+                    }
+
+                    const character = String.fromCodePoint(codePoint);
+                    box.textContent = character;
+                    box.dataset.codepoint = codePointStr;
+                    box.dataset.codepointValue = codePoint;
+                    box.dataset.index = index;
+
+                    // Add click handler for deletion
+                    box.addEventListener('click', () => handleCharacterClick(codePointStr, codePoint));
+                } catch (error) {
+                    box.classList.add('error');
+                    box.textContent = `Invalid: ${codePointStr}`;
+                }
+
+                charactersGrid.appendChild(box);
+            });
+        }
+
+        // Handle character click and deletion
+        async function handleCharacterClick(codePointStr, codePoint) {
+            let data = await getUnicodeName(codePoint);
+            let message = `Delete character: ${String.fromCodePoint(codePoint)}\n\nCode Point: ${codePointStr}`;
+            if (data.name) {
+                message += `\nName: ${data.name}`;
+            }
+            if (data.category) {
+                message += `\nCategory: ${data.category}`;
+            }
+            message += '\n\nAre you sure?';
+
+            const confirmed = confirm(message);
+
+            if (confirmed) {
+                const text = textarea.value;
+                const lines = text.split('\n');
+
+                // Remove the code point from all lines
+                const updatedLines = lines.map(line => {
+                    const parts = line.split(',').filter(part => part.trim() !== codePointStr);
+                    return parts.join(',');
+                }).filter(line => line.trim().length > 0);
+
+                textarea.value = updatedLines.join('\n');
+                updateDisplay();
+            }
+        }
+
+        // Event listeners
+        textarea.addEventListener('input', updateDisplay);
+        textarea.addEventListener('change', updateDisplay);
+        randomBtn.addEventListener('click', addRandomCodePoints);
+        clearBtn.addEventListener('click', function(e) { textarea.value = "";});
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>
+
+
