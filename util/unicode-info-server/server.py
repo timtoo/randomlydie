@@ -1,3 +1,18 @@
+#!/usr/bin/python
+"""
+Python Unicode Info Server
+
+Python has built in http server, and built in unicode database. I needed quick access
+to a unicode database to sort out some of the unicode in this app. So a quick python 
+server with a hacky javascript UI was the way....
+
+Default port is 8888, but can be changed as a command line argument.
+
+http://localhost:8888/api/info?q=0041 or ?q=0x0041 or ?q=☺
+
+returns text/json information about the unicode codepoint.
+"""
+
 import http.server
 import socketserver
 import json
@@ -19,7 +34,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/api/info'):
             try:
-                # Get the 'q' parameter (e.g., /api/info?q=0041 or /api/info?q=0x0041 or /api/info?q=A)
                 query = self.path.split('q=')[1].split('&')[0]
                 
                 # Try to interpret as hex; if it fails, treat as character
