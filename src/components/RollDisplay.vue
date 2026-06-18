@@ -118,7 +118,7 @@ export default defineComponent({
     :outline="roll?.mode !== MODE_ID.dice"
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
     class="q-pa-lg rr-big-btn"
-    :class="[roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '']"
+    :class="[roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '', !roll ? 'rr-idle-shake' : '']"
     :style="{ minHeight: '9rem', borderRadius: '1rem', backgroundColor: sparkleBg, '--rr-glow-color': sparkleGlow || 'transparent' }"
     :aria-label="roll ? 'Random result: ' + displayValue : 'Tap to roll'"
   >
