@@ -171,7 +171,6 @@ export default defineComponent({
     });
 
     function handleURLChange() {
-      console.log('route params', route.params);
       const modeParam = Array.isArray(route.params.mode)
         ? route.params.mode[0]
         : route.params.mode;
@@ -385,16 +384,16 @@ export default defineComponent({
         Object.assign(die.value, targetModeObj.override);
       }
       const quickToUse = targetModeObj.default_max;
-      if (targetMode === MODE_ID.emoji || targetMode === MODE_ID.games || targetMode === MODE_ID.note) {
-        targetModeObj.configureDie(die.value, quickToUse);
-      } else {
-        targetModeObj.configureDie(die.value, quickToUse);
-      }
+      targetModeObj.configureDie(die.value, quickToUse);
       mode.value = targetMode;
       if (props.options?.rollOnStart) {
         bigButtonClick();
       }
       router.push({ path: '/' });
+    }
+
+    function handleClearHistory() {
+      clearHistoryTrigger.value++;
     }
 
     function handleConsoleSubmit(data: rollHistoryType) {
@@ -510,6 +509,7 @@ export default defineComponent({
       handleExclusiveToggle,
       handleModeChange,
       handleReset,
+      handleClearHistory,
       advancedUpdate,
       handleModUpdate,
       handleConsoleSubmit,
@@ -751,6 +751,7 @@ export default defineComponent({
       @mode-change="(m:number) => handleModeChange(m, false)"
       @mod-update="(v:number) => handleModUpdate(v)"
       @close="bigButtonClick"
+      @clear-history="handleClearHistory"
     ></GeneratorSettingsDialog>
 
     <!-- Mode Picker Dialog -->

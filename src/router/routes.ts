@@ -1,5 +1,5 @@
 import { RouteRecordRaw } from 'vue-router';
-import { MODE } from 'src/lib/modes';
+import { MODE } from '../lib/modes';
 
 const mode_name_str = Object.values(MODE)
   .map((e) => e.name_stripped.slice(0, 3) + '[^/]*')
@@ -8,11 +8,11 @@ const mode_name_str = Object.values(MODE)
 const routes: RouteRecordRaw[] = [
   {
     path: `/:mode(${mode_name_str})*/:die*`,
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('../layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'modes', component: () => import('pages/ModePage.vue') },
-      { path: 'test', component: () => import('pages/TestPage.vue') },
+      { path: '', component: () => import('../pages/IndexPage.vue') },
+      { path: 'modes', component: () => import('../pages/ModePage.vue') },
+      { path: 'test', component: () => import('../pages/TestPage.vue') },
     ],
   },
 

@@ -8,9 +8,22 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { defineConfig } from '#q-app/wrappers';
+import { defineConfig } from '@quasar/app-vite';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(function (/* ctx */) {
+  const buildTimestamp = new Date().toISOString();
+  let gitCommitHash = 'unknown';
+  try {
+    gitCommitHash = execSync('git rev-parse --short HEAD').toString().trim();
+  } catch (e) {
+    console.warn('Could not retrieve git commit hash');
+  }
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -58,6 +71,24 @@ export default defineConfig(function (/* ctx */) {
 
       //publicPath: '/randomly-die',
       publicPath: process.env.APP_PUBLIC_PATH || '/randomly-die',
+
+      alias: {
+        src: join(__dirname, './src'),
+        components: join(__dirname, './src/components'),
+        layouts: join(__dirname, './src/layouts'),
+        pages: join(__dirname, './src/pages'),
+        composables: join(__dirname, './src/composables'),
+        lib: join(__dirname, './src/lib'),
+        assets: join(__dirname, './src/assets'),
+        boot: join(__dirname, './src/boot'),
+        css: join(__dirname, './src/css'),
+      },
+
+      define: {
+        'import.meta.env.VITE_BUILD_TIMESTAMP': JSON.stringify(buildTimestamp),
+        'import.meta.env.VITE_GIT_COMMIT_HASH': JSON.stringify(gitCommitHash),
+      },
+
       // analyze: true,
       // env: {},
       // rawDefine: {}

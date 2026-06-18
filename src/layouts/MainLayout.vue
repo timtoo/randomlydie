@@ -5,6 +5,7 @@ import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { useClearHistory } from 'src/composables/useClearHistory';
+import { BUILD_TIMESTAMP, GIT_COMMIT_HASH } from 'src/composables/useBuildInfo';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -21,6 +22,7 @@ export default defineComponent({
       enableDebug: false,
       sparkleMode: false,
       slideshow_delay: 5,
+      fab_position: 'bottom-right',
       rollOnStart: false,
     };
     const options = useStorage('options', options_default);
@@ -105,6 +107,7 @@ export default defineComponent({
       handleCopy,
       lastRollDisplay,
       router,
+      BUILD_TIMESTAMP, GIT_COMMIT_HASH
     };
   },
 });
@@ -264,6 +267,17 @@ export default defineComponent({
                 </q-item-section>
                 <q-item-section>Clear history</q-item-section>
               </q-item>
+              
+              <q-separator spaced style="background: var(--rr-border)" />
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="info" size="xs" />
+                </q-item-section>
+                <q-item-section class="text-caption text-grey-7">App build: {{ BUILD_TIMESTAMP }} ({{ GIT_COMMIT_HASH }})</q-item-section>
+              </q-item>
+
+
             </q-list>
           </q-menu>
         </q-btn>
