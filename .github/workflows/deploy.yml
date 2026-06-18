@@ -12,19 +12,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: |
           mkdir -p public/assets
           cp node_modules/sql.js/dist/sql-wasm.wasm public/assets/
-          npx quasar build -m pwa
+          pnpm quasar build -m pwa
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
