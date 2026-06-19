@@ -237,18 +237,6 @@ export default defineComponent({
 
               <q-separator spaced style="background: var(--rr-border)" />
 
-              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
-                Developer
-              </q-item-label>
-              <q-item tag="label" v-ripple>
-                <q-item-section side>
-                  <q-toggle v-model="options.enableDebug" color="red" />
-                </q-item-section>
-                <q-item-section>Enable debug</q-item-section>
-              </q-item>
-
-              <q-separator spaced style="background: var(--rr-border)" />
-
               <q-item clickable @click="router.push('/modes')">
                 <q-item-section avatar>
                   <q-icon name="list" size="xs" />
@@ -270,11 +258,21 @@ export default defineComponent({
               
               <q-separator spaced style="background: var(--rr-border)" />
 
+              <q-item-label header class="text-uppercase text-caption" style="color: var(--rr-text-muted)">
+                Developer
+              </q-item-label>
+              <q-item tag="label" v-ripple>
+                <q-item-section side>
+                  <q-toggle v-model="options.enableDebug" color="red" />
+                </q-item-section>
+                <q-item-section>Enable debug</q-item-section>
+              </q-item>
+
               <q-item>
                 <q-item-section avatar>
                   <q-icon name="info" size="xs" />
                 </q-item-section>
-                <q-item-section class="text-caption text-grey-7">App build: {{ BUILD_TIMESTAMP }} ({{ GIT_COMMIT_HASH }})</q-item-section>
+                <q-item-section class="text-caption text-grey-7">{{ BUILD_TIMESTAMP }} ({{ GIT_COMMIT_HASH }})</q-item-section>
               </q-item>
 
 
