@@ -21,6 +21,10 @@ Run everything from the repo root:
 
 There is **no standalone `typecheck` script**; TypeScript is checked during Quasar build/dev.
 
+## CI
+
+- `.github/workflows/android-build.yml` builds the Android debug APK on pushes/PRs to `main` and on manual dispatch. It uploads `android/app/build/outputs/apk/debug/app-debug.apk` as a workflow artifact named `app-debug`.
+
 ## Android / Capacitor
 
 - Capacitor config is in `capacitor.config.ts` (`webDir: 'dist/spa'`). The generated native project lives in `android/`.
