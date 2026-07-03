@@ -23,7 +23,7 @@ There is **no standalone `typecheck` script**; TypeScript is checked during Quas
 
 ## CI
 
-- `.github/workflows/android-build.yml` builds the Android debug APK on pushes/PRs to `main` and on manual dispatch. It uploads `android/app/build/outputs/apk/debug/app-debug.apk` as a workflow artifact named `app-debug`.
+- `.github/workflows/android-build.yml` builds the Android debug APK on pushes/PRs to `main` and on manual dispatch. It uses pnpm 11 (matching local development), JDK 21, and uploads `android/app/build/outputs/apk/debug/app-debug.apk` as a workflow artifact named `app-debug`.
 
 ## Android / Capacitor
 
