@@ -15,8 +15,10 @@ Run everything from the repo root:
 - `pnpm lint` — ESLint over `src*/**/*.{ts,js,cjs,mjs,vue}` (root config files are not linted by this command).
 - `pnpm format` — Prettier write over `**/*.{js,ts,vue,scss,html,md,json}` respecting `.gitignore`.
 - `pnpm deploy` — builds PWA then runs `deploy.sh`, which force-publishes `dist/pwa` to the `gh-pages` branch.
-- `pnpm android:build` — builds SPA, syncs to `android/`, and produces `android/app/build/outputs/apk/debug/app-debug.apk`.
+- `pnpm android:build` — builds SPA, syncs to `android/`, and produces `android/app/build/outputs/apk/debug/app-debug.apk`. Sets `CAPACITOR_BUILD=1` so Vite emits relative asset paths required by the Android WebView.
+- `pnpm android:build:clean` — same as above, but runs `./gradlew clean` first.
 - `pnpm android:build:release` — same as above, but builds the release APK.
+- `pnpm android:build:release:clean` — release build with `./gradlew clean` first.
 - `node version-bump.js --patch --update` — bumps `package.json` and `android/app/build.gradle` version/versionCode together.
 
 There is **no standalone `typecheck` script**; TypeScript is checked during Quasar build/dev.

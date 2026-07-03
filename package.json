@@ -13,8 +13,10 @@
     "test": "vitest run",
     "deploy": "pnpm quasar build -m pwa && bash deploy.sh",
     "postinstall": "quasar prepare",
-    "android:build": "pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleDebug",
-    "android:build:release": "pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleRelease"
+    "android:build": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleDebug",
+    "android:build:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew clean :app:assembleDebug",
+    "android:build:release": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleRelease",
+    "android:build:release:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew clean :app:assembleRelease"
   },
   "dependencies": {
     "@quasar/extras": "^2.0.2",
