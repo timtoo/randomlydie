@@ -2,6 +2,5 @@ allowBuilds:
   '@parcel/watcher': true
   esbuild: true
 ignoredBuiltDependencies: '[]'
-minimumReleaseAgeExclude:
-  - '@types/node@25.9.2'
+minimumReleaseAge: 0
 onlyBuiltDependencies: '[]'
