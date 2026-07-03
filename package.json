@@ -4,6 +4,7 @@
   "description": "Random number generator with fast UI, dice, hex, binary and secrets",
   "productName": "Randomly/Die",
   "author": "Tim Middleton <x@vaults.ca>",
+  "license": "GPL-3.0-or-later",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +12,9 @@
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "vitest run",
     "deploy": "pnpm quasar build -m pwa && bash deploy.sh",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "android:build": "pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleDebug",
+    "android:build:release": "pnpm quasar build && pnpm exec cap sync android && cd android && ./gradlew :app:assembleRelease"
   },
   "dependencies": {
     "@quasar/extras": "^2.0.2",
