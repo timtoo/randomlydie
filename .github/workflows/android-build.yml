@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -32,7 +33,7 @@ jobs:
           java-version: '21'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build Android debug APK
         run: pnpm android:build
