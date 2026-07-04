@@ -13,10 +13,10 @@
     "test": "vitest run",
     "deploy": "pnpm quasar build -m pwa && bash deploy.sh",
     "postinstall": "quasar prepare",
-    "android:build": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && bash scripts/fix-android-app-name.sh && cd android && ./gradlew :app:assembleDebug",
-    "android:build:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && bash scripts/fix-android-app-name.sh && cd android && ./gradlew clean :app:assembleDebug",
-    "android:build:release": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && bash scripts/fix-android-app-name.sh && cd android && ./gradlew :app:assembleRelease",
-    "android:build:release:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && bash scripts/fix-android-app-name.sh && cd android && ./gradlew clean :app:assembleRelease"
+    "android:build": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && node scripts/sync-android-version.js && bash scripts/fix-android-app-name.sh && cd android && ./gradlew :app:assembleDebug",
+    "android:build:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && node scripts/sync-android-version.js && bash scripts/fix-android-app-name.sh && cd android && ./gradlew clean :app:assembleDebug",
+    "android:build:release": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && node scripts/sync-android-version.js && bash scripts/fix-android-app-name.sh && cd android && ./gradlew :app:assembleRelease",
+    "android:build:release:clean": "CAPACITOR_BUILD=1 pnpm quasar build && pnpm exec cap sync android && node scripts/sync-android-version.js && bash scripts/fix-android-app-name.sh && cd android && ./gradlew clean :app:assembleRelease"
   },
   "dependencies": {
     "@quasar/extras": "^2.0.2",
