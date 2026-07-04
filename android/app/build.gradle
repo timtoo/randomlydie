@@ -3,6 +3,24 @@ apply plugin: 'com.android.application'
 android {
     namespace = "ca.vaults.randomlydie"
     compileSdk = rootProject.ext.compileSdkVersion
+
+    def localProps = new Properties()
+    def localPropsFile = rootProject.file('local.properties')
+    if (localPropsFile.exists()) {
+        localPropsFile.withInputStream { stream ->
+            localProps.load(stream)
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile localProps['RELEASE_STORE_FILE'] ? file(localProps['RELEASE_STORE_FILE']) : null
+            storePassword localProps['RELEASE_STORE_PASSWORD']
+            keyAlias localProps['RELEASE_KEY_ALIAS']
+            keyPassword localProps['RELEASE_KEY_PASSWORD']
+        }
+    }
+
     defaultConfig {
         applicationId "ca.vaults.randomlydie"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -20,6 +38,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
