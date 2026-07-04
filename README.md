@@ -3,15 +3,21 @@
 I just wanted some random numbers the way I wanted random numbers, so...
 _[here we are](https://randomly-die.vaults.ca)_.
 
-This is the only random number app that has Sparkle Mode.
+This is the only random number app that has Sparkle Mode. And emojis? ಠ_ಠ
 
-The app installable via browsers that fully support PWA (Chrome, Edge, Safari, etc),
-and able to be cached and run offline by others, via this url:
+The app installable via browsers that support PWA,
+via this url: https://randomly-die.vaults.ca
 
-https://randomly-die.vaults.ca
+Use randomness for good. 
 
-Have fun. Use randomness for good. Below are just some silly details
-you need not worry about.
+Below are just some silly details
+you need not worry about. Have a nice day.
+
+## Oh, the name
+
+Oh, that. Well, one of the early uses for this app was to assist in creating random characters for roll playing games and rogue-likes. These unique creatures would frequently sadly and/or hilariously die. And, you know, the singular of dice? So there, you've dragged it out of me, it's some sort of filthy rotten pun-like construct! Are you happy now? I am so (not) ashamed.
+
+That is, at least, part of the story.
 
 ## License
 
@@ -20,17 +26,17 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-See [LICENSE](LICENSE) for the full license text.
+See [LICENSE](LICENSE) for the full license text, and the source code is here: https://github.com/timtoo/randomly-die
 
-## About the console
+## About the console (?!)
 
-I had the idea of implementing a game console inspired text input mode using
-standard old Dungeons & Dragons dice notation. Just as a sort of joke. But it
-could be useful? Turns out there's a Wikipedia
+I had the idea of implementing a game [console](https://www.doomwiki.org/wiki/Console)-inspired text input mode, allowing
+standard old Dungeons & Dragons dice notation. Just as a sort of joke? But it
+could be useful?? Turns out there's a Wikipedia
 article on [dice notation](https://en.wikipedia.org/wiki/Dice_notation), which
 maybe I really should do more than glance at... but then I may find I may need a
 full blown _resursive descent parser_! Maybe just more fudges than anticipated,
-would do? Yeah, yeah, RegEx is fine.
+would do? Yeah, yeah, regex is fine.
 
 More importantly (?), is there some way to extend the notation to encapsulate
 the other settings of this generator, so I can use this notation throughout the
