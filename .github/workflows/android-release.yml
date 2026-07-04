@@ -41,7 +41,7 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > android/release.keystore
+          printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > android/app/release.keystore
           cat > android/local.properties <<EOF
           RELEASE_STORE_FILE=release.keystore
           RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD

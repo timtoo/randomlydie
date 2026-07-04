@@ -43,7 +43,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           if [ -n "$ANDROID_RELEASE_KEYSTORE" ]; then
-            printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > android/release.keystore
+            printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > android/app/release.keystore
           fi
           cat > android/local.properties <<EOF
           RELEASE_STORE_FILE=release.keystore
