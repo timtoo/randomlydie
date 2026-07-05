@@ -1,0 +1,64 @@
+name: Reproducible Build
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'Name for the uploaded artifact'
+        required: false
+        default: 'app-release-unsigned'
+        type: string
+      upload-artifact:
+        description: 'Upload the unsigned APK as an artifact'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Android release APK (unsigned)
+        env:
+          SOURCE_DATE_EPOCH: ${{ github.event.head_commit.timestamp && format('{0}', github.event.head_commit.timestamp) || '0' }}
+        run: pnpm android:build:release
+
+      - name: Strip signing for comparison
+        run: |
+          mkdir -p unsigned-apk
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk unsigned-apk/app-release-unsigned.apk || \
+          cp android/app/build/outputs/apk/release/app-release.apk unsigned-apk/app-release-unsigned.apk
+
+      - name: Upload unsigned APK
+        if: inputs.upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: unsigned-apk/app-release-unsigned.apk
+          if-no-files-found: error

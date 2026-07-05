@@ -14,10 +14,13 @@ android {
 
     signingConfigs {
         release {
-            storeFile localProps['RELEASE_STORE_FILE'] ? file(localProps['RELEASE_STORE_FILE']) : null
-            storePassword localProps['RELEASE_STORE_PASSWORD']
-            keyAlias localProps['RELEASE_KEY_ALIAS']
-            keyPassword localProps['RELEASE_KEY_PASSWORD']
+            def releaseStoreFile = localProps['RELEASE_STORE_FILE']
+            if (releaseStoreFile) {
+                storeFile file(releaseStoreFile)
+                storePassword localProps['RELEASE_STORE_PASSWORD']
+                keyAlias localProps['RELEASE_KEY_ALIAS']
+                keyPassword localProps['RELEASE_KEY_PASSWORD']
+            }
         }
     }
 
@@ -38,7 +41,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            def releaseStoreFile = localProps['RELEASE_STORE_FILE']
+            if (releaseStoreFile && file(releaseStoreFile).exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

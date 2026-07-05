@@ -1,0 +1,43 @@
+name: Reproducible Build Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-a:
+    uses: ./.github/workflows/reproducible-build.yml
+    with:
+      artifact-name: app-release-unsigned-build-a
+      upload-artifact: true
+
+  build-b:
+    needs: build-a
+    uses: ./.github/workflows/reproducible-build.yml
+    with:
+      artifact-name: app-release-unsigned-build-b
+      upload-artifact: true
+
+  compare:
+    needs: [build-a, build-b]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build A
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-unsigned-build-a
+          path: build-a
+
+      - name: Download build B
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-unsigned-build-b
+          path: build-b
+
+      - name: Compare APKs
+        run: |
+          sha256sum build-a/app-release-unsigned.apk build-b/app-release-unsigned.apk
+          diff -q build-a/app-release-unsigned.apk build-b/app-release-unsigned.apk

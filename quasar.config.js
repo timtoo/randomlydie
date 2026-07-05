@@ -16,12 +16,20 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(function (/* ctx */) {
-  const buildTimestamp = new Date().toISOString();
   let gitCommitHash = 'unknown';
+  let buildTimestamp = new Date().toISOString();
   try {
     gitCommitHash = execSync('git rev-parse --short HEAD').toString().trim();
+    const sourceDateEpoch = process.env.SOURCE_DATE_EPOCH;
+    if (sourceDateEpoch) {
+      buildTimestamp = new Date(sourceDateEpoch * 1000).toISOString();
+    } else {
+      buildTimestamp = execSync('git log -1 --format=%cI')
+        .toString()
+        .trim();
+    }
   } catch (e) {
-    console.warn('Could not retrieve git commit hash');
+    console.warn('Could not retrieve git metadata for deterministic build');
   }
 
   return {

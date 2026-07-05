@@ -1,0 +1,6 @@
+- New Games mode: Playing Cards, Mahjong, Dominoes, Chess, Xiangqi, and I Ching.
+- New Emoji mode with curated sets: Animals, Plants, Food, Sports, Religion, Weather, Math, and more.
+- Expanded Dice mode with d3, d4, d8, d10, d12, d20, d30, d100, and custom SVG faces.
+- Extended dice notation support (e.g. 3d6+2, 4x(3d6+2)).
+- New Sparkle mode, auto-roll/slideshow, roll-on-start, and customizable floating button.
+- Updated UI with light/dark themes, improved accessibility, and copy-to-clipboard.

@@ -7,23 +7,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
+  build:
+    uses: ./.github/workflows/reproducible-build.yml
+    with:
+      artifact-name: app-release-unsigned
+      upload-artifact: true
+
+  verify:
+    needs: build
+    uses: ./.github/workflows/reproducible-build.yml
+    with:
+      artifact-name: app-release-unsigned-verify
+      upload-artifact: true
+
+  compare:
+    needs: [build, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download unsigned APKs
+        uses: actions/download-artifact@v4
+        with:
+          path: apks
+          pattern: app-release-unsigned*
+
+      - name: Compare APKs
+        run: |
+          find apks -name '*.apk' -exec sha256sum {} \;
+          APK_A=$(find apks -name '*.apk' | head -n1)
+          APK_B=$(find apks -name '*.apk' | tail -n1)
+          diff -q "$APK_A" "$APK_B"
+
+  sign-and-release:
+    needs: compare
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -31,31 +50,38 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Download unsigned APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-unsigned
+          path: unsigned-apk
 
-      - name: Write release signing config
+      - name: Decode keystore and sign APK
         env:
           ANDROID_RELEASE_KEYSTORE: ${{ secrets.ANDROID_RELEASE_KEYSTORE }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > android/app/release.keystore
-          cat > android/local.properties <<EOF
-          RELEASE_STORE_FILE=release.keystore
-          RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
-          RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
-          RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
-          EOF
+          printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > release.keystore
+          UNSIGNED_APK=$(find unsigned-apk -name '*.apk' | head -n1)
+          ALIGNED_APK=unsigned-apk/app-release-aligned.apk
+          SIGNED_APK=randomly-die.apk
+          ${ANDROID_SDK_ROOT}/build-tools/*/zipalign -p -f 4 "$UNSIGNED_APK" "$ALIGNED_APK"
+          APKSIGNER=$(ls -1 ${ANDROID_SDK_ROOT}/build-tools/*/apksigner | head -n1)
+          "$APKSIGNER" sign \
+            --ks release.keystore \
+            --ks-pass pass:"$RELEASE_STORE_PASSWORD" \
+            --key-pass pass:"$RELEASE_KEY_PASSWORD" \
+            --ks-key-alias "$RELEASE_KEY_ALIAS" \
+            --out "$SIGNED_APK" \
+            "$ALIGNED_APK"
+          rm release.keystore
 
-      - name: Build Android release APK
-        run: pnpm android:build:release
-
-      - name: Rename release APK
+      - name: Rename signed APK
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          cp android/app/build/outputs/apk/release/app-release.apk "randomly-die-${VERSION}.apk"
+          mv randomly-die.apk "randomly-die-${VERSION}.apk"
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
