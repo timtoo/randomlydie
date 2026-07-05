@@ -705,7 +705,7 @@ export default defineComponent({
           </q-card-section>
           <q-separator />
           <q-card-section class="text-caption" style="color: var(--rr-text-muted)">
-            <div>Licensed under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" style="color: inherit; text-decoration: underline;">PolyForm Noncommercial License 1.0.0</a>.</div>
+            <div>This randomness is "free as in freedom" (<a href="https://en.wikipedia.org/wiki/GNU_General_Public_License" target="_blank" style="color: inherit; text-decoration: underline;">GPL 3.0-or-later</a>.</div>
             <div class="q-mt-xs"><i>Use your randomness for good.</i></div>
           </q-card-section>
         </q-card>
