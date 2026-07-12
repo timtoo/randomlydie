@@ -37,8 +37,51 @@ jobs:
           APK_B=$(find apks -name '*.apk' | tail -n1)
           diff -q "$APK_A" "$APK_B"
 
+  build-pwa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            src-pwa/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          cd src-pwa && pnpm install --frozen-lockfile
+
+      - name: Build PWA
+        run: pnpm quasar build -m pwa
+
+      - name: Zip PWA
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          cd dist/pwa
+          zip -r "../../randomly-die-pwa-${VERSION}.zip" .
+
+      - name: Upload PWA archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: randomly-die-pwa
+          path: randomly-die-pwa-*.zip
+          if-no-files-found: error
+
   sign-and-release:
-    needs: compare
+    needs: [compare, build-pwa]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,6 +98,12 @@ jobs:
         with:
           name: app-release-unsigned
           path: unsigned-apk
+
+      - name: Download PWA archive
+        uses: actions/download-artifact@v4
+        with:
+          name: randomly-die-pwa
+          path: pwa-zip
 
       - name: Decode keystore and sign APK
         env:
@@ -85,6 +134,9 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           mv randomly-die.apk "randomly-die-${VERSION}.apk"
 
+      - name: Move PWA archive to root
+        run: mv pwa-zip/randomly-die-pwa-*.zip .
+
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
@@ -92,8 +144,10 @@ jobs:
           path: randomly-die-*.apk
           if-no-files-found: error
 
-      - name: Attach APK to GitHub Release
+      - name: Attach APK and PWA to GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: randomly-die-*.apk
+          files: |
+            randomly-die-*.apk
+            randomly-die-pwa-*.zip
