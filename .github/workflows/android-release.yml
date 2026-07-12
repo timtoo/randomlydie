@@ -67,8 +67,10 @@ jobs:
           UNSIGNED_APK=$(find unsigned-apk -name '*.apk' | head -n1)
           ALIGNED_APK=unsigned-apk/app-release-aligned.apk
           SIGNED_APK=randomly-die.apk
-          ${ANDROID_SDK_ROOT}/build-tools/*/zipalign -p -f 4 "$UNSIGNED_APK" "$ALIGNED_APK"
-          APKSIGNER=$(ls -1 ${ANDROID_SDK_ROOT}/build-tools/*/apksigner | head -n1)
+          BUILD_TOOLS=$(ls -1 ${ANDROID_SDK_ROOT}/build-tools | sort -V | tail -n1)
+          ZIPALIGN=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/zipalign
+          APKSIGNER=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/apksigner
+          "$ZIPALIGN" -p -f 4 "$UNSIGNED_APK" "$ALIGNED_APK"
           "$APKSIGNER" sign \
             --ks release.keystore \
             --ks-pass pass:"$RELEASE_STORE_PASSWORD" \
