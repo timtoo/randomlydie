@@ -44,9 +44,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Set SOURCE_DATE_EPOCH
+        id: source_date
+        run: echo "epoch=$(git log -1 --format=%ct)" >> "$GITHUB_OUTPUT"
+
       - name: Build Android release APK (unsigned)
         env:
-          SOURCE_DATE_EPOCH: ${{ github.event.head_commit.timestamp && format('{0}', github.event.head_commit.timestamp) || '0' }}
+          SOURCE_DATE_EPOCH: ${{ steps.source_date.outputs.epoch }}
         run: pnpm android:build:release
 
       - name: Strip signing for comparison

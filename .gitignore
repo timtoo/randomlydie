@@ -37,4 +37,5 @@ yarn.lock
 *.njsproj
 *.sln
 
+AGENTS.md
 tmp/
