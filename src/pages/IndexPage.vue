@@ -601,12 +601,12 @@ export default defineComponent({
 
     <!-- Dice Quantity Stepper -->
     <div class="row justify-center q-mt-lg rr-quantity-stepper">
-      <q-btn flat dense color="primary" icon="remove" class="text-h6" aria-label="Decrease number of values" @click="decrementDice" />
+      <q-btn flat dense color="primary" icon="remove" class="text-h6" aria-label="Decrease number of items" @click="decrementDice" />
       <div class="rr-quantity-value text-h5 self-center">{{ die.dice }}</div>
-      <q-btn flat dense color="primary" icon="add" class="text-h6" aria-label="Increase number of values" @click="incrementDice" />
+      <q-btn flat dense color="primary" icon="add" class="text-h6" aria-label="Increase number of items" @click="incrementDice" />
     </div>
     <div class="text-center text-body2" style="color: var(--rr-text-muted)">
-      Number of values
+      Number of items
     </div>
 
     <!-- Quick Buttons -->

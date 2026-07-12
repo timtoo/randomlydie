@@ -1,17 +1,21 @@
 # Randomly/Die
 
-I just wanted some random numbers the way I wanted random numbers, so...
-_[here we are](https://randomly-die.vaults.ca)_.
+Random numbers with minimal fuss, a bunch of other stuff, and Sparkle Mode. 
 
-This is the only random number app that has Sparkle Mode. And emojis? ಠ_ಠ
+Featuring:
+- Binary, hexademical, and dice modes
+- Non-numeric modes for random cards, emoji, etc
+- Quick button sets for ranges / options
+- History for quick re-rolls, or reference
+- "Slideshow" mode for a periodic stream of numbers
+- Dice notation support
+- Light and Dark mode
 
-The app installable via browsers that support PWA,
-via this url: https://randomly-die.vaults.ca
+The app is available for android, or via web browsers (PWA) at this url: https://randomly-die.vaults.ca
 
 Use randomness for good. 
 
-Below are just some silly details
-you need not worry about. Have a nice day.
+Below are just some silly details you need not worry about. Have a nice day.
 
 ## Oh, the name
 
