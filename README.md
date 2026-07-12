@@ -11,7 +11,7 @@ Featuring:
 - Dice notation support
 - Light and Dark mode
 
-The app is available for android, or via web browsers (PWA) at this url: https://randomly-die.vaults.ca
+The app is available for android, or via web browser (PWA) at this url: https://randomly-die.vaults.ca
 
 Use randomness for good. 
 
