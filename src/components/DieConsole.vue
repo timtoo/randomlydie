@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
+import { useQuasar } from 'quasar';
+import { computed, defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
 import { Die } from 'src/lib/die';
 import { rollHistoryType } from '../lib/models';
 import { MODE_ID, mode_by_name } from 'src/lib/modes';
@@ -9,6 +10,7 @@ interface Props {
   die: Die;
   mode: MODE_ID;
   history: rollHistoryType[];
+  sparkle?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -24,6 +26,15 @@ const error_status = ref(false);
 const console_error = ref('');
 const consoleRef = ref<HTMLDivElement | null>(null);
 const keyboardOffset = ref(0);
+const $q = useQuasar();
+
+const sparkleGlow = computed(() => {
+  if (!props.sparkle || !console_active.value) return undefined;
+  const isDark = $q.dark.isActive;
+  const h = Math.floor(Math.random() * 360);
+  const alpha = isDark ? 0.8 : 0.6;
+  return `hsla(${h}, 80%, 60%, ${alpha})`;
+});
 
 watch(console_error, () => {
   error_status.value = console_error.value !== '';
@@ -123,7 +134,8 @@ onUnmounted(() => {
   >
     <div
       class="row console justify-center items-center"
-      :style="{ marginBottom: keyboardOffset + 'px' }"
+      :class="[sparkle && console_active ? 'rr-sparkle-glow' : '']"
+      :style="{ marginBottom: keyboardOffset + 'px', '--rr-glow-color': sparkleGlow || 'transparent' }"
     >
       <div class="col-grow">
         <q-input

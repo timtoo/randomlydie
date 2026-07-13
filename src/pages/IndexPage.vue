@@ -424,18 +424,24 @@ export default defineComponent({
     });
 
     onKeyStroke('`', () => {
-      if (!console_active.value) {
-        preConsoleMode.value = mode.value;
-        handleModeChange(MODE_ID.default, false);
-        console_active.value = true;
-      }
+      if (!console_active.value) openConsole();
     });
     onKeyStroke('Escape', () => {
-      if (console_active.value) {
-        console_active.value = false;
-        handleModeChange(preConsoleMode.value, false);
-      }
+      if (console_active.value) closeConsole();
     });
+
+    function openConsole() {
+      preConsoleMode.value = mode.value;
+      if (MODE[mode.value].number_base === 0) {
+        handleModeChange(MODE_ID.default, false);
+      }
+      console_active.value = true;
+    }
+
+    function closeConsole() {
+      console_active.value = false;
+      handleModeChange(preConsoleMode.value, false);
+    }
 
     function shouldIgnoreHotkey() {
       if (console_active.value || settingsDialogOpen.value) return true;
@@ -523,6 +529,8 @@ export default defineComponent({
       advancedUpdate,
       handleModUpdate,
       handleConsoleSubmit,
+      openConsole,
+      closeConsole,
       toggleSlideshow,
       incrementDice,
       decrementDice,
@@ -740,7 +748,7 @@ export default defineComponent({
         color="primary"
         icon="computer"
         aria-label="Toggle console"
-        @click="console_active ? (console_active = false, handleModeChange(preConsoleMode, false)) : (preConsoleMode = mode, handleModeChange(MODE_ID.default, false), console_active = true)"
+        @click="console_active ? closeConsole() : openConsole()"
       />
       <q-btn
         flat
@@ -791,7 +799,8 @@ export default defineComponent({
       :history="rolls"
       :die="die"
       :mode="mode"
-      @console-close="console_active = false; handleModeChange(preConsoleMode, false)"
+      :sparkle="options?.sparkleMode"
+      @console-close="closeConsole()"
       @submit="handleConsoleSubmit"
     ></DieConsole>
 
