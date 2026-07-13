@@ -246,6 +246,10 @@ body.body--light .rr-qb {
   outline-offset: 2px;
 }
 
+body.body--dark .q-dialog__backdrop {
+  background: rgba(0, 0, 0, 0.65) !important;
+}
+
 body.body--dark .rr-big-btn.q-btn--outline::before {
   border-color: $primary !important;
 }
