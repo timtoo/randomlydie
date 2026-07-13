@@ -72,8 +72,12 @@ body.body--light .rr-qb {
 }
 
 .rr-card {
-    background-color: $primary;
-    border-color: black;
+  background-color: $primary;
+  border-color: black;
+}
+
+.rr-modifier-display .q-btn {
+  border-style: dashed !important;
 }
 
 .bounce-enter-active {

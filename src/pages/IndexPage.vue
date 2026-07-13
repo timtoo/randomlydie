@@ -550,6 +550,20 @@ export default defineComponent({
             @on-roll-display-click="bigButtonClick"
           ></roll-display>
         </div>
+        <div
+          v-if="lastRoll.die.mod !== 0 && MODE[lastRoll.mode].number_base !== 0"
+          class="rr-modifier-display"
+          :key="lastRoll.time.getTime() + '-mod'"
+        >
+          <roll-display
+            :value="lastRoll.die.mod"
+            :index="lastRoll.die.getThrow().length"
+            :display="(lastRoll.die.mod > 0 ? '+' : '') + MODE[lastRoll.mode].formatValue(lastRoll.die.mod)"
+            :roll="lastRoll"
+            :sparkle="options?.sparkleMode"
+            @on-roll-display-click="bigButtonClick"
+          ></roll-display>
+        </div>
       </template>
       <template v-else>
         <roll-display

@@ -117,11 +117,18 @@ class ModeBase {
 
   // if given multiple values, how to display them? depends on if they have a number_base != 0
   displayMulti(die: Die): string {
-    if (this.number_base && die.getThrow().length > 1) {
-      return this._displayMultiWithTotal(die);
+    const throws = die.getThrow();
+    const rawSum = throws.reduce((a, b) => a + b, 0);
+    let result: string;
+    if (this.number_base && (throws.length > 1 || die.getResult() !== rawSum)) {
+      result = this._displayMultiWithTotal(die);
     } else {
-      return this._displayMultiValsOnly(die);
+      result = this._displayMultiValsOnly(die);
     }
+    if (this.number_base && die.mod !== 0) {
+      result += (die.mod > 0 ? '+' : '') + this.formatValue(die.mod);
+    }
+    return result;
   }
 
   // return formated total, with individual values in brackets after
@@ -133,7 +140,11 @@ class ModeBase {
 
   // alternate display without total
   _displayMultiValsOnly(die: Die): string {
-    return die.getThrow().map((s) => this.historyValue(s, die.max, die.mod)).join(MULTI_VALUE_SEPARATOR);
+    const separator = this.number_base ? '+' : MULTI_VALUE_SEPARATOR;
+    return die
+      .getThrow()
+      .map((s) => this.historyValue(s, die.max, die.mod))
+      .join(separator);
   }
 }
 

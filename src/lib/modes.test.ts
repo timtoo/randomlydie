@@ -36,6 +36,57 @@ describe('mode_by_name', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Numeric display
+// ---------------------------------------------------------------------------
+
+describe('ModeNormal displayMulti', () => {
+  const normal = MODE[MODE_ID.default];
+
+  test('single die without modifier shows only the die value', () => {
+    const d = new Die('1d20').roll();
+    expect(normal.displayMulti(d)).toBe(normal.formatValue(d.getThrow()[0]));
+  });
+
+  test('single die with positive modifier shows total, die and modifier', () => {
+    const d = new Die('1d20+8').roll();
+    const result = normal.displayMulti(d);
+    expect(result).toContain(normal.formatValue(d.getResult()));
+    expect(result).toContain(normal.formatValue(d.getThrow()[0]));
+    expect(result).toContain('+' + normal.formatValue(d.mod));
+  });
+
+  test('single die with negative modifier shows total, die and signed modifier', () => {
+    const d = new Die('1d20-8').roll();
+    const result = normal.displayMulti(d);
+    expect(result).toContain(normal.formatValue(d.getResult()));
+    expect(result).toContain(normal.formatValue(d.getThrow()[0]));
+    expect(result).toContain(normal.formatValue(d.mod));
+  });
+
+  test('multiple dice with modifier show total, dice and modifier', () => {
+    const d = new Die('2d10+5').roll();
+    const result = normal.displayMulti(d);
+    expect(result).toContain(normal.formatValue(d.getResult()));
+    expect(result).toContain(normal.formatValue(d.getThrow()[0]));
+    expect(result).toContain(normal.formatValue(d.getThrow()[1]));
+    expect(result).toContain('+' + normal.formatValue(d.mod));
+  });
+
+  test('numeric modes use + as the dice separator', () => {
+    const d = new Die('2d10').roll();
+    const result = normal.displayMulti(d);
+    expect(result).toContain(normal.formatValue(d.getThrow()[0]) + '+' + normal.formatValue(d.getThrow()[1]));
+    expect(result).not.toContain('·');
+  });
+
+  test('modifier is appended immediately after the closing parenthesis', () => {
+    const d = new Die('2d10+5').roll();
+    const result = normal.displayMulti(d);
+    expect(result).toMatch(/\)+\+5$/);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Emoji mode
 // ---------------------------------------------------------------------------
 
