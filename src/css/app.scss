@@ -76,8 +76,8 @@ body.body--light .rr-qb {
   border-color: black;
 }
 
-.rr-modifier-display .q-btn {
-  border-style: dashed !important;
+.rr-modifier-display .q-btn--outline::before {
+  border: 1px dashed currentColor !important;
 }
 
 .bounce-enter-active {

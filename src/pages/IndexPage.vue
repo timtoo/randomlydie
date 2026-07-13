@@ -559,7 +559,7 @@ export default defineComponent({
           ></roll-display>
         </div>
         <div
-          v-if="lastRoll.die.mod !== 0 && MODE[lastRoll.mode].number_base !== 0"
+          v-if="lastRoll.die.mod !== 0"
           class="rr-modifier-display"
           :key="lastRoll.time.getTime() + '-mod'"
         >
