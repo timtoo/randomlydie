@@ -737,7 +737,7 @@ export default defineComponent({
           </q-card-section>
           <q-separator />
           <q-card-section class="text-caption" style="color: var(--rr-text-muted)">
-            <div>This randomness is "free as in freedom" (<a href="https://en.wikipedia.org/wiki/GNU_General_Public_License" target="_blank" style="color: inherit; text-decoration: underline;">GPL 3.0-or-later</a>.</div>
+            <div><a href="https://github.com/timtoo/randomly-die">This randomness</a> is "free as in freedom" (<a href="https://en.wikipedia.org/wiki/GNU_General_Public_License" target="_blank" style="color: inherit; text-decoration: underline;">GPL 3.0-or-later</a>).</div>
             <div class="q-mt-xs"><i>Use your randomness for good.</i></div>
           </q-card-section>
         </q-card>
