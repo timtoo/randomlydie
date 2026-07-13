@@ -5,6 +5,7 @@ import { useQuasar, copyToClipboard } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { useClearHistory } from 'src/composables/useClearHistory';
+import { useResetApp } from 'src/composables/useResetApp';
 import { BUILD_TIMESTAMP, GIT_COMMIT_HASH } from 'src/composables/useBuildInfo';
 
 export default defineComponent({
@@ -32,6 +33,8 @@ export default defineComponent({
     const darkMode = useStorage<'auto' | boolean>('darkMode', 'auto');
     const router = useRouter();
     const showSettingsMenu = ref(false);
+    const resetConfirmDialog = ref(false);
+    const { resetAppTrigger } = useResetApp();
     const { lastRollDisplay } = useLastRoll();
 
     watch(
@@ -61,9 +64,32 @@ export default defineComponent({
       return darkMode.value ? 'dark_mode' : 'light_mode';
     });
 
-    function handleReset() {
+    function handleResetPreferences() {
       options.value = { ...options_default };
+      resetConfirmDialog.value = false;
       showSettingsMenu.value = false;
+      $q.notify({
+        message: 'Preferences reset',
+        icon: 'restore',
+        color: 'primary',
+        position: 'top',
+        textColor: 'background',
+      });
+    }
+
+    function handleResetApp() {
+      options.value = { ...options_default };
+      darkMode.value = 'auto';
+      resetAppTrigger.value++;
+      resetConfirmDialog.value = false;
+      showSettingsMenu.value = false;
+      $q.notify({
+        message: 'Entire app reset',
+        icon: 'restore',
+        color: 'primary',
+        position: 'top',
+        textColor: 'background',
+      });
     }
 
     const { clearHistoryTrigger } = useClearHistory();
@@ -102,7 +128,9 @@ export default defineComponent({
       darkIcon,
       showSettingsMenu,
       toggleDark,
-      handleReset,
+      handleResetPreferences,
+      handleResetApp,
+      resetConfirmDialog,
       handleClearHistory,
       handleCopy,
       lastRollDisplay,
@@ -243,7 +271,7 @@ export default defineComponent({
                 </q-item-section>
                 <q-item-section>Modes</q-item-section>
               </q-item>
-              <q-item clickable @click="handleReset">
+              <q-item clickable @click="resetConfirmDialog = true">
                 <q-item-section avatar>
                   <q-icon name="restore" size="xs" />
                 </q-item-section>
@@ -290,6 +318,20 @@ export default defineComponent({
         />
       </q-toolbar>
     </q-header>
+
+    <q-dialog v-model="resetConfirmDialog" role="alertdialog" aria-label="Confirm reset">
+      <q-card class="bg-rrinput">
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="primary" text-color="white" />
+          <span class="q-ml-sm">Reset preferences or the entire app?</span>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn outline label="Preferences only" color="primary" @click="handleResetPreferences" />
+          <q-btn outline label="Entire app" color="primary" @click="handleResetApp" />
+          <q-btn outline label="Cancel" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <q-page-container>
       <router-view :options="options" />

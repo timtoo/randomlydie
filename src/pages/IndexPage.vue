@@ -16,6 +16,7 @@ import TimerBar from 'components/TimerBar.vue';
 import { onKeyStroke, useStorage } from '@vueuse/core';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { useClearHistory } from 'src/composables/useClearHistory';
+import { useResetApp } from 'src/composables/useResetApp';
 import { version } from '../../package.json';
 
 const DEFAULT_QUANTITY = 2;
@@ -26,6 +27,7 @@ const MAX_DICE = 12;
 const MAX_HISTORY = MAX_QUANTITY * 5;
 const { lastRollDisplay } = useLastRoll();
 const { clearHistoryTrigger } = useClearHistory();
+const { resetAppTrigger } = useResetApp();
 
 function letsroll(
   die: Die,
@@ -395,6 +397,14 @@ export default defineComponent({
     function handleClearHistory() {
       clearHistoryTrigger.value++;
     }
+
+    function handleResetApp() {
+      showPrevious.value = false;
+      showHistory.value = false;
+      handleReset();
+    }
+
+    watch(resetAppTrigger, handleResetApp);
 
     function handleConsoleSubmit(data: rollHistoryType) {
       if (data.die !== undefined) die.value = data.die as Die;
