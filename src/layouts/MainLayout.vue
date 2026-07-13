@@ -271,17 +271,17 @@ export default defineComponent({
                 </q-item-section>
                 <q-item-section>Modes</q-item-section>
               </q-item>
-              <q-item clickable @click="resetConfirmDialog = true">
-                <q-item-section avatar>
-                  <q-icon name="restore" size="xs" />
-                </q-item-section>
-                <q-item-section>Reset preferences</q-item-section>
-              </q-item>
               <q-item clickable @click="handleClearHistory">
                 <q-item-section avatar>
                   <q-icon name="delete" size="xs" />
                 </q-item-section>
                 <q-item-section>Clear history</q-item-section>
+              </q-item>
+              <q-item clickable @click="resetConfirmDialog = true">
+                <q-item-section avatar>
+                  <q-icon name="restore" size="xs" />
+                </q-item-section>
+                <q-item-section>Reset</q-item-section>
               </q-item>
               
               <q-separator spaced style="background: var(--rr-border)" />

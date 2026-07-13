@@ -369,7 +369,7 @@ export default defineComponent({
       saveModeNotation();
     }
 
-    function handleReset() {
+    function handleResetRole() {
       if (slideshow.value == true) {
         toggleSlideshow();
       }
@@ -401,7 +401,7 @@ export default defineComponent({
     function handleResetApp() {
       showPrevious.value = false;
       showHistory.value = false;
-      handleReset();
+      handleResetRole();
     }
 
     watch(resetAppTrigger, handleResetApp);
@@ -518,7 +518,7 @@ export default defineComponent({
       handleZeroBaseToggle,
       handleExclusiveToggle,
       handleModeChange,
-      handleReset,
+      handleResetRole,
       handleClearHistory,
       advancedUpdate,
       handleModUpdate,
@@ -803,7 +803,7 @@ export default defineComponent({
           <span class="q-ml-sm">Clear history and reset mode?</span>
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn outline label="Do it" color="primary" @click="handleReset" />
+          <q-btn outline label="Do it" color="primary" @click="handleResetRole" />
           <q-btn outline label="Cancel" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
