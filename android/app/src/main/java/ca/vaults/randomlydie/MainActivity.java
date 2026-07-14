@@ -1,4 +1,4 @@
-package ca.vaults.randomly_die;
+package ca.vaults.randomlydie;
 
 import com.getcapacitor.BridgeActivity;
 

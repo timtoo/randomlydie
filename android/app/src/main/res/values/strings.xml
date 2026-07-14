@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Randomly/Die</string>
     <string name="title_activity_main">Randomly/Die</string>
-    <string name="package_name">ca.vaults.randomly_die</string>
-    <string name="custom_url_scheme">ca.vaults.randomly_die</string>
+    <string name="package_name">ca.vaults.randomlydie</string>
+    <string name="custom_url_scheme">ca.vaults.randomlydie</string>
 </resources>
