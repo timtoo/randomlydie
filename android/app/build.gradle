@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "ca.vaults.randomlydie"
+    namespace = "ca.vaults.randomly_die"
     compileSdk = rootProject.ext.compileSdkVersion
 
     def localProps = new Properties()
@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "ca.vaults.randomlydie"
+        applicationId "ca.vaults.randomly_die"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 60100
