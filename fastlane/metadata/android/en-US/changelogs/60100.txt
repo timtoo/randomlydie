@@ -1,0 +1,3 @@
+- Dice modifier added to display and history
+- Console restricted to numeric modes
+- Several visual fixes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.1.0 (2026-07-13)
+
+- Dice modifier added to display and history.
+- Console restricted to numeric modes.
+- Several visual fixes.
+
 ## 6.0.0 (2026-07-04)
 
 ### New modes & content
