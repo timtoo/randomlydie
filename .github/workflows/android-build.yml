@@ -58,13 +58,13 @@ jobs:
       - name: Rename release APK
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          cp android/app/build/outputs/apk/release/app-release.apk "randomly-die-test-signed-${VERSION}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk "randomlydie-test-signed-${VERSION}.apk"
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: randomly-die-test-release
-          path: randomly-die-*.apk
+          name: randomlydie-test-release
+          path: randomlydie-*.apk
           if-no-files-found: error
 
 #      - name: Upload APK

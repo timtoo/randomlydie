@@ -71,13 +71,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           cd dist/pwa
-          zip -r "../../randomly-die-pwa-${VERSION}.zip" .
+          zip -r "../../randomlydie-pwa-${VERSION}.zip" .
 
       - name: Upload PWA archive
         uses: actions/upload-artifact@v4
         with:
-          name: randomly-die-pwa
-          path: randomly-die-pwa-*.zip
+          name: randomlydie-pwa
+          path: randomlydie-pwa-*.zip
           if-no-files-found: error
 
   sign-and-release:
@@ -102,7 +102,7 @@ jobs:
       - name: Download PWA archive
         uses: actions/download-artifact@v4
         with:
-          name: randomly-die-pwa
+          name: randomlydie-pwa
           path: pwa-zip
 
       - name: Decode keystore and sign APK
@@ -115,7 +115,7 @@ jobs:
           printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > release.keystore
           UNSIGNED_APK=$(find unsigned-apk -name '*.apk' | head -n1)
           ALIGNED_APK=unsigned-apk/app-release-aligned.apk
-          SIGNED_APK=randomly-die.apk
+          SIGNED_APK=randomlydie.apk
           BUILD_TOOLS=$(ls -1 ${ANDROID_SDK_ROOT}/build-tools | sort -V | tail -n1)
           ZIPALIGN=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/zipalign
           APKSIGNER=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/apksigner
@@ -132,16 +132,16 @@ jobs:
       - name: Rename signed APK
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          mv randomly-die.apk "randomly-die-${VERSION}.apk"
+          mv randomlydie.apk "randomlydie-${VERSION}.apk"
 
       - name: Move PWA archive to root
-        run: mv pwa-zip/randomly-die-pwa-*.zip .
+        run: mv pwa-zip/randomlydie-pwa-*.zip .
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: randomly-die-release
-          path: randomly-die-*.apk
+          name: randomlydie-release
+          path: randomlydie-*.apk
           if-no-files-found: error
 
       - name: Attach APK and PWA to GitHub Release
@@ -149,5 +149,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            randomly-die-*.apk
-            randomly-die-pwa-*.zip
+            randomlydie-*.apk
+            randomlydie-pwa-*.zip

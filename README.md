@@ -11,7 +11,7 @@ Featuring:
 - Dice notation support
 - Light and Dark mode
 
-The app is available for android, or via web browser (PWA) at this url: https://randomly-die.vaults.ca
+The app is available for android, or via web browser (PWA) at this url: https://randomlydie.vaults.ca
 
 Use randomness for good. 
 
@@ -30,7 +30,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-See [LICENSE](LICENSE) for the full license text, and the source code is here: https://github.com/timtoo/randomly-die
+See [LICENSE](LICENSE) for the full license text, and the source code is here: https://github.com/timtoo/randomlydie
 
 ## About the console (?!)
 

@@ -72,8 +72,8 @@ export default defineConfig(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      //publicPath: '/randomly-die',
-      publicPath: process.env.APP_PUBLIC_PATH || '/randomly-die',
+      //publicPath: '/randomlydie',
+      publicPath: process.env.APP_PUBLIC_PATH || '/randomlydie',
 
       alias: {
         src: join(__dirname, './src'),
@@ -223,7 +223,7 @@ export default defineConfig(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'randomly-die',
+        appId: 'randomlydie',
       },
     },
 
