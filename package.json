@@ -1,11 +1,12 @@
 {
   "name": "randomlydie",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Random number generator with fast UI, dice, hex, binary and secrets",
   "productName": "Randomly/Die",
   "author": "Tim Middleton <x@vaults.ca>",
   "license": "GPL-3.0-or-later",
   "private": true,
+  "packageManager": "pnpm@11.13",
   "type": "module",
   "scripts": {
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",

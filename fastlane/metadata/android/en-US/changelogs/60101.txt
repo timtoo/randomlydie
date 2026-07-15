@@ -1,0 +1,2 @@
+- Pin pnpm via Corepack and packageManager field for reproducible F-Droid builds
+- Update GitHub Actions workflows to use Corepack

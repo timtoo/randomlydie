@@ -23,17 +23,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24.18.0
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup JDK
         uses: actions/setup-java@v4

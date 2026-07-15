@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.1.1 (2026-07-15)
+
+- Pin pnpm via Corepack and packageManager field for reproducible F-Droid builds.
+- Update GitHub Actions workflows to use Corepack.
+
 ## 6.1.0 (2026-07-13)
 
 - Dice modifier added to display and history.
