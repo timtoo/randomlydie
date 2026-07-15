@@ -114,19 +114,17 @@ jobs:
         run: |
           printf '%s' "$ANDROID_RELEASE_KEYSTORE" | base64 -d > release.keystore
           UNSIGNED_APK=$(find unsigned-apk -name '*.apk' | head -n1)
-          ALIGNED_APK=unsigned-apk/app-release-aligned.apk
           SIGNED_APK=randomlydie.apk
           BUILD_TOOLS=$(ls -1 ${ANDROID_SDK_ROOT}/build-tools | sort -V | tail -n1)
-          ZIPALIGN=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/zipalign
           APKSIGNER=${ANDROID_SDK_ROOT}/build-tools/${BUILD_TOOLS}/apksigner
-          "$ZIPALIGN" -p -f 4 "$UNSIGNED_APK" "$ALIGNED_APK"
           "$APKSIGNER" sign \
+            --alignment-preserved \
             --ks release.keystore \
             --ks-pass pass:"$RELEASE_STORE_PASSWORD" \
             --key-pass pass:"$RELEASE_KEY_PASSWORD" \
             --ks-key-alias "$RELEASE_KEY_ALIAS" \
             --out "$SIGNED_APK" \
-            "$ALIGNED_APK"
+            "$UNSIGNED_APK"
           rm release.keystore
 
       - name: Rename signed APK
