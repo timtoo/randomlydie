@@ -54,8 +54,10 @@ jobs:
             pnpm-lock.yaml
             src-pwa/pnpm-lock.yaml
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          package_json_file: package.json
 
       - name: Install dependencies
         run: |
