@@ -44,6 +44,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Remove F-Droid-scanned binaries
+        run: |
+          rm -rf node_modules/sass-embedded node_modules/.pnpm/sass-embedded*
+          rm -f node_modules/.pnpm/source-map@*/node_modules/source-map/lib/mappings.wasm
+
       - name: Set SOURCE_DATE_EPOCH
         id: source_date
         run: echo "epoch=$(git log -1 --format=%ct)" >> "$GITHUB_OUTPUT"
