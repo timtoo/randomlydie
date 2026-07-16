@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
@@ -61,14 +61,14 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk "randomlydie-test-signed-${VERSION}.apk"
 
       - name: Upload release APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: randomlydie-test-release
           path: randomlydie-*.apk
           if-no-files-found: error
 
 #      - name: Upload APK
-#        uses: actions/upload-artifact@v4
+#        uses: actions/upload-artifact@v7
 #        with:
 #          name: app-debug
 #          path: android/app/build/outputs/apk/debug/app-debug.apk
