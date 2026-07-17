@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { computed, defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { Die } from 'src/lib/die';
-import { rollHistoryType } from '../lib/models';
-import { MODE_ID, mode_by_name } from 'src/lib/modes';
+import { consoleSubmitType, rollHistoryType } from '../lib/models';
+import { MODE_ID } from 'src/lib/modes';
+import { parseDiceExpression } from 'src/lib/consoleParser';
 
 interface Props {
   active: boolean;
@@ -16,7 +17,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'submit', data: rollHistoryType): void;
+  (e: 'submit', data: consoleSubmitType): void;
   (e: 'console-close'): void;
 }>();
 
@@ -52,51 +53,33 @@ watch(console_input, () => {
 });
 
 function onSubmit() {
-  let terms = console_input.value.split(/[\s:;.,]+/);
-  let valid_die = false;
-  let valid_mode = false;
-  let new_die = props.die;
-  let new_mode = props.mode;
-
   console.log('handle console submit: ' + console_input.value);
 
-  while (terms.length > 0) {
-    if (!valid_mode) {
-      let found_mode = mode_by_name(terms[0]);
-      if (found_mode) {
-        console.log(`Console found mode: ${found_mode.id} (${terms[0]})`)
-        new_mode = found_mode.id;
-        valid_mode = true;
-        terms = terms.slice(1);
-      }
-    }
-    if (terms.length > 0) {
-      if (
-        !valid_die &&
-        (terms[0].indexOf('d') >= 0 || terms[0].indexOf('D') >= 0)
-      ) {
-        try {
-          new_die = new Die(terms[0]);
-          console_error.value = '';
-          valid_die = true;
-          console.log(`Console found die: ${new_die.toString()} (${terms[0]})`)
-        } catch {
-          console_error.value = 'Invalid dice format. Try something like: dice 3d6.';
-        }
-      }
-      terms = terms.slice(1);
-    }
+  const result = parseDiceExpression(
+    console_input.value,
+    props.mode,
+    props.die
+  );
+
+  if (!result) {
+    console_error.value = 'Invalid dice format. Try something like: dice 3d6.';
+    return;
   }
 
-  if (!console_error.value) {
-    emit('submit', {
-      die: new_die,
-      display: [],
-      mode: new_mode,
-      label: console_input.value,
-      time: new Date(),
-    });
-  }
+  console_error.value = '';
+  console.log(
+    'Console parsed:',
+    result.dice
+      .map((d) => `${MODE_ID[d.mode]}:${d.die.toString()}(${d.die.operator})`)
+      .join(', ')
+  );
+
+  emit('submit', {
+    label: console_input.value,
+    mode: result.mode,
+    dice: result.dice,
+    time: new Date()
+  });
 }
 
 // Visual Viewport API to handle virtual keyboard on mobile

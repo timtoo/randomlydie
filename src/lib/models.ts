@@ -10,6 +10,18 @@ export type rollHistoryType = {
   time: Date;         // when did this roll take place
 };
 
+export type consoleDiceEntry = {
+  die: Die;
+  mode: MODE_ID;
+};
+
+export type consoleSubmitType = {
+  label: string;      // the raw console input
+  mode: MODE_ID;      // mode of the first die (fallback for the single-die UI)
+  dice: consoleDiceEntry[]; // parsed dice, each with its resolved mode
+  time: Date;
+};
+
 // export type saveStateDictType = {
 //   [key: string]: Die;
 // };

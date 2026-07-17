@@ -46,6 +46,7 @@ class Die {
   repeat: number;
   zerobase: boolean;
   exclusive: boolean;
+  operator: string;
 
   parsedText: string;
   result: number | null;
@@ -61,6 +62,7 @@ class Die {
     repeat = DEFAULT_REPEAT,
     exclusive = false,
     zerobase = false,
+    operator = '+'
   ) {
     this.min = DEFAULT_MIN; // default minimum allowed
     this.max = max; // sides of dice
@@ -71,6 +73,7 @@ class Die {
 
     this.zerobase = zerobase; // zero is lowest instead of one
     this.exclusive = exclusive; // subtract 1 from highest dice number
+    this.operator = operator; // is the total positive or negative (for aggregation)
 
     this.result = null; // total value of last roll
     this.results = []; // [total, die 1, die 2, die 3, ...]

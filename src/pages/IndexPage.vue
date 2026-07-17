@@ -1,7 +1,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { rollHistoryType } from 'src/lib/models';
+import { rollHistoryType, consoleSubmitType } from 'src/lib/models';
 import { MODE_ID, MODE, mode_by_name } from 'src/lib/modes';
 import { Die } from 'src/lib/die';
 import GeneratorSettingsDialog from 'components/GeneratorSettingsDialog.vue';
@@ -474,9 +474,11 @@ export default defineComponent({
 
     watch(resetAppTrigger, handleResetApp);
 
-    function handleConsoleSubmit(data: rollHistoryType) {
-      if (data.die !== undefined) die.value = data.die as Die;
-      if (data.mode !== undefined) mode.value = data.mode as number;
+    function handleConsoleSubmit(data: consoleSubmitType) {
+      if (data.dice && data.dice.length > 0) {
+        die.value = data.dice[0].die;
+        mode.value = data.dice[0].mode;
+      }
       saveModeNotation();
       bigButtonClick();
     }
