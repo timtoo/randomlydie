@@ -51,6 +51,15 @@ test('two dice with plus operator', () => {
   expect(result?.dice[1].die.operator).toBe('+');
 });
 
+test('two dice with no operator', () => {
+  const result = parseDiceExpression('2d6 1d8', MODE_ID.dice, defaultDie);
+  expect(result?.dice.length).toBe(2);
+  expect(result?.dice[0].die.toString()).toBe('2d6');
+  expect(result?.dice[0].die.operator).toBe('+');
+  expect(result?.dice[1].die.toString()).toBe('1d8');
+  expect(result?.dice[1].die.operator).toBe('+');
+});
+
 test('two dice with minus operator', () => {
   const result = parseDiceExpression('2d6 - 1d8', MODE_ID.dice, defaultDie);
   expect(result?.dice.length).toBe(2);
