@@ -17,7 +17,7 @@ import { onKeyStroke, useStorage } from '@vueuse/core';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { useClearHistory } from 'src/composables/useClearHistory';
 import { useResetApp } from 'src/composables/useResetApp';
-import { computeDisplayScale } from 'src/lib/display-scale';
+import { computeEffectiveScale } from 'src/lib/display-scale';
 import { version } from '../../package.json';
 
 const DEFAULT_QUANTITY = 2;
@@ -164,7 +164,9 @@ export default defineComponent({
       return count;
     });
 
-    const displayScale = computed(() => computeDisplayScale(displayItemCount.value));
+    const displayScale = computed(() =>
+      computeEffectiveScale(displayItemCount.value, props.options?.resultScale ?? 100)
+    );
     const displayGap = computed(() => `${0.5 * displayScale.value}rem`);
 
     const showRollTotal = computed(() => {
