@@ -20,6 +20,7 @@ export default defineComponent({
     roll: { type: Object as PropType<rollHistoryType | null>, default: null },
     index: { type: Number, default: 0 },
     sparkle: { type: Boolean, default: false },
+    scale: { type: Number, default: 1 },
   },
   components: { SvgDie6, SvgDie8, SvgDie10, SvgDie12, SvgDie20, SvgDie30, SvgDie100 },
   emits: ['onRollDisplayClick'],
@@ -68,6 +69,21 @@ export default defineComponent({
       return props.roll ? props.index === props.roll.die.getThrow().length : false;
     });
 
+    const isSingleResult = computed(() => {
+      return props.roll ? props.roll.die.getThrow().length === 1 : false;
+    });
+
+    const scaledStyle = computed(() => ({
+      minHeight: `${9 * props.scale}rem`,
+      borderRadius: `${1 * props.scale}rem`,
+      padding: `${1.5 * props.scale}rem`,
+      fontSize: `${(isSingleResult.value ? 3.75 : 3) * props.scale}rem`,
+      backgroundColor: sparkleBg.value,
+      '--rr-glow-color': sparkleGlow.value || 'transparent',
+    }));
+
+    const svgHeight = computed(() => `${6 * props.scale}rem`);
+
     function handleLongPress() {
       inLongPress.value = true;
       if (props.roll) {
@@ -103,6 +119,9 @@ export default defineComponent({
       btn_ref,
       displayValue,
       isModifier,
+      isSingleResult,
+      scaledStyle,
+      svgHeight,
       sparkleBg,
       sparkleGlow,
       sparkleEmojis,
@@ -122,14 +141,14 @@ export default defineComponent({
     unelevated
     :outline="roll?.mode !== MODE_ID.dice"
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
-    class="q-pa-lg rr-big-btn"
-    :class="[roll?.die.getThrow().length === 1 ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '', !roll ? 'rr-idle-shake' : '']"
-    :style="{ minHeight: '9rem', borderRadius: '1rem', backgroundColor: sparkleBg, '--rr-glow-color': sparkleGlow || 'transparent' }"
+    class="rr-big-btn"
+    :class="[isSingleResult ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '', !roll ? 'rr-idle-shake' : '']"
+    :style="scaledStyle"
     :aria-label="roll ? 'Random result: ' + displayValue : 'Tap to roll'"
   >
     <template v-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 8">
       <SvgDie8
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
@@ -137,7 +156,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max <= 9">
       <SvgDie6
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
@@ -145,7 +164,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 10">
       <SvgDie10
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -153,7 +172,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 12">
       <SvgDie12
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -161,7 +180,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 20">
       <SvgDie20
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -169,7 +188,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 30">
       <SvgDie30
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
@@ -177,7 +196,7 @@ export default defineComponent({
     </template>
     <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 100">
       <SvgDie100
-        height="6rem"
+        :height="svgHeight"
         :value="value"
         :alt="value + ' die'"
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
