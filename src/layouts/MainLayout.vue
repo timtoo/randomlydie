@@ -25,6 +25,7 @@ export default defineComponent({
       slideshow_delay: 5,
       fab_position: 'bottom-right',
       rollOnStart: false,
+      resultScale: 100,
     };
     const options = useStorage('options', options_default);
     // Merge with defaults so new fields are populated on old stored data
@@ -213,6 +214,21 @@ export default defineComponent({
                   <q-toggle v-model="options.sparkleMode" color="primary" />
                 </q-item-section>
                 <q-item-section>Sparkle mode</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label class="text-body2">
+                    Result scale: {{ options.resultScale }}%
+                  </q-item-label>
+                  <q-slider
+                    v-model="options.resultScale"
+                    :min="75"
+                    :max="125"
+                    :step="1"
+                    color="primary"
+                    label
+                  />
+                </q-item-section>
               </q-item>
               <q-separator spaced style="background: var(--rr-border)" />
 
