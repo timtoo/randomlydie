@@ -17,6 +17,7 @@ import { onKeyStroke, useStorage } from '@vueuse/core';
 import { useLastRoll } from 'src/composables/useLastRoll';
 import { useClearHistory } from 'src/composables/useClearHistory';
 import { useResetApp } from 'src/composables/useResetApp';
+import { computeDisplayScale } from 'src/lib/display-scale';
 import { version } from '../../package.json';
 
 const DEFAULT_QUANTITY = 2;
@@ -153,6 +154,18 @@ export default defineComponent({
     const dice_count = computed(() => {
       return rolls.value.length > 0 ? rolls.value[0].die.dice : 0;
     });
+
+    const displayItemCount = computed(() => {
+      if (!lastRoll.value) return 1;
+      let count = lastRoll.value.die.getThrow().length;
+      if (lastRoll.value.die.mod !== 0 && MODE[lastRoll.value.mode].number_base !== 0) {
+        count++;
+      }
+      return count;
+    });
+
+    const displayScale = computed(() => computeDisplayScale(displayItemCount.value));
+    const displayGap = computed(() => `${0.5 * displayScale.value}rem`);
 
     const showRollTotal = computed(() => {
       if (!lastRoll.value) return false;
@@ -498,6 +511,8 @@ export default defineComponent({
       MODE_ID,
       lastRoll,
       dice_count,
+      displayScale,
+      displayGap,
       showRollTotal,
       rollTotal,
       lastUpdate,
@@ -546,7 +561,7 @@ export default defineComponent({
   <q-page class="rr-page-container q-pb-xl">
     <main role="main">
     <!-- Hero Result Display -->
-    <div id="result-display" class="rr-hero-display" role="region" aria-label="Roll result">
+    <div id="result-display" class="rr-hero-display" role="region" aria-label="Roll result" :style="{ gap: displayGap }">
       <template v-if="lastRoll">
         <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="lastRoll.time.getTime() + '-' + idx">
           <roll-display
@@ -555,6 +570,7 @@ export default defineComponent({
             :display="MODE[lastRoll.mode].displayValue(lastRoll.die.getThrow()[idx], lastRoll.die.max, lastRoll.die.mod)"
             :roll="lastRoll"
             :sparkle="options?.sparkleMode"
+            :scale="displayScale"
             @on-roll-display-click="bigButtonClick"
           ></roll-display>
         </div>
@@ -569,6 +585,7 @@ export default defineComponent({
             :display="(lastRoll.die.mod > 0 ? '+' : '') + MODE[lastRoll.mode].formatValue(lastRoll.die.mod)"
             :roll="lastRoll"
             :sparkle="options?.sparkleMode"
+            :scale="displayScale"
             @on-roll-display-click="bigButtonClick"
           ></roll-display>
         </div>
@@ -578,6 +595,7 @@ export default defineComponent({
           :value="0"
           :roll="null"
           display="Tap to Roll"
+          :scale="displayScale"
           @on-roll-display-click="bigButtonClick"
         ></roll-display>
       </template>
