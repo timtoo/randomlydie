@@ -193,7 +193,6 @@ class Die {
     );
   }
 
-<<<<<<< HEAD
   get_mod_operator(): string {
     if (this.mod !== 0) {
       return this.mod > 0 ? "+" : "-";
@@ -229,18 +228,9 @@ class Die {
 
   toString_format_mult_mod(): string {
     return this.toString_format_mult() + this.toString_format_mod()
-=======
-  // format any multiplier to how it should look as part of dice notation
-  toString_format_mult(): string {
-    let value = "";
-    if (this.mult > 1) value = MULTIPY_CHARS[0] + this.mult
-    else if (this.mult < 1)
-      value = DIVIDE_CHARS[0] + Math.round(1 / this.mult);
-    return value;
->>>>>>> 7b71e9d (fix division in console, and division in results display)
   }
 
-  // dice notation 
+  // dice notation git push --force-with-lease origin multid
   toString(compact = false): string {
     let value = `${this.dice}d${this.max}`;
 
@@ -250,15 +240,8 @@ class Die {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
     
-<<<<<<< HEAD
     value += this.toString_format_mult_mod()
  
-=======
-    if (this.mult !== 0) value += this.toString_format_mult();
-    if (this.mod > 0) value += '+' + this.mod;
-    if (this.mod < 0) value += this.mod;
-
->>>>>>> 7b71e9d (fix division in console, and division in results display)
     if (this.repeat > 1) value = `${this.repeat}x(${value})`;
 
     if (compact) {

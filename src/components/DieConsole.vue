@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core';
 import { useQuasar } from 'quasar';
-<<<<<<< HEAD
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
-=======
-import {
-  computed,
-  ref,
-  watch,
-  onMounted,
-  onUnmounted,
-} from 'vue';
->>>>>>> e34f71e (add persistent substring-matched console input history)
 import { Die } from 'src/lib/die';
 import { consoleSubmitType, rollHistoryType } from '../lib/models';
 import { MODE_ID } from 'src/lib/modes';
