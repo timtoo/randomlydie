@@ -167,16 +167,25 @@ export default defineComponent({
       return rolls.value.length > 0 ? rolls.value[0].die.dice : 0;
     });
 
+    const displayItems = computed(() => {
+      if (!lastRoll.value) return [];
+      const items: { value: number; index: number }[] = lastRoll.value.die
+        .getThrow()
+        .map((value, index) => ({ value, index }));
+      if (MODE[lastRoll.value.mode].number_base !== 0) {
+        if (lastRoll.value.die.mult !== 1) {
+          items.push({ value: lastRoll.value.die.mult, index: items.length });
+        }
+        if (lastRoll.value.die.mod !== 0) {
+          items.push({ value: lastRoll.value.die.mod, index: items.length });
+        }
+      }
+      return items;
+    });
+
     const displayItemCount = computed(() => {
       if (!lastRoll.value) return 1;
-      let count = lastRoll.value.die.getThrow().length;
-      if (
-        lastRoll.value.die.mod !== 0 &&
-        MODE[lastRoll.value.mode].number_base !== 0
-      ) {
-        count++;
-      }
-      return count;
+      return displayItems.value.length;
     });
 
     const displayScale = computed(() =>
@@ -549,6 +558,7 @@ export default defineComponent({
       dice_count,
       displayScale,
       displayGap,
+      displayItems,
       showRollTotal,
       rollTotal,
       lastUpdate,
@@ -608,39 +618,12 @@ export default defineComponent({
       >
         <template v-if="lastRoll">
           <div
-            v-for="(v, idx) in lastRoll.die.getThrow()"
-            :key="lastRoll.time.getTime() + '-' + idx"
+            v-for="item in displayItems"
+            :key="lastRoll.time.getTime() + '-' + item.index"
           >
             <roll-display
-              :value="v"
-              :index="idx"
-              :display="
-                MODE[lastRoll.mode].displayValue(
-                  lastRoll.die.getThrow()[idx],
-                  lastRoll.die.max,
-                  lastRoll.die.mod,
-                )
-              "
-              :roll="lastRoll"
-              :sparkle="options?.sparkleMode"
-              :scale="displayScale"
-              @on-roll-display-click="bigButtonClick"
-            ></roll-display>
-          </div>
-          <div
-            v-if="
-              lastRoll.die.mod !== 0 && MODE[lastRoll.mode].number_base !== 0
-            "
-            class="rr-modifier-display"
-            :key="lastRoll.time.getTime() + '-mod'"
-          >
-            <roll-display
-              :value="lastRoll.die.mod"
-              :index="lastRoll.die.getThrow().length"
-              :display="
-                (lastRoll.die.mod > 0 ? '+' : '') +
-                MODE[lastRoll.mode].formatValue(lastRoll.die.mod)
-              "
+              :value="item.value"
+              :index="item.index"
               :roll="lastRoll"
               :sparkle="options?.sparkleMode"
               :scale="displayScale"

@@ -3,7 +3,8 @@ import { computed, defineComponent, ref, PropType } from 'vue';
 import { onLongPress } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'src/lib/models';
-import { MODE_ID } from 'src/lib/modes';
+import { MODE, MODE_ID } from 'src/lib/modes';
+import { MULTIPY_CHARS } from 'src/lib/die';
 import SvgDie6 from 'components/SvgDie6.vue';
 import SvgDie8 from 'components/SvgDie8.vue';
 import SvgDie10 from 'components/SvgDie10.vue';
@@ -22,7 +23,15 @@ export default defineComponent({
     sparkle: { type: Boolean, default: false },
     scale: { type: Number, default: 1 },
   },
-  components: { SvgDie6, SvgDie8, SvgDie10, SvgDie12, SvgDie20, SvgDie30, SvgDie100 },
+  components: {
+    SvgDie6,
+    SvgDie8,
+    SvgDie10,
+    SvgDie12,
+    SvgDie20,
+    SvgDie30,
+    SvgDie100,
+  },
   emits: ['onRollDisplayClick'],
   setup(props) {
     const $q = useQuasar();
@@ -31,18 +40,57 @@ export default defineComponent({
     const ttopen = ref(false);
     let padding = '1em 4em 1em 4em';
 
+    const isMultiplier = computed(() => {
+      return props.roll
+        ? props.index === props.roll.die.getThrow().length &&
+            props.roll.die.mult !== 1
+        : false;
+    });
+
+    const isModifier = computed(() => {
+      if (!props.roll) return false;
+      const multOffset = props.roll.die.mult !== 1 ? 1 : 0;
+      return (
+        props.index === props.roll.die.getThrow().length + multOffset &&
+        props.roll.die.mod !== 0
+      );
+    });
+
+    const isOperator = computed(() => isMultiplier.value || isModifier.value);
+
+    const isDie = computed(() => {
+      return props.roll ? !isMultiplier.value && !isModifier.value : false;
+    });
+
     const displayValue = computed(() => {
       if (props.roll && props.roll.mode === MODE_ID.dice)
         padding = '1em 1em 1em 1em';
-      return props.display;
+      if (props.display) return props.display;
+      if (!props.roll) return props.value.toString();
+      const mode = MODE[props.roll.mode];
+      if (isMultiplier.value) {
+        return MULTIPY_CHARS[0] + mode.formatValue(props.value);
+      }
+      if (isModifier.value) {
+        return (props.value > 0 ? '+' : '') + mode.formatValue(props.value);
+      }
+      return mode.displayValue(
+        props.value,
+        props.roll.die.max,
+        props.roll.die.mod,
+      );
     });
 
     const sparkleBg = computed(() => {
       if (!props.sparkle || !props.roll) return undefined;
       const isDark = $q.dark.isActive;
       const h = Math.floor(Math.random() * 360);
-      const s = isDark ? 60 + Math.floor(Math.random() * 30) : 50 + Math.floor(Math.random() * 30);
-      const l = isDark ? 25 + Math.floor(Math.random() * 20) : 70 + Math.floor(Math.random() * 20);
+      const s = isDark
+        ? 60 + Math.floor(Math.random() * 30)
+        : 50 + Math.floor(Math.random() * 30);
+      const l = isDark
+        ? 25 + Math.floor(Math.random() * 20)
+        : 70 + Math.floor(Math.random() * 20);
       return `hsl(${h} ${s}% ${l}%) !important`;
     });
 
@@ -56,17 +104,34 @@ export default defineComponent({
 
     const sparkleEmojis = computed(() => {
       if (!props.sparkle || !props.roll) return [];
-      const emojis = ['✨', '🎲', '🌈', '🔥', '⭐', '🎉', '💫', '🌟', '👏', '🐕', '🐈', '🐋', '🌸', '😊', '🦄', '🍀', '🌺', '🎈', '🌙', '☀️'];
+      const emojis = [
+        '✨',
+        '🎲',
+        '🌈',
+        '🔥',
+        '⭐',
+        '🎉',
+        '💫',
+        '🌟',
+        '👏',
+        '🐕',
+        '🐈',
+        '🐋',
+        '🌸',
+        '😊',
+        '🦄',
+        '🍀',
+        '🌺',
+        '🎈',
+        '🌙',
+        '☀️',
+      ];
       const count = 2 + Math.floor(Math.random() * 4);
       const result = [];
       for (let i = 0; i < count; i++) {
         result.push(emojis[Math.floor(Math.random() * emojis.length)]);
       }
       return result;
-    });
-
-    const isModifier = computed(() => {
-      return props.roll ? props.index === props.roll.die.getThrow().length : false;
     });
 
     const isSingleResult = computed(() => {
@@ -118,7 +183,10 @@ export default defineComponent({
     return {
       btn_ref,
       displayValue,
+      isMultiplier,
       isModifier,
+      isOperator,
+      isDie,
       isSingleResult,
       scaledStyle,
       svgHeight,
@@ -142,11 +210,18 @@ export default defineComponent({
     :outline="roll?.mode !== MODE_ID.dice"
     @click="inLongPress ? (inLongPress = false) : $emit('onRollDisplayClick')"
     class="rr-big-btn"
-    :class="[isSingleResult ? 'text-h2' : 'text-h3', sparkle ? 'rr-sparkle-glow' : '', !roll ? 'rr-idle-shake' : '']"
+    :class="[
+      isSingleResult ? 'text-h2' : 'text-h3',
+      sparkle ? 'rr-sparkle-glow' : '',
+      !roll ? 'rr-idle-shake' : '',
+      isOperator ? 'rr-operator-display' : '',
+    ]"
     :style="scaledStyle"
     :aria-label="roll ? 'Random result: ' + displayValue : 'Tap to roll'"
   >
-    <template v-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 8">
+    <template
+      v-if="roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 8"
+    >
       <SvgDie8
         :height="svgHeight"
         :value="value"
@@ -154,7 +229,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
       ></SvgDie8>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max <= 9">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max <= 9
+      "
+    >
       <SvgDie6
         :height="svgHeight"
         :value="value"
@@ -162,7 +241,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 90 - 45) + 'deg)' }"
       ></SvgDie6>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 10">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 10
+      "
+    >
       <SvgDie10
         :height="svgHeight"
         :value="value"
@@ -170,7 +253,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie10>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 12">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 12
+      "
+    >
       <SvgDie12
         :height="svgHeight"
         :value="value"
@@ -178,7 +265,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie12>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 20">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 20
+      "
+    >
       <SvgDie20
         :height="svgHeight"
         :value="value"
@@ -186,7 +277,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie20>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 30">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 30
+      "
+    >
       <SvgDie30
         :height="svgHeight"
         :value="value"
@@ -194,7 +289,11 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie30>
     </template>
-    <template v-else-if="roll && roll.mode === MODE_ID.dice && !isModifier && roll.die.max === 100">
+    <template
+      v-else-if="
+        roll && roll.mode === MODE_ID.dice && isDie && roll.die.max === 100
+      "
+    >
       <SvgDie100
         :height="svgHeight"
         :value="value"
