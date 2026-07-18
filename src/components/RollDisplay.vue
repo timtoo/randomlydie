@@ -4,7 +4,7 @@ import { onLongPress } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'src/lib/models';
 import { MODE, MODE_ID } from 'src/lib/modes';
-import { MULTIPY_CHARS } from 'src/lib/die';
+import { MULTIPY_CHARS, DIVIDE_CHARS } from 'src/lib/die';
 import SvgDie6 from 'components/SvgDie6.vue';
 import SvgDie8 from 'components/SvgDie8.vue';
 import SvgDie10 from 'components/SvgDie10.vue';
@@ -69,7 +69,7 @@ export default defineComponent({
       if (!props.roll) return props.value.toString();
       const mode = MODE[props.roll.mode];
       if (isMultiplier.value) {
-        return MULTIPY_CHARS[0] + mode.formatValue(props.value);
+        return (props.value > 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0]) + mode.formatValue(Math.abs(props.value));
       }
       if (isModifier.value) {
         return (props.value > 0 ? '+' : '') + mode.formatValue(props.value);

@@ -30,7 +30,7 @@ const DEFAULT_MOD = 0;
 const DEFAULT_REPEAT = 1;
 
 const MULTIPY_CHARS = '×Xx*⋅';
-const DIVIDE_CHARS = '/÷';
+const DIVIDE_CHARS = '∕÷/';
 
 const DieRegExp = new RegExp(
   `\\b((?<repeat>\\d+)[${MULTIPY_CHARS}]\\(?)?(?<rolls>\\d*)[dD](?<max>-?\\d*)(>(?<min>-?\\d+))?((?<mult>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)(?<mod>[+-]\\d+)|(?<mod1>[+-]\\d+)(?<mult1>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)|(?<mod2>[+-]\\d+)|(?<mult2>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+))?(?<flag1>[xXzZ])?(?<flag2>[xXzZ])?\\b`,
@@ -197,9 +197,9 @@ class Die {
     if (this.min !== 1) {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
-    if (this.mult > 1) value += 'x' + this.mult;
+    if (this.mult > 1) value += MULTIPY_CHARS[0] + this.mult;
     if (this.mult > 0 && this.mult < 1)
-      value += '/' + Math.round(1 / this.mult);
+      value += DIVIDE_CHARS[0] + Math.round(1 / this.mult);
 
     if (this.mod > 0) value += '+' + this.mod;
     if (this.mod < 0) value += this.mod;
@@ -274,4 +274,4 @@ class Die {
   }
 }
 
-export { Die, DieRegExp, MULTIPY_CHARS };
+export { Die, DieRegExp, MULTIPY_CHARS, DIVIDE_CHARS };
