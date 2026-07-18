@@ -29,7 +29,7 @@ const DEFAULT_MULT = 1;
 const DEFAULT_MOD = 0;
 const DEFAULT_REPEAT = 1;
 
-const MULTIPY_CHARS = 'Xx×*';
+const MULTIPY_CHARS = '×Xx*⋅';
 const DIVIDE_CHARS = '/÷';
 
 const DieRegExp = new RegExp(
@@ -197,7 +197,7 @@ class Die {
     if (this.min !== 1) {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
-    if (this.mult > 1) value += 'x' + this.mult;
+    if (this.mult > 1) value += MULTIPY_CHARS[0] + this.mult;
     if (this.mult > 0 && this.mult < 1)
       value += '/' + Math.round(1 / this.mult);
 

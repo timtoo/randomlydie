@@ -33,15 +33,25 @@ export default defineComponent({
     const min = ref(props.die.min);
     const max = ref(props.die.max);
     const dice = ref(props.die.dice);
+    const repeat = ref(props.die.repeat);
+    const mult = ref(props.die.mult);
     const modeDropdownOpen = ref(false);
     const modDropdownOpen = ref(false);
 
     const isSetBasedMode = computed(() => {
-      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games || props.mode === MODE_ID.note;
+      return (
+        props.mode === MODE_ID.emoji ||
+        props.mode === MODE_ID.games ||
+        props.mode === MODE_ID.note
+      );
     });
 
     const hasModDropdown = computed(() => {
-      return props.mode === MODE_ID.emoji || props.mode === MODE_ID.games || props.mode === MODE_ID.note;
+      return (
+        props.mode === MODE_ID.emoji ||
+        props.mode === MODE_ID.games ||
+        props.mode === MODE_ID.note
+      );
     });
 
     const showRawModInput = computed(() => {
@@ -69,7 +79,10 @@ export default defineComponent({
           { label: 'A♯/B♭', value: 10 },
         ].map((opt) => ({
           ...opt,
-          label: scaleSize === 12 ? opt.label : `${opt.label} ${scaleSize === 5 ? 'Pentatonic' : 'Scale'}`,
+          label:
+            scaleSize === 12
+              ? opt.label
+              : `${opt.label} ${scaleSize === 5 ? 'Pentatonic' : 'Scale'}`,
         }));
       }
       // Emoji / Games: use quick buttons (skip Unicode -2 for emoji dropdown? include it)
@@ -106,7 +119,9 @@ export default defineComponent({
         min.value = props.die.min;
         max.value = props.die.max;
         dice.value = props.die.dice;
-      }
+        repeat.value = props.die.repeat;
+        mult.value = props.die.mult;
+      },
     );
 
     function handleMinMaxDice(v: string) {
@@ -122,7 +137,30 @@ export default defineComponent({
         if (dice.value > 10) dice.value = 10;
         ctx.emit('input', dice.value, v);
       }
-      ctx.emit('advanced-update', [min.value, max.value, dice.value]);
+      ctx.emit('advanced-update', [
+        min.value,
+        max.value,
+        dice.value,
+        repeat.value,
+        mult.value,
+      ]);
+    }
+
+    function handleRepeatMult(v: string) {
+      if (v === 'repeat') {
+        if (repeat.value < 1) repeat.value = 1;
+        if (repeat.value > 10) repeat.value = 10;
+      } else if (v === 'mult') {
+        if (mult.value < 1) mult.value = 1;
+        if (mult.value > 100) mult.value = 100;
+      }
+      ctx.emit('advanced-update', [
+        min.value,
+        max.value,
+        dice.value,
+        repeat.value,
+        mult.value,
+      ]);
     }
 
     function handleModChange(newMod: number) {
@@ -174,7 +212,28 @@ export default defineComponent({
       }
     });
 
-    return { min, max, dice, MODE, MODE_ID, handleMinMaxDice, modeDropdownOpen, modDropdownOpen, isSetBasedMode, notationDisplay, copyNotation, hasModDropdown, showRawModInput, modOptions, currentModLabel, handleModChange, handleRawModChange };
+    return {
+      min,
+      max,
+      dice,
+      repeat,
+      mult,
+      MODE,
+      MODE_ID,
+      handleMinMaxDice,
+      handleRepeatMult,
+      modeDropdownOpen,
+      modDropdownOpen,
+      isSetBasedMode,
+      notationDisplay,
+      copyNotation,
+      hasModDropdown,
+      showRawModInput,
+      modOptions,
+      currentModLabel,
+      handleModChange,
+      handleRawModChange,
+    };
   },
 });
 </script>
@@ -196,17 +255,33 @@ export default defineComponent({
         :aria-expanded="modeDropdownOpen"
         aria-labelledby="mode-label"
       >
-        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select generator mode">
+        <q-list
+          bordered
+          dense
+          class="bg-rrinput"
+          role="listbox"
+          aria-label="Select generator mode"
+        >
           <template
             v-for="m of Object.values(MODE)
               .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
               .map((m) => m.id)"
             :key="m"
           >
-            <q-item clickable @click="modeDropdownOpen = false; $emit('mode-change', m)" role="option" :aria-selected="mode === m">
+            <q-item
+              clickable
+              @click="
+                modeDropdownOpen = false;
+                $emit('mode-change', m);
+              "
+              role="option"
+              :aria-selected="mode === m"
+            >
               <q-item-section>
                 <q-item-label>
-                  <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{ MODE[m].name }}
+                  <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{
+                    MODE[m].name
+                  }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -228,7 +303,13 @@ export default defineComponent({
         :aria-expanded="modDropdownOpen"
         aria-labelledby="mod-select-label"
       >
-        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select set or key">
+        <q-list
+          bordered
+          dense
+          class="bg-rrinput"
+          role="listbox"
+          aria-label="Select set or key"
+        >
           <template v-for="opt of modOptions" :key="opt.value">
             <q-item clickable @click="handleModChange(opt.value)" role="option">
               <q-item-section>
@@ -298,6 +379,48 @@ export default defineComponent({
     </div>
     <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
       <div class="col-6">
+        <label id="repeat-label" class="sr-only">Repeats</label>
+        <InputNumber
+          dense
+          v-model="repeat"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput full-width"
+          label-color="primary"
+          @update:model-value="handleRepeatMult('repeat')"
+          :min="1"
+          :max="10"
+          aria-labelledby="repeat-label"
+        ></InputNumber>
+        <div
+          class="text-center text-caption"
+          style="color: var(--rr-text-muted)"
+        >
+          Repeats
+        </div>
+      </div>
+      <div class="col-6">
+        <label id="mult-label" class="sr-only">Multiplier</label>
+        <InputNumber
+          dense
+          v-model="mult"
+          input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput full-width"
+          label-color="primary"
+          @update:model-value="handleRepeatMult('mult')"
+          :min="1"
+          :max="100"
+          aria-labelledby="mult-label"
+        ></InputNumber>
+        <div
+          class="text-center text-caption"
+          style="color: var(--rr-text-muted)"
+        >
+          Multiplier
+        </div>
+      </div>
+    </div>
+    <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
+      <div class="col-6">
         <q-btn
           dense
           outline
@@ -327,7 +450,14 @@ export default defineComponent({
       </div>
     </div>
     <div class="row items-center justify-center q-gutter-x-sm">
-      <div class="text-caption" style="font-family: monospace; letter-spacing: 0.05em; color: var(--rr-text-muted);">
+      <div
+        class="text-caption"
+        style="
+          font-family: monospace;
+          letter-spacing: 0.05em;
+          color: var(--rr-text-muted);
+        "
+      >
         {{ notationDisplay }}
       </div>
       <q-btn

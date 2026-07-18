@@ -36,7 +36,7 @@ function letsroll(
   rolls: rollHistoryType[],
   quantity?: number,
   min?: number,
-  max?: number
+  max?: number,
 ): Die {
   const title_divider = ' | ';
   if (quantity !== undefined && quantity !== die.dice) die.dice = quantity;
@@ -57,7 +57,9 @@ function letsroll(
 
   const title_divider_index = document.title.lastIndexOf(title_divider);
   if (title_divider_index >= 0) {
-    document.title = document.title.slice(title_divider_index + title_divider.length);
+    document.title = document.title.slice(
+      title_divider_index + title_divider.length,
+    );
   }
   document.title = `${rolls[0].display}${title_divider}${rolls[0].label}${title_divider}${document.title}`;
   lastRollDisplay.value = rolls[0].display;
@@ -101,7 +103,10 @@ export default defineComponent({
     const showPrevious = useStorage('rd-show-previous', false);
     const showHistory = useStorage('rd-show-history', false);
     const lastMode = useStorage<number>('rd-last-mode', MODE_ID.dice);
-    const lastNotationPerMode = useStorage<Record<string, string>>('rd-last-notation', {});
+    const lastNotationPerMode = useStorage<Record<string, string>>(
+      'rd-last-notation',
+      {},
+    );
     const mode = ref(lastMode.value);
 
     function saveModeNotation(m = mode.value) {
@@ -129,7 +134,14 @@ export default defineComponent({
       const base = { position: 'fixed' as const, zIndex: 1000 };
       const maxW = 720;
       const pad = 16;
-      const margin = 'max(' + pad + 'px, calc((100vw - ' + maxW + 'px) / 2 + ' + pad + 'px))';
+      const margin =
+        'max(' +
+        pad +
+        'px, calc((100vw - ' +
+        maxW +
+        'px) / 2 + ' +
+        pad +
+        'px))';
       switch (pos) {
         case 'bottom-left':
           return { ...base, bottom: '20px', left: margin };
@@ -144,7 +156,7 @@ export default defineComponent({
 
     watch(
       () => route.params,
-      () => handleURLChange()
+      () => handleURLChange(),
     );
 
     const lastRoll = computed(() => {
@@ -158,14 +170,20 @@ export default defineComponent({
     const displayItemCount = computed(() => {
       if (!lastRoll.value) return 1;
       let count = lastRoll.value.die.getThrow().length;
-      if (lastRoll.value.die.mod !== 0 && MODE[lastRoll.value.mode].number_base !== 0) {
+      if (
+        lastRoll.value.die.mod !== 0 &&
+        MODE[lastRoll.value.mode].number_base !== 0
+      ) {
         count++;
       }
       return count;
     });
 
     const displayScale = computed(() =>
-      computeEffectiveScale(displayItemCount.value, props.options?.resultScale ?? 100)
+      computeEffectiveScale(
+        displayItemCount.value,
+        props.options?.resultScale ?? 100,
+      ),
     );
     const displayGap = computed(() => `${0.5 * displayScale.value}rem`);
 
@@ -274,7 +292,11 @@ export default defineComponent({
     }
 
     function isSetBasedMode() {
-      return mode.value === MODE_ID.emoji || mode.value === MODE_ID.games || mode.value === MODE_ID.note;
+      return (
+        mode.value === MODE_ID.emoji ||
+        mode.value === MODE_ID.games ||
+        mode.value === MODE_ID.note
+      );
     }
 
     function advancedUpdate(v: number[]) {
@@ -291,12 +313,18 @@ export default defineComponent({
         die.value.max = v[1];
       }
       die.value.dice = v[2];
+      if (v.length > 3) die.value.repeat = v[3];
+      if (v.length > 4) die.value.mult = v[4];
       saveModeNotation();
     }
 
     function handleModUpdate(newMod: number) {
       const currentMode = MODE[mode.value];
-      if (mode.value === MODE_ID.emoji || mode.value === MODE_ID.games || mode.value === MODE_ID.note) {
+      if (
+        mode.value === MODE_ID.emoji ||
+        mode.value === MODE_ID.games ||
+        mode.value === MODE_ID.note
+      ) {
         // For set/key-based modes, use configureDie to properly set min/max/mod
         currentMode.configureDie(die.value, newMod);
       } else {
@@ -356,9 +384,15 @@ export default defineComponent({
             // For set-based modes, always reconfigure since previous mode's
             // min/max values are not meaningful in the new mode's context.
             const quickToUse = new_mode.default_max;
-            if (m === MODE_ID.emoji || m === MODE_ID.games || m === MODE_ID.note) {
+            if (
+              m === MODE_ID.emoji ||
+              m === MODE_ID.games ||
+              m === MODE_ID.note
+            ) {
               new_mode.configureDie(die.value, quickToUse);
-            } else if (!new_mode.quick.includes(new_mode.getQuickValue(die.value))) {
+            } else if (
+              !new_mode.quick.includes(new_mode.getQuickValue(die.value))
+            ) {
               new_mode.configureDie(die.value, quickToUse);
             }
           }
@@ -553,7 +587,9 @@ export default defineComponent({
       decrementDice,
       fabClick,
       fabStyle,
-      clearHistory: () => { rolls.value = []; },
+      clearHistory: () => {
+        rolls.value = [];
+      },
     };
   },
 });
@@ -562,307 +598,413 @@ export default defineComponent({
 <template>
   <q-page class="rr-page-container q-pb-xl">
     <main role="main">
-    <!-- Hero Result Display -->
-    <div id="result-display" class="rr-hero-display" role="region" aria-label="Roll result" :style="{ gap: displayGap }">
-      <template v-if="lastRoll">
-        <div v-for="(v, idx) in lastRoll.die.getThrow()" :key="lastRoll.time.getTime() + '-' + idx">
+      <!-- Hero Result Display -->
+      <div
+        id="result-display"
+        class="rr-hero-display"
+        role="region"
+        aria-label="Roll result"
+        :style="{ gap: displayGap }"
+      >
+        <template v-if="lastRoll">
+          <div
+            v-for="(v, idx) in lastRoll.die.getThrow()"
+            :key="lastRoll.time.getTime() + '-' + idx"
+          >
+            <roll-display
+              :value="v"
+              :index="idx"
+              :display="
+                MODE[lastRoll.mode].displayValue(
+                  lastRoll.die.getThrow()[idx],
+                  lastRoll.die.max,
+                  lastRoll.die.mod,
+                )
+              "
+              :roll="lastRoll"
+              :sparkle="options?.sparkleMode"
+              :scale="displayScale"
+              @on-roll-display-click="bigButtonClick"
+            ></roll-display>
+          </div>
+          <div
+            v-if="
+              lastRoll.die.mod !== 0 && MODE[lastRoll.mode].number_base !== 0
+            "
+            class="rr-modifier-display"
+            :key="lastRoll.time.getTime() + '-mod'"
+          >
+            <roll-display
+              :value="lastRoll.die.mod"
+              :index="lastRoll.die.getThrow().length"
+              :display="
+                (lastRoll.die.mod > 0 ? '+' : '') +
+                MODE[lastRoll.mode].formatValue(lastRoll.die.mod)
+              "
+              :roll="lastRoll"
+              :sparkle="options?.sparkleMode"
+              :scale="displayScale"
+              @on-roll-display-click="bigButtonClick"
+            ></roll-display>
+          </div>
+        </template>
+        <template v-else>
           <roll-display
-            :value="v"
-            :index="idx"
-            :display="MODE[lastRoll.mode].displayValue(lastRoll.die.getThrow()[idx], lastRoll.die.max, lastRoll.die.mod)"
-            :roll="lastRoll"
-            :sparkle="options?.sparkleMode"
+            :value="0"
+            :roll="null"
+            display="Tap to Roll"
             :scale="displayScale"
             @on-roll-display-click="bigButtonClick"
           ></roll-display>
-        </div>
-        <div
-          v-if="lastRoll.die.mod !== 0 && MODE[lastRoll.mode].number_base !== 0"
-          class="rr-modifier-display"
-          :key="lastRoll.time.getTime() + '-mod'"
+        </template>
+      </div>
+
+      <!-- Roll Total -->
+      <div
+        v-if="showRollTotal"
+        class="text-center q-mt-sm text-h5"
+        style="color: var(--rr-text)"
+        aria-live="polite"
+      >
+        <span class="text-body1" style="color: var(--rr-text-muted)"
+          >Total:</span
         >
-          <roll-display
-            :value="lastRoll.die.mod"
-            :index="lastRoll.die.getThrow().length"
-            :display="(lastRoll.die.mod > 0 ? '+' : '') + MODE[lastRoll.mode].formatValue(lastRoll.die.mod)"
-            :roll="lastRoll"
-            :sparkle="options?.sparkleMode"
-            :scale="displayScale"
-            @on-roll-display-click="bigButtonClick"
-          ></roll-display>
-        </div>
-      </template>
-      <template v-else>
-        <roll-display
-          :value="0"
-          :roll="null"
-          display="Tap to Roll"
-          :scale="displayScale"
-          @on-roll-display-click="bigButtonClick"
-        ></roll-display>
-      </template>
-    </div>
+        {{ rollTotal }}
+      </div>
 
-    <!-- Roll Total -->
-    <div
-      v-if="showRollTotal"
-      class="text-center q-mt-sm text-h5"
-      style="color: var(--rr-text)"
-      aria-live="polite"
-    >
-      <span class="text-body1" style="color: var(--rr-text-muted)">Total:</span>
-      {{ rollTotal }}
-    </div>
-
-    <!-- Settings Summary Bar -->
-    <div
-      class="text-center q-mt-sm rr-settings-bar row justify-center items-center q-gutter-x-sm"
-    >
-      <span
-        class="rr-settings-item cursor-pointer"
-        tabindex="0"
-        role="button"
-        aria-label="Open generator settings"
-        @click="settingsDialogOpen = true"
-        @keydown.enter="settingsDialogOpen = true"
-        @keydown.space.prevent="settingsDialogOpen = true"
+      <!-- Settings Summary Bar -->
+      <div
+        class="text-center q-mt-sm rr-settings-bar row justify-center items-center q-gutter-x-sm"
       >
-        <q-icon name="expand_more" size="xs" class="q-mr-xs" style="opacity: 0.6" />
-        {{ die.getRangeString(true, ' to ') }}
-      </span>
-      <span style="color: var(--rr-text-muted)">·</span>
-      <span
-        class="rr-settings-item cursor-pointer"
-        tabindex="0"
-        role="button"
-        aria-label="Open mode picker"
-        @click="modeDialogOpen = true"
-        @keydown.enter="modeDialogOpen = true"
-        @keydown.space.prevent="modeDialogOpen = true"
+        <span
+          class="rr-settings-item cursor-pointer"
+          tabindex="0"
+          role="button"
+          aria-label="Open generator settings"
+          @click="settingsDialogOpen = true"
+          @keydown.enter="settingsDialogOpen = true"
+          @keydown.space.prevent="settingsDialogOpen = true"
+        >
+          <q-icon
+            name="expand_more"
+            size="xs"
+            class="q-mr-xs"
+            style="opacity: 0.6"
+          />
+          {{ die.getRangeString(true, ' to ') }}
+        </span>
+        <span style="color: var(--rr-text-muted)">·</span>
+        <span
+          class="rr-settings-item cursor-pointer"
+          tabindex="0"
+          role="button"
+          aria-label="Open mode picker"
+          @click="modeDialogOpen = true"
+          @keydown.enter="modeDialogOpen = true"
+          @keydown.space.prevent="modeDialogOpen = true"
+        >
+          <q-icon :name="MODE[mode].material_icon" size="sm" />
+          <span class="q-ml-xs">{{ MODE[mode].name }}</span>
+          <q-icon
+            name="expand_more"
+            size="xs"
+            class="q-ml-xs"
+            style="opacity: 0.6"
+          />
+        </span>
+      </div>
+
+      <!-- Timestamp -->
+      <div
+        class="text-center q-mt-xs text-body2 text-italic"
+        style="color: var(--rr-text-muted)"
       >
-        <q-icon :name="MODE[mode].material_icon" size="sm" />
-        <span class="q-ml-xs">{{ MODE[mode].name }}</span>
-        <q-icon name="expand_more" size="xs" class="q-ml-xs" style="opacity: 0.6" />
-      </span>
-    </div>
+        {{ lastRoll ? lastRoll.time.toLocaleString() : '&nbsp;' }}
+      </div>
 
-    <!-- Timestamp -->
-    <div class="text-center q-mt-xs text-body2 text-italic" style="color: var(--rr-text-muted)">
-      {{ lastRoll ? lastRoll.time.toLocaleString() : '&nbsp;' }}
-    </div>
+      <!-- Dice Quantity Stepper -->
+      <div class="row justify-center q-mt-lg rr-quantity-stepper">
+        <q-btn
+          flat
+          dense
+          color="primary"
+          icon="remove"
+          class="text-h6"
+          aria-label="Decrease number of items"
+          @click="decrementDice"
+        />
+        <div class="rr-quantity-value text-h5 self-center">{{ die.dice }}</div>
+        <q-btn
+          flat
+          dense
+          color="primary"
+          icon="add"
+          class="text-h6"
+          aria-label="Increase number of items"
+          @click="incrementDice"
+        />
+      </div>
+      <div class="text-center text-body2" style="color: var(--rr-text-muted)">
+        Number of items
+      </div>
 
-    <!-- Dice Quantity Stepper -->
-    <div class="row justify-center q-mt-lg rr-quantity-stepper">
-      <q-btn flat dense color="primary" icon="remove" class="text-h6" aria-label="Decrease number of items" @click="decrementDice" />
-      <div class="rr-quantity-value text-h5 self-center">{{ die.dice }}</div>
-      <q-btn flat dense color="primary" icon="add" class="text-h6" aria-label="Increase number of items" @click="incrementDice" />
-    </div>
-    <div class="text-center text-body2" style="color: var(--rr-text-muted)">
-      Number of items
-    </div>
+      <!-- Quick Buttons -->
+      <div id="quick-roll" class="q-mt-md" v-if="!options?.hideQuick">
+        <quick-buttons
+          :mode="mode"
+          :current="MODE[mode].getQuickValue(die)"
+          @on-quick-button="(v: number) => handleQuickButton(v)"
+        ></quick-buttons>
+      </div>
 
-    <!-- Quick Buttons -->
-    <div id="quick-roll" class="q-mt-md" v-if="!options?.hideQuick">
-      <quick-buttons
+      <!-- History Toggles -->
+      <div
+        class="row justify-center q-gutter-sm q-mt-md"
+        v-if="
+          rolls.length > 0 && (!options?.hidePrevious || !options?.hideHistory)
+        "
+      >
+        <q-btn
+          v-if="!options?.hidePrevious"
+          :unelevated="showPrevious"
+          :outline="!showPrevious"
+          color="primary"
+          no-caps
+          size="md"
+          class="text-body1"
+          :label="
+            'Previous rolls (' + (rolls.length > 1 ? rolls.length - 1 : 0) + ')'
+          "
+          @click="showPrevious = !showPrevious"
+        />
+        <q-btn
+          v-if="!options?.hideHistory"
+          :unelevated="showHistory"
+          :outline="!showHistory"
+          color="primary"
+          no-caps
+          size="md"
+          class="text-body1"
+          :label="
+            'Roll history (' +
+            new Set(
+              rolls.map((r: rollHistoryType) => r.chipLabel + ':' + r.mode),
+            ).size +
+            ')'
+          "
+          @click="showHistory = !showHistory"
+        />
+      </div>
+
+      <!-- Previous Rolls Panel -->
+      <div
+        v-if="showPrevious && !options?.hidePrevious && rolls.length > 1"
+        class="rr-history-panel q-mt-sm q-pa-md"
+      >
+        <previous-rolls :rolls="rolls"></previous-rolls>
+      </div>
+
+      <!-- Roll History Panel -->
+      <div
+        v-if="showHistory && !options?.hideHistory && rolls.length > 0"
+        class="rr-history-panel q-mt-sm q-pa-md"
+      >
+        <history-list
+          :rolls="rolls"
+          @on-die-chip="(v: rollHistoryType) => handleChipClick(v)"
+        ></history-list>
+      </div>
+
+      <!-- Action Icons -->
+      <div class="row justify-center q-mt-xl rr-action-row">
+        <q-btn
+          flat
+          round
+          color="primary"
+          icon="help_outline"
+          aria-label="About"
+          @click="aboutDialogOpen = true"
+        />
+        <q-dialog v-model="aboutDialogOpen" aria-label="About RandomlyDie">
+          <q-card style="min-width: 280px; max-width: 90vw">
+            <q-card-section class="row items-center q-pb-none">
+              <div class="text-h6">Randomly/Die</div>
+              <q-space />
+              <q-btn
+                icon="close"
+                flat
+                round
+                dense
+                v-close-popup
+                aria-label="Close about dialog"
+              />
+            </q-card-section>
+            <q-card-section>
+              <div
+                class="text-body2 q-mb-md"
+                style="color: var(--rr-text-muted)"
+              >
+                Version {{ version }}
+              </div>
+              <div class="text-body1 q-mb-md">
+                <b>Tips and tricks!</b>
+              </div>
+              <ul class="text-body2 q-pl-md" style="margin-top: 0">
+                <li class="q-mb-xs">
+                  Click/tap the top box, or the bottom right button, for
+                  <b>new number(s)</b>.
+                </li>
+                <li class="q-mb-xs">
+                  Long press a random result to copy to <b>clipboard</b>.
+                </li>
+                <li class="q-mb-xs desktop-only">
+                  Hot keys: N/n (min), X/x (max), D/d (dice), Space/Enter
+                  (roll).
+                </li>
+                <li class="q-mb-xs">
+                  Use hex mode <code>x1000000</code> for random HTML colour
+                  codes.
+                </li>
+                <li class="q-mb-xs">Use five dice to play Yahtzee?</li>
+                <li class="desktop-only">
+                  Backtick <code>`</code> opens the console.
+                </li>
+              </ul>
+            </q-card-section>
+            <q-separator />
+            <q-card-section
+              class="text-caption"
+              style="color: var(--rr-text-muted)"
+            >
+              <div>
+                <a href="https://github.com/timtoo/randomlydie"
+                  >This randomness</a
+                >
+                is "free as in freedom" (<a
+                  href="https://en.wikipedia.org/wiki/GNU_General_Public_License"
+                  target="_blank"
+                  style="color: inherit; text-decoration: underline"
+                  >GPL 3.0-or-later</a
+                >).
+              </div>
+              <div class="q-mt-xs"><i>Use your randomness for good.</i></div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+        <q-btn
+          flat
+          round
+          color="primary"
+          icon="computer"
+          aria-label="Toggle console"
+          @click="console_active ? closeConsole() : openConsole()"
+        />
+        <q-btn
+          flat
+          round
+          color="primary"
+          icon="refresh"
+          aria-label="Reset to defaults"
+          @click="reset_confirm_dialog = true"
+        >
+          <q-tooltip :delay="1000">Reset to defaults</q-tooltip>
+        </q-btn>
+        <q-btn
+          flat
+          round
+          color="primary"
+          :icon="slideshow ? 'pause' : 'play_arrow'"
+          :aria-label="slideshow ? 'Stop slideshow' : 'Start slideshow'"
+          @click="toggleSlideshow"
+        >
+          <q-tooltip :delay="1000"
+            >Toggle automatic random numbers every few seconds</q-tooltip
+          >
+        </q-btn>
+      </div>
+
+      <!-- Settings Dialog -->
+      <GeneratorSettingsDialog
+        v-model="settingsDialogOpen"
+        :die="die"
         :mode="mode"
-        :current="MODE[mode].getQuickValue(die)"
-        @on-quick-button="(v:number) => handleQuickButton(v)"
-      ></quick-buttons>
-    </div>
+        @advanced-update="(v: number[]) => advancedUpdate(v)"
+        @base-toggle="handleZeroBaseToggle"
+        @exclusive-toggle="handleExclusiveToggle"
+        @mode-change="(m: number) => handleModeChange(m, false)"
+        @mod-update="(v: number) => handleModUpdate(v)"
+        @close="bigButtonClick"
+        @clear-history="handleClearHistory"
+      ></GeneratorSettingsDialog>
 
-    <!-- History Toggles -->
-    <div class="row justify-center q-gutter-sm q-mt-md" v-if="rolls.length > 0 && (!options?.hidePrevious || !options?.hideHistory)">
-      <q-btn
-        v-if="!options?.hidePrevious"
-        :unelevated="showPrevious"
-        :outline="!showPrevious"
-        color="primary"
-        no-caps
-        size="md"
-        class="text-body1"
-        :label="'Previous rolls (' + (rolls.length > 1 ? rolls.length - 1 : 0) + ')'"
-        @click="showPrevious = !showPrevious"
-      />
-      <q-btn
-        v-if="!options?.hideHistory"
-        :unelevated="showHistory"
-        :outline="!showHistory"
-        color="primary"
-        no-caps
-        size="md"
-        class="text-body1"
-        :label="'Roll history (' + new Set(rolls.map((r: rollHistoryType) => r.chipLabel + ':' + r.mode)).size + ')'"
-        @click="showHistory = !showHistory"
-      />
-    </div>
+      <!-- Mode Picker Dialog -->
+      <ModePickerDialog
+        v-model="modeDialogOpen"
+        :mode="mode"
+        @mode-change="(m: number) => handleModeChange(m)"
+      ></ModePickerDialog>
 
-    <!-- Previous Rolls Panel -->
-    <div
-      v-if="showPrevious && !options?.hidePrevious && rolls.length > 1"
-      class="rr-history-panel q-mt-sm q-pa-md"
-    >
-      <previous-rolls :rolls="rolls"></previous-rolls>
-    </div>
+      <!-- Console -->
+      <DieConsole
+        :active="console_active"
+        :history="rolls"
+        :die="die"
+        :mode="mode"
+        :sparkle="options?.sparkleMode"
+        @console-close="closeConsole()"
+        @submit="handleConsoleSubmit"
+      ></DieConsole>
 
-    <!-- Roll History Panel -->
-    <div
-      v-if="showHistory && !options?.hideHistory && rolls.length > 0"
-      class="rr-history-panel q-mt-sm q-pa-md"
-    >
-      <history-list
-        :rolls="rolls"
-        @on-die-chip="(v: rollHistoryType) => handleChipClick(v)"
-      ></history-list>
-    </div>
+      <!-- FAB -->
+      <div v-if="!console_active" :style="fabStyle">
+        <q-btn
+          fab
+          :icon="slideshow ? 'stop' : MODE[mode].material_icon"
+          :color="slideshow ? 'positive' : 'secondary'"
+          text-color="black"
+          @click="fabClick"
+        >
+          &nbsp;
+          <span style="text-transform: none">{{
+            slideshow ? 'Stop' : die.toString()
+          }}</span>
+        </q-btn>
+      </div>
 
-    <!-- Action Icons -->
-    <div class="row justify-center q-mt-xl rr-action-row">
-      <q-btn
-        flat
-        round
-        color="primary"
-        icon="help_outline"
-        aria-label="About"
-        @click="aboutDialogOpen = true"
-      />
-      <q-dialog v-model="aboutDialogOpen" aria-label="About RandomlyDie">
-        <q-card style="min-width: 280px; max-width: 90vw">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Randomly/Die</div>
-            <q-space />
-            <q-btn icon="close" flat round dense v-close-popup aria-label="Close about dialog" />
+      <!-- Reset Dialog -->
+      <q-dialog
+        v-model="reset_confirm_dialog"
+        role="alertdialog"
+        aria-label="Confirm reset"
+      >
+        <q-card class="reset-card outlined">
+          <q-card-section class="row items-center">
+            <q-avatar icon="warning" color="primary" text-color="white" />
+            <span class="q-ml-sm">Clear history and reset mode?</span>
           </q-card-section>
-          <q-card-section>
-            <div class="text-body2 q-mb-md" style="color: var(--rr-text-muted)">Version {{ version }}</div>
-            <div class="text-body1 q-mb-md">
-              <b>Tips and tricks!</b>
-            </div>
-            <ul class="text-body2 q-pl-md" style="margin-top: 0">
-              <li class="q-mb-xs">
-                Click/tap the top box, or the bottom right button, for
-                <b>new number(s)</b>.
-              </li>
-              <li class="q-mb-xs">
-                Long press a random result to copy to <b>clipboard</b>.
-              </li>
-              <li class="q-mb-xs desktop-only">
-                Hot keys: N/n (min), X/x (max), D/d (dice), Space/Enter (roll).
-              </li>
-              <li class="q-mb-xs">
-                Use hex mode <code>x1000000</code> for random HTML colour codes.
-              </li>
-              <li class="q-mb-xs">Use five dice to play Yahtzee?</li>
-              <li class="desktop-only">Backtick <code>`</code> opens the console.</li>
-            </ul>
-          </q-card-section>
-          <q-separator />
-          <q-card-section class="text-caption" style="color: var(--rr-text-muted)">
-            <div><a href="https://github.com/timtoo/randomlydie">This randomness</a> is "free as in freedom" (<a href="https://en.wikipedia.org/wiki/GNU_General_Public_License" target="_blank" style="color: inherit; text-decoration: underline;">GPL 3.0-or-later</a>).</div>
-            <div class="q-mt-xs"><i>Use your randomness for good.</i></div>
-          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn
+              outline
+              label="Do it"
+              color="primary"
+              @click="handleResetRole"
+            />
+            <q-btn outline label="Cancel" color="primary" v-close-popup />
+          </q-card-actions>
         </q-card>
       </q-dialog>
-      <q-btn
-        flat
-        round
-        color="primary"
-        icon="computer"
-        aria-label="Toggle console"
-        @click="console_active ? closeConsole() : openConsole()"
-      />
-      <q-btn
-        flat
-        round
-        color="primary"
-        icon="refresh"
-        aria-label="Reset to defaults"
-        @click="reset_confirm_dialog = true"
-      >
-        <q-tooltip :delay="1000">Reset to defaults</q-tooltip>
-      </q-btn>
-      <q-btn
-        flat
-        round
-        color="primary"
-        :icon="slideshow ? 'pause' : 'play_arrow'"
-        :aria-label="slideshow ? 'Stop slideshow' : 'Start slideshow'"
-        @click="toggleSlideshow"
-      >
-        <q-tooltip :delay="1000">Toggle automatic random numbers every few seconds</q-tooltip>
-      </q-btn>
-    </div>
 
-    <!-- Settings Dialog -->
-    <GeneratorSettingsDialog
-      v-model="settingsDialogOpen"
-      :die="die"
-      :mode="mode"
-      @advanced-update="(v:number[]) => advancedUpdate(v)"
-      @base-toggle="handleZeroBaseToggle"
-      @exclusive-toggle="handleExclusiveToggle"
-      @mode-change="(m:number) => handleModeChange(m, false)"
-      @mod-update="(v:number) => handleModUpdate(v)"
-      @close="bigButtonClick"
-      @clear-history="handleClearHistory"
-    ></GeneratorSettingsDialog>
+      <TimerBar
+        :duration="slideshow_delay"
+        :active="slideshow"
+        @timeout="bigButtonClick"
+      ></TimerBar>
 
-    <!-- Mode Picker Dialog -->
-    <ModePickerDialog
-      v-model="modeDialogOpen"
-      :mode="mode"
-      @mode-change="(m:number) => handleModeChange(m)"
-    ></ModePickerDialog>
-
-    <!-- Console -->
-    <DieConsole
-      :active="console_active"
-      :history="rolls"
-      :die="die"
-      :mode="mode"
-      :sparkle="options?.sparkleMode"
-      @console-close="closeConsole()"
-      @submit="handleConsoleSubmit"
-    ></DieConsole>
-
-    <!-- FAB -->
-    <div v-if="!console_active" :style="fabStyle">
-      <q-btn
-        fab
-        :icon="slideshow ? 'stop' : MODE[mode].material_icon"
-        :color="slideshow ? 'positive' : 'secondary'"
-        text-color="black"
-        @click="fabClick"
-      >
-        &nbsp;
-        <span style="text-transform: none">{{ slideshow ? 'Stop' : die.toString() }}</span>
-      </q-btn>
-    </div>
-
-    <!-- Reset Dialog -->
-    <q-dialog v-model="reset_confirm_dialog" role="alertdialog" aria-label="Confirm reset">
-      <q-card class="reset-card outlined">
-        <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="primary" text-color="white" />
-          <span class="q-ml-sm">Clear history and reset mode?</span>
-        </q-card-section>
-        <q-card-actions align="center">
-          <q-btn outline label="Do it" color="primary" @click="handleResetRole" />
-          <q-btn outline label="Cancel" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <TimerBar
-      :duration="slideshow_delay"
-      :active="slideshow"
-      @timeout="bigButtonClick"
-    ></TimerBar>
-
-    <DebugDie
-      :die="die"
-      :active="options?.enableDebug"
-      bg-color="#d5c396"
-    ></DebugDie>
+      <DebugDie
+        :die="die"
+        :active="options?.enableDebug"
+        bg-color="#d5c396"
+      ></DebugDie>
     </main>
   </q-page>
 </template>
