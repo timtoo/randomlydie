@@ -45,7 +45,7 @@ export function parseDiceExpression(
 
     if (pos >= text.length) break;
 
-    const wordMatch = text.slice(pos).match(/^[A-Za-z]+/);
+    const wordMatch = text.slice(pos).match(/^[A-Za-z]+(?![0-9])/);
     if (wordMatch) {
       const word = wordMatch[0];
       const mode = mode_by_name(word);

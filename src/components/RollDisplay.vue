@@ -91,7 +91,7 @@ export default defineComponent({
         return die.toString_format_mult();
       }
       if (isModifier.value) {
-        return die.get_mod_operator() + mode.formatValue(props.value);
+        return die.get_mod_operator() + mode.formatValue(Math.abs(props.value));
       }
       return mode.displayValue(props.value, die.max, die.mod);
     });
@@ -101,7 +101,7 @@ export default defineComponent({
       const modeId = effectiveMode.value;
       if (!die || !isCombinedOperator.value || modeId === undefined) return '';
       const mode = MODE[modeId];
-      return die.get_mod_operator() + mode.formatValue(props.combinedMod!);
+      return die.get_mod_operator() + mode.formatValue(Math.abs(props.combinedMod!));
     });
 
     const sparkleBg = computed(() => {

@@ -130,7 +130,7 @@ class ModeBase {
         result += die.get_mult_operator() + this.formatValue(die.get_mult_value());
       }
       if (die.mod !== 0) {
-        result += die.get_mod_operator() + this.formatValue(die.mod);
+        result += die.get_mod_operator() + this.formatValue(die.get_mod_value());
       }
     }
     return result;

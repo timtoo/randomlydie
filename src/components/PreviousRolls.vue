@@ -57,14 +57,14 @@ export default defineComponent({
       }
       if (modeObj.number_base && die.mod !== 0) {
         if (die.mult !== 1) {
-          result += die.get_mod_operator() + modeObj.formatValue(die.mod);
+          result += die.get_mod_operator() + modeObj.formatValue(die.get_mod_value());
         } else {
           result =
             '(' +
             result +
             ')' +
             die.get_mod_operator() +
-            modeObj.formatValue(die.mod);
+            modeObj.formatValue(die.get_mod_value());
         }
       }
       return result;

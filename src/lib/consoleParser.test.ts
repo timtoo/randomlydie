@@ -123,6 +123,15 @@ test('single die with modifier is not split on embedded sign', () => {
   expect(result?.dice[0].die.mod).toBe(-1);
 });
 
+test('single-letter mode prefix is not consumed by a following die', () => {
+  const result = parseDiceExpression('d12  + d5', MODE_ID.dice, defaultDie);
+  expect(result?.dice.length).toBe(2);
+  expect(result?.dice[0].die.toString()).toBe('1d12');
+  expect(result?.dice[0].die.operator).toBe('+');
+  expect(result?.dice[1].die.toString()).toBe('1d5');
+  expect(result?.dice[1].die.operator).toBe('+');
+});
+
 test('unknown words are ignored', () => {
   const result = parseDiceExpression('foo 2d6 bar', MODE_ID.dice, defaultDie);
   expect(result?.dice.length).toBe(1);
