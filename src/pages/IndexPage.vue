@@ -264,10 +264,12 @@ export default defineComponent({
         value: number;
         index: number;
         repeatIndex: number;
+        entryIndex: number;
         combinedMod?: number;
         die: Die;
         mode: MODE_ID;
       }[] = [];
+      let entryIndex = 0;
       for (const entry of lastRoll.value.dice) {
         const die = entry.die;
         const mode = entry.mode;
@@ -275,7 +277,7 @@ export default defineComponent({
         for (let r = 0; r < repeatCount; r++) {
           const throwValues = die.getThrow(r + 1);
           throwValues.forEach((value, index) => {
-            items.push({ value, index, repeatIndex: r, die, mode });
+            items.push({ value, index, repeatIndex: r, entryIndex, die, mode });
           });
           if (MODE[mode].number_base !== 0) {
             if (die.mult !== 1 && die.mod !== 0) {
@@ -283,6 +285,7 @@ export default defineComponent({
                 value: die.mult,
                 index: throwValues.length,
                 repeatIndex: r,
+                entryIndex,
                 die,
                 mode,
                 combinedMod: die.mod,
@@ -293,6 +296,7 @@ export default defineComponent({
                   value: die.mult,
                   index: throwValues.length,
                   repeatIndex: r,
+                  entryIndex,
                   die,
                   mode,
                 });
@@ -302,6 +306,7 @@ export default defineComponent({
                   value: die.mod,
                   index: throwValues.length + (die.mult !== 1 ? 1 : 0),
                   repeatIndex: r,
+                  entryIndex,
                   die,
                   mode,
                 });
@@ -309,6 +314,7 @@ export default defineComponent({
             }
           }
         }
+        entryIndex++;
       }
       return items;
     });
@@ -817,6 +823,8 @@ export default defineComponent({
             v-for="item in displayItems"
             :key="
               lastRoll.time.getTime() +
+              '-' +
+              item.entryIndex +
               '-' +
               item.repeatIndex +
               '-' +
