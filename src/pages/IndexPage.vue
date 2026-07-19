@@ -169,15 +169,21 @@ export default defineComponent({
 
     const displayItems = computed(() => {
       if (!lastRoll.value) return [];
-      const items: { value: number; index: number }[] = lastRoll.value.die
-        .getThrow()
-        .map((value, index) => ({ value, index }));
-      if (MODE[lastRoll.value.mode].number_base !== 0) {
-        if (lastRoll.value.die.mult !== 1) {
-          items.push({ value: lastRoll.value.die.mult, index: items.length });
-        }
-        if (lastRoll.value.die.mod !== 0) {
-          items.push({ value: lastRoll.value.die.mod, index: items.length });
+      const items: { value: number; index: number; repeatIndex: number }[] = [];
+      const die = lastRoll.value.die;
+      const repeatCount = die.repeat || 1;
+      for (let r = 0; r < repeatCount; r++) {
+        const throwValues = die.getThrow(r + 1);
+        throwValues.forEach((value, index) => {
+          items.push({ value, index, repeatIndex: r });
+        });
+        if (MODE[lastRoll.value.mode].number_base !== 0) {
+          if (die.mult !== 1) {
+            items.push({ value: die.mult, index: throwValues.length, repeatIndex: r });
+          }
+          if (die.mod !== 0) {
+            items.push({ value: die.mod, index: throwValues.length + (die.mult !== 1 ? 1 : 0), repeatIndex: r });
+          }
         }
       }
       return items;
@@ -619,7 +625,7 @@ export default defineComponent({
         <template v-if="lastRoll">
           <div
             v-for="item in displayItems"
-            :key="lastRoll.time.getTime() + '-' + item.index"
+            :key="lastRoll.time.getTime() + '-' + item.repeatIndex + '-' + item.index"
           >
             <roll-display
               :value="item.value"
