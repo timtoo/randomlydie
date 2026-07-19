@@ -7,7 +7,7 @@ const mode_name_str = Object.values(MODE)
 
 const routes: RouteRecordRaw[] = [
   {
-    path: `/:mode((?:${mode_name_str})(?:,(?:${mode_name_str}))*)?/:die*`,
+    path: `/:mode(${mode_name_str}(,${mode_name_str})*)?/:die*`,
     component: () => import('../layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('../pages/IndexPage.vue') },
