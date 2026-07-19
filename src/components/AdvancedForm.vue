@@ -103,16 +103,6 @@ export default defineComponent({
       return mode.quick_label[idx] ?? `Set ${props.die.mod}`;
     });
 
-    const notationDisplay = computed(() => {
-      return props.die.toString();
-    });
-
-    const { copy } = useClipboard();
-
-    function copyNotation() {
-      copy(notationDisplay.value);
-    }
-
     watch(
       () => props.die,
       () => {
@@ -225,8 +215,6 @@ export default defineComponent({
       modeDropdownOpen,
       modDropdownOpen,
       isSetBasedMode,
-      notationDisplay,
-      copyNotation,
       hasModDropdown,
       showRawModInput,
       modOptions,
@@ -242,41 +230,17 @@ export default defineComponent({
   <div class="q-gutter-y-md">
     <div>
       <label id="mode-label" class="sr-only">Generator mode</label>
-      <q-btn-dropdown
-        v-model="modeDropdownOpen"
-        class="full-width"
-        dense
-        outline
-        no-caps
-        color="primary"
-        :label="MODE[mode].name"
-        :icon="MODE[mode].material_icon"
-        aria-haspopup="listbox"
-        :aria-expanded="modeDropdownOpen"
-        aria-labelledby="mode-label"
-      >
-        <q-list
-          bordered
-          dense
-          class="bg-rrinput"
-          role="listbox"
-          aria-label="Select generator mode"
-        >
-          <template
-            v-for="m of Object.values(MODE)
-              .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-              .map((m) => m.id)"
-            :key="m"
-          >
-            <q-item
-              clickable
-              @click="
-                modeDropdownOpen = false;
-                $emit('mode-change', m);
-              "
-              role="option"
-              :aria-selected="mode === m"
-            >
+      <q-btn-dropdown v-model="modeDropdownOpen" class="full-width" dense outline no-caps color="primary"
+        :label="MODE[mode].name" :icon="MODE[mode].material_icon" aria-haspopup="listbox"
+        :aria-expanded="modeDropdownOpen" aria-labelledby="mode-label">
+        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select generator mode">
+          <template v-for="m of Object.values(MODE)
+            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+            .map((m) => m.id)" :key="m">
+            <q-item clickable @click="
+              modeDropdownOpen = false;
+            $emit('mode-change', m);
+            " role="option" :aria-selected="mode === m">
               <q-item-section>
                 <q-item-label>
                   <q-icon :name="MODE[m].material_icon"></q-icon>&nbsp;&nbsp;{{
@@ -291,25 +255,10 @@ export default defineComponent({
     </div>
     <div v-if="hasModDropdown" class="full-width">
       <label id="mod-select-label" class="sr-only">Set or key selection</label>
-      <q-btn-dropdown
-        v-model="modDropdownOpen"
-        class="full-width"
-        dense
-        outline
-        no-caps
-        color="primary"
-        :label="currentModLabel"
-        aria-haspopup="listbox"
-        :aria-expanded="modDropdownOpen"
-        aria-labelledby="mod-select-label"
-      >
-        <q-list
-          bordered
-          dense
-          class="bg-rrinput"
-          role="listbox"
-          aria-label="Select set or key"
-        >
+      <q-btn-dropdown v-model="modDropdownOpen" class="full-width" dense outline no-caps color="primary"
+        :label="currentModLabel" aria-haspopup="listbox" :aria-expanded="modDropdownOpen"
+        aria-labelledby="mod-select-label">
+        <q-list bordered dense class="bg-rrinput" role="listbox" aria-label="Select set or key">
           <template v-for="opt of modOptions" :key="opt.value">
             <q-item clickable @click="handleModChange(opt.value)" role="option">
               <q-item-section>
@@ -323,152 +272,65 @@ export default defineComponent({
     <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="min-label" class="sr-only">Minimum value</label>
-        <InputNumber
-          dense
-          v-model="min"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput"
-          label-color="primary"
-          @update:model-value="handleMinMaxDice('min')"
-          :min="0"
-          :max="max - 1"
-          aria-labelledby="min-label"
-        ></InputNumber>
+        <InputNumber dense v-model="min" input-class="text-rrinput text-rrinput-center" class="bg-rrinput"
+          label-color="primary" @update:model-value="handleMinMaxDice('min')" :min="0" :max="max - 1"
+          aria-labelledby="min-label"></InputNumber>
       </div>
       <div class="col-6">
         <label id="max-label" class="sr-only">Maximum value</label>
-        <InputNumber
-          dense
-          v-model="max"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput"
-          label-color="primary"
-          @update:model-value="handleMinMaxDice('max')"
-          :min="min + 1"
-          aria-labelledby="max-label"
-        ></InputNumber>
+        <InputNumber dense v-model="max" input-class="text-rrinput text-rrinput-center" class="bg-rrinput"
+          label-color="primary" @update:model-value="handleMinMaxDice('max')" :min="min + 1"
+          aria-labelledby="max-label">
+        </InputNumber>
       </div>
     </div>
     <div class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="dice-label" class="sr-only">Number of dice</label>
-        <InputNumber
-          dense
-          v-model="dice"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput full-width"
-          label-color="primary"
-          @update:model-value="handleMinMaxDice('dice')"
-          :min="1"
-          :max="10"
-          aria-labelledby="dice-label"
-        ></InputNumber>
+        <InputNumber dense v-model="dice" input-class="text-rrinput text-rrinput-center" class="bg-rrinput full-width"
+          label-color="primary" @update:model-value="handleMinMaxDice('dice')" :min="1" :max="10"
+          aria-labelledby="dice-label"></InputNumber>
       </div>
       <div v-if="showRawModInput" class="col-6">
         <label id="mod-label" class="sr-only">Minus/Plus Modifier</label>
-        <InputNumber
-          dense
-          :model-value="die.mod"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput full-width"
-          label-color="primary"
-          @update:model-value="handleRawModChange"
-          aria-labelledby="mod-label"
-        ></InputNumber>
+        <InputNumber dense :model-value="die.mod" input-class="text-rrinput text-rrinput-center"
+          class="bg-rrinput full-width" label-color="primary" @update:model-value="handleRawModChange"
+          aria-labelledby="mod-label"></InputNumber>
       </div>
     </div>
     <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
       <div class="col-6">
         <label id="repeat-label" class="sr-only">Repeats</label>
-        <InputNumber
-          dense
-          v-model="repeat"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput full-width"
-          label-color="primary"
-          @update:model-value="handleRepeatMult('repeat')"
-          :min="1"
-          :max="10"
-          aria-labelledby="repeat-label"
-        ></InputNumber>
-        <div
-          class="text-center text-caption"
-          style="color: var(--rr-text-muted)"
-        >
+        <InputNumber dense v-model="repeat" input-class="text-rrinput text-rrinput-center" class="bg-rrinput full-width"
+          label-color="primary" @update:model-value="handleRepeatMult('repeat')" :min="1" :max="10"
+          aria-labelledby="repeat-label"></InputNumber>
+        <div class="text-center text-caption" style="color: var(--rr-text-muted)">
           Repeats
         </div>
       </div>
       <div class="col-6">
         <label id="mult-label" class="sr-only">Multiplier</label>
-        <InputNumber
-          dense
-          v-model="mult"
-          input-class="text-rrinput text-rrinput-center"
-          class="bg-rrinput full-width"
-          label-color="primary"
-          @update:model-value="handleRepeatMult('mult')"
-          :min="1"
-          :max="100"
-          aria-labelledby="mult-label"
-        ></InputNumber>
-        <div
-          class="text-center text-caption"
-          style="color: var(--rr-text-muted)"
-        >
+        <InputNumber dense v-model="mult" input-class="text-rrinput text-rrinput-center" class="bg-rrinput full-width"
+          label-color="primary" @update:model-value="handleRepeatMult('mult')" :min="1" :max="100"
+          aria-labelledby="mult-label"></InputNumber>
+        <div class="text-center text-caption" style="color: var(--rr-text-muted)">
           Multiplier
         </div>
       </div>
     </div>
     <div v-if="!isSetBasedMode" class="row q-col-gutter-sm">
       <div class="col-6">
-        <q-btn
-          dense
-          outline
-          no-caps
-          class="full-width"
-          color="primary"
-          :class="die.zerobase ? 'rr-active-button' : ''"
-          @click="$emit('base-toggle')"
-          :aria-pressed="die.zerobase"
-        >
+        <q-btn dense outline no-caps class="full-width" color="primary" :class="die.zerobase ? 'rr-active-button' : ''"
+          @click="$emit('base-toggle')" :aria-pressed="die.zerobase">
           {{ die.zerobase ? 'Zero-based' : 'One-based' }}
         </q-btn>
       </div>
       <div class="col-6">
-        <q-btn
-          dense
-          outline
-          no-caps
-          class="full-width"
-          color="primary"
-          :class="die.exclusive ? 'rr-active-button' : ''"
-          @click="$emit('exclusive-toggle')"
-          :aria-pressed="die.exclusive"
-        >
+        <q-btn dense outline no-caps class="full-width" color="primary" :class="die.exclusive ? 'rr-active-button' : ''"
+          @click="$emit('exclusive-toggle')" :aria-pressed="die.exclusive">
           {{ die.exclusive ? 'Exclusive' : 'Inclusive' }}
         </q-btn>
       </div>
-    </div>
-    <div class="row items-center justify-center q-gutter-x-sm">
-      <div
-        class="text-caption"
-        style="
-          font-family: monospace;
-          letter-spacing: 0.05em;
-          color: var(--rr-text-muted);
-        "
-      >
-        {{ notationDisplay }}
-      </div>
-      <q-btn
-        dense
-        flat
-        size="sm"
-        icon="content_copy"
-        color="grey-7"
-        @click="copyNotation"
-        aria-label="Copy dice notation"
-      />
     </div>
   </div>
 </template>
