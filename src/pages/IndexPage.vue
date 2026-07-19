@@ -169,7 +169,7 @@ export default defineComponent({
 
     const displayItems = computed(() => {
       if (!lastRoll.value) return [];
-      const items: { value: number; index: number; repeatIndex: number }[] = [];
+      const items: { value: number; index: number; repeatIndex: number; combinedMod?: number }[] = [];
       const die = lastRoll.value.die;
       const repeatCount = die.repeat || 1;
       for (let r = 0; r < repeatCount; r++) {
@@ -178,11 +178,15 @@ export default defineComponent({
           items.push({ value, index, repeatIndex: r });
         });
         if (MODE[lastRoll.value.mode].number_base !== 0) {
-          if (die.mult !== 1) {
-            items.push({ value: die.mult, index: throwValues.length, repeatIndex: r });
-          }
-          if (die.mod !== 0) {
-            items.push({ value: die.mod, index: throwValues.length + (die.mult !== 1 ? 1 : 0), repeatIndex: r });
+          if (die.mult !== 1 && die.mod !== 0) {
+            items.push({ value: die.mult, index: throwValues.length, repeatIndex: r, combinedMod: die.mod });
+          } else {
+            if (die.mult !== 1) {
+              items.push({ value: die.mult, index: throwValues.length, repeatIndex: r });
+            }
+            if (die.mod !== 0) {
+              items.push({ value: die.mod, index: throwValues.length + (die.mult !== 1 ? 1 : 0), repeatIndex: r });
+            }
           }
         }
       }
@@ -631,6 +635,7 @@ export default defineComponent({
               :value="item.value"
               :index="item.index"
               :roll="lastRoll"
+              :combined-mod="item.combinedMod"
               :sparkle="options?.sparkleMode"
               :scale="displayScale"
               @on-roll-display-click="bigButtonClick"

@@ -22,6 +22,7 @@ export default defineComponent({
     index: { type: Number, default: 0 },
     sparkle: { type: Boolean, default: false },
     scale: { type: Number, default: 1 },
+    combinedMod: { type: Number, default: undefined },
   },
   components: {
     SvgDie6,
@@ -47,8 +48,12 @@ export default defineComponent({
         : false;
     });
 
+    const isCombinedOperator = computed(() =>
+      isMultiplier.value && props.combinedMod !== undefined && props.combinedMod !== 0
+    );
+
     const isModifier = computed(() => {
-      if (!props.roll) return false;
+      if (!props.roll || isCombinedOperator.value) return false;
       const multOffset = props.roll.die.mult !== 1 ? 1 : 0;
       return (
         props.index === props.roll.die.getThrow().length + multOffset &&
@@ -79,6 +84,12 @@ export default defineComponent({
         props.roll.die.max,
         props.roll.die.mod,
       );
+    });
+
+    const modDisplayValue = computed(() => {
+      if (!props.roll || !isCombinedOperator.value) return '';
+      const mode = MODE[props.roll.mode];
+      return (props.combinedMod! > 0 ? '+' : '') + mode.formatValue(props.combinedMod!);
     });
 
     const sparkleBg = computed(() => {
@@ -183,7 +194,9 @@ export default defineComponent({
     return {
       btn_ref,
       displayValue,
+      modDisplayValue,
       isMultiplier,
+      isCombinedOperator,
       isModifier,
       isOperator,
       isDie,
@@ -301,6 +314,12 @@ export default defineComponent({
         :style="{ transform: 'rotate(' + (Math.random() * 60 - 30) + 'deg)' }"
       ></SvgDie100>
     </template>
+    <template v-else-if="isCombinedOperator">
+      <div class="rr-combined-operator">
+        <span v-html="displayValue"></span><br/>
+        <span>{{ modDisplayValue }}</span>
+      </div>
+    </template>
     <template v-else>
       <span v-html="displayValue"></span>
     </template>
@@ -327,6 +346,15 @@ export default defineComponent({
 .rr-big-btn {
   color: var(--rr-text);
   min-width: 2.6em;
+  height: 2.6em;
   text-transform: none;
+}
+.rr-combined-operator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  font-size: 75%;
 }
 </style>
