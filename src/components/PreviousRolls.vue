@@ -4,7 +4,7 @@ import { defineComponent, computed, PropType, ref, onMounted, watch, nextTick } 
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'src/lib/models';
 import { MODE } from 'src/lib/modes';
-import { MULTIPY_CHARS, DIVIDE_CHARS } from 'src/lib/die';
+import { Die } from 'src/lib/die';
 
 export default defineComponent({
   name: 'PreviousRolls',
@@ -20,7 +20,7 @@ export default defineComponent({
     const canScrollLeft = ref(false);
     const canScrollRight = ref(false);
 
-    function formatMultiRepeat(die: { getThrow: (r?: number) => number[]; results: number[][]; repeat: number; max: number; mod: number; mult: number }, mode: number): string {
+    function formatMultiRepeat(die: Die, mode: number): string {
       const modeObj = MODE[mode];
       const repeatCount = die.repeat || 1;
       if (repeatCount <= 1) {
@@ -34,13 +34,13 @@ export default defineComponent({
       }
       let result = displays.join(',');
       if (modeObj.number_base && die.mult !== 1) {
-        result = '(' + result + ')' + (die.mult > 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0]) + modeObj.formatValue(Math.abs(die.mult));
+        result = '(' + result + ')' + die.get_mult_operator() + modeObj.formatValue(die.get_mult_value());
       }
       if (modeObj.number_base && die.mod !== 0) {
         if (die.mult !== 1) {
-          result += (die.mod > 0 ? '+' : '-') + modeObj.formatValue(die.mod);
+          result += die.get_mod_operator() + modeObj.formatValue(die.mod);
         } else {
-          result = '(' + result + ')' + (die.mod > 0 ? '+' : '-') + modeObj.formatValue(die.mod);
+          result = '(' + result + ')' + die.get_mod_operator() + modeObj.formatValue(die.mod);
         }
       }
       return result;

@@ -4,7 +4,6 @@ import { onLongPress } from '@vueuse/core';
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'src/lib/models';
 import { MODE, MODE_ID } from 'src/lib/modes';
-import { MULTIPY_CHARS, DIVIDE_CHARS } from 'src/lib/die';
 import SvgDie6 from 'components/SvgDie6.vue';
 import SvgDie8 from 'components/SvgDie8.vue';
 import SvgDie10 from 'components/SvgDie10.vue';
@@ -77,7 +76,7 @@ export default defineComponent({
         return props.roll.die.toString_format_mult()
       }
       if (isModifier.value) {
-        return (props.value > 0 ? '+' : '') + mode.formatValue(props.value);
+        return (props.roll.die.get_mod_operator()) + mode.formatValue(props.value);
       }
       return mode.displayValue(
         props.value,
@@ -89,7 +88,7 @@ export default defineComponent({
     const modDisplayValue = computed(() => {
       if (!props.roll || !isCombinedOperator.value) return '';
       const mode = MODE[props.roll.mode];
-      return (props.combinedMod! > 0 ? '+' : '') + mode.formatValue(props.combinedMod!);
+      return props.roll.die.get_mod_operator() + mode.formatValue(props.combinedMod!);
     });
 
     const sparkleBg = computed(() => {

@@ -190,13 +190,41 @@ class Die {
     );
   }
 
+  get_mod_operator(): string {
+    if (this.mod !== 0) {
+      return this.mod > 0 ? "+" : "-";
+    }
+    return "";
+  } 
+
+  get_mod_value(): number {
+    return this.mod > 0 ? this.mod : Math.abs(this.mod)
+  }
+
+  // the number to put after the operator
+  get_mult_operator(): string {
+    if (this.mult === 1) return "";
+    return this.mult > 1 || this.mult === 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0];
+  }
+
+  // the number to put after the operator
+  get_mult_value(): number {
+    return (this.mult > 1 || this.mult === 0) ? this.mult : Math.round(1 / this.mult);  
+  }
+
   // format any multiplier to how it should look as part of dice notation
   toString_format_mult(): string {
-    let value = "";
-    if (this.mult > 1) value = MULTIPY_CHARS[0] + this.mult
-    else if (this.mult < 1)
-      value = DIVIDE_CHARS[0] + Math.round(1 / this.mult);
-    return value;
+    if (this.mult === 1) return "";
+    return this.get_mult_operator() + this.get_mult_value();
+  }
+
+  toString_format_mod(): string {
+    if (this.mod === 0) return ""
+    return this.get_mod_operator() + this.get_mod_value();
+  }
+
+  toString_format_mult_mod(): string {
+    return this.toString_format_mult() + this.toString_format_mod()
   }
 
   // dice notation 
@@ -209,10 +237,8 @@ class Die {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
     
-    if (this.mult !== 0) value += this.toString_format_mult();
-    if (this.mod > 0) value += '+' + this.mod;
-    if (this.mod < 0) value += this.mod;
-
+    value += this.toString_format_mult_mod()
+ 
     if (this.repeat > 1) value = `${this.repeat}x(${value})`;
 
     if (compact) {
