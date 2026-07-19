@@ -6,8 +6,6 @@ import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 =======
 import {
   computed,
-  defineProps,
-  defineEmits,
   ref,
   watch,
   onMounted,
