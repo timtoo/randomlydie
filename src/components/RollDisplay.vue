@@ -74,7 +74,7 @@ export default defineComponent({
       if (!props.roll) return props.value.toString();
       const mode = MODE[props.roll.mode];
       if (isMultiplier.value) {
-        return (props.value > 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0]) + mode.formatValue(Math.abs(props.value));
+        return props.roll.die.toString_format_mult()
       }
       if (isModifier.value) {
         return (props.value > 0 ? '+' : '') + mode.formatValue(props.value);
