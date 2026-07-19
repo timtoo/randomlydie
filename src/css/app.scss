@@ -1,8 +1,8 @@
 // app global css in SCSS form
 
 body {
-    background-color: $background;
-    color: $text-default;
+  background-color: $background;
+  color: $text-default;
 }
 
 // CSS custom properties for theme switching
@@ -50,25 +50,25 @@ body.body--dark {
 .bg-rrinput {
   background: var(--rr-paper) !important;
   &-center {
-    text-align:center;
+    text-align: center;
   }
 }
 
 .rr-qb {
-    background: $primary;
-    color: $background;
-    margin-right: 0.3em;
-    margin-bottom: 0.3em;
-    border-radius: 0.5rem;
-    padding: 0.3em 1em;
-    &-selected {
-        background: $secondary;
-        color: black;
-    }
+  background: $primary;
+  color: $background;
+  margin-right: 0.3em;
+  margin-bottom: 0.3em;
+  border-radius: 0.5rem;
+  padding: 0.3em 1em;
+  &-selected {
+    background: $secondary;
+    color: black;
+  }
 }
 
 body.body--light .rr-qb {
-    color: white;
+  color: white;
 }
 
 .rr-card {
@@ -76,27 +76,27 @@ body.body--light .rr-qb {
   border-color: black;
 }
 
-.rr-modifier-display .q-btn--outline::before {
+.rr-operator-display.q-btn--outline::before {
   border: 1px dashed currentColor !important;
 }
 
 .bounce-enter-active {
-    animation: bounce-in 0.5s;
-  }
+  animation: bounce-in 0.5s;
+}
 .bounce-leave-active {
-    animation: bounce-in 0.5s reverse;
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
   }
-  @keyframes bounce-in {
-    0% {
-      transform: scale(0);
-    }
-    50% {
-      transform: scale(1.25);
-    }
-    100% {
-      transform: scale(1);
-    }
+  50% {
+    transform: scale(1.25);
   }
+  100% {
+    transform: scale(1);
+  }
+}
 
 // Layout utilities
 .rr-page-container {
@@ -183,7 +183,7 @@ body.body--light .rr-qb {
   }
 }
 
-.cursor-pointer[role="button"] {
+.cursor-pointer[role='button'] {
   &:focus-visible {
     outline: 2px solid $primary;
     outline-offset: 2px;
@@ -221,12 +221,25 @@ body.body--light .rr-qb {
 }
 
 @keyframes rr-idle-shake {
-  0%, 90% { transform: translateX(0); }
-  92% { transform: translateX(-2px); }
-  94% { transform: translateX(2px); }
-  96% { transform: translateX(-1px); }
-  98% { transform: translateX(1px); }
-  100% { transform: translateX(0); }
+  0%,
+  90% {
+    transform: translateX(0);
+  }
+  92% {
+    transform: translateX(-2px);
+  }
+  94% {
+    transform: translateX(2px);
+  }
+  96% {
+    transform: translateX(-1px);
+  }
+  98% {
+    transform: translateX(1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -267,8 +280,14 @@ body.body--light .rr-big-btn.q-btn--outline::before {
 }
 
 @keyframes rr-pulse-glow {
-  0% { opacity: 1; box-shadow: 0 0 30px 14px var(--rr-glow-color, transparent); }
-  100% { opacity: 0.6; box-shadow: 0 0 4px 2px var(--rr-glow-color, transparent); }
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 30px 14px var(--rr-glow-color, transparent);
+  }
+  100% {
+    opacity: 0.6;
+    box-shadow: 0 0 4px 2px var(--rr-glow-color, transparent);
+  }
 }
 
 .rr-sparkle-emoji {
@@ -279,8 +298,15 @@ body.body--light .rr-big-btn.q-btn--outline::before {
 }
 
 @keyframes rr-sparkle-float {
-  0% { opacity: 1; transform: translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--rr-float-x, 0), var(--rr-float-y, -3rem)) scale(1.5); }
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--rr-float-x, 0), var(--rr-float-y, -3rem))
+      scale(1.5);
+  }
 }
 
 .rr-sparkle-emoji {

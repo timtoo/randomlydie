@@ -1,6 +1,7 @@
 // vitest test file
 import { expect, test } from 'vitest';
 import { Die } from './die';
+import { MULTIPY_CHARS, DIVIDE_CHARS } from './die';
 
 // [string to parse]: [expecte dice object], [expected string], [compact string]
 const test_dice: { [key: string]: [Die, string, string?] } = {
@@ -12,18 +13,18 @@ const test_dice: { [key: string]: [Die, string, string?] } = {
   '3d12': [new Die(1, 12, 3), ''],
   '3d12+4': [new Die(1, 12, 3, 4), ''],
   '3d12-5': [new Die(1, 12, 3, -5), ''],
-  '4d8x3': [new Die(1, 8, 4, 0, 3), ''],
-  '4d8×3': [new Die(1, 8, 4, 0, 3), '4d8x3'],
-  '4d8*3': [new Die(1, 8, 4, 0, 3), '4d8x3'],
-  'd8/2': [new Die(1, 8, 1, 0, 0.5), '1d8/2'],
-  '2d8÷2': [new Die(1, 8, 2, 0, 0.5), '2d8/2'],
-  'd/3': [new Die(1, 6, 1, 0, 1 / 3), '1d6/3'],
-  '10d100/4+5': [new Die(1, 100, 10, 5, 0.25), ''],
-  '4x(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), ''],
-  '4X(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), '4x(10d100/4+5)'],
-  '4×(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), '4x(10d100/4+5)'],
-  '4*(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), '4x(10d100/4+5)'],
-  '4x(10d100+5/4)': [new Die(1, 100, 10, 5, 0.25, 4), '4x(10d100/4+5)'],
+  '4d8x3': [new Die(1, 8, 4, 0, 3), `4d8${MULTIPY_CHARS[0]}3`],
+  '4d8×3': [new Die(1, 8, 4, 0, 3), `4d8${MULTIPY_CHARS[0]}3`],
+  '4d8*3': [new Die(1, 8, 4, 0, 3), `4d8${MULTIPY_CHARS[0]}3`],
+  'd8/2': [new Die(1, 8, 1, 0, 0.5), `1d8${DIVIDE_CHARS[0]}2`],
+  '2d8÷2': [new Die(1, 8, 2, 0, 0.5), `2d8${DIVIDE_CHARS[0]}2`],
+  'd/3': [new Die(1, 6, 1, 0, 1 / 3), `1d6${DIVIDE_CHARS[0]}3`],
+  '10d100/4+5': [new Die(1, 100, 10, 5, 0.25), `10d100${DIVIDE_CHARS[0]}4+5`],
+  '4x(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), `4x(10d100${DIVIDE_CHARS[0]}4+5)`],
+  '4X(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), `4x(10d100${DIVIDE_CHARS[0]}4+5)`],
+  '4×(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), `4x(10d100${DIVIDE_CHARS[0]}4+5)`],
+  '4*(10d100/4+5)': [new Die(1, 100, 10, 5, 0.25, 4), `4x(10d100${DIVIDE_CHARS[0]}4+5)`],
+  '4x(10d100+5/4)': [new Die(1, 100, 10, 5, 0.25, 4), `4x(10d100${DIVIDE_CHARS[0]}4+5)`],
   '2X(3d6)/2+3': [new Die(1, 6, 3, 0, 1, 2, false, false), '2x(3d6)'], // typo result
   '3xd': [new Die(1, 6, 1, 0, 1, 3), '3x(1d6)'],
   '1d6>2': [new Die(2, 6), '', 'd>2'],

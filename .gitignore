@@ -37,5 +37,6 @@ yarn.lock
 *.njsproj
 *.sln
 
+docs/superpowers
 AGENTS.md
 tmp/

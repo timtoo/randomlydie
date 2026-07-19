@@ -4,6 +4,7 @@ import { defineComponent, computed, PropType, ref, onMounted, watch, nextTick } 
 import { useQuasar, copyToClipboard } from 'quasar';
 import { rollHistoryType } from 'src/lib/models';
 import { MODE } from 'src/lib/modes';
+import { MULTIPY_CHARS, DIVIDE_CHARS } from 'src/lib/die';
 
 export default defineComponent({
   name: 'PreviousRolls',
@@ -19,15 +20,42 @@ export default defineComponent({
     const canScrollLeft = ref(false);
     const canScrollRight = ref(false);
 
+    function formatMultiRepeat(die: { getThrow: (r?: number) => number[]; results: number[][]; repeat: number; max: number; mod: number; mult: number }, mode: number): string {
+      const modeObj = MODE[mode];
+      const repeatCount = die.repeat || 1;
+      if (repeatCount <= 1) {
+        return modeObj.displayMulti(die as never);
+      }
+      const separator = modeObj.number_base ? '+' : '·';
+      const displays: string[] = [];
+      for (let r = 1; r <= repeatCount; r++) {
+        const throwValues = die.getThrow(r);
+        displays.push(throwValues.map(v => modeObj.historyValue(v, die.max, die.mod)).join(separator));
+      }
+      let result = displays.join(',');
+      if (modeObj.number_base && die.mult !== 1) {
+        result = '(' + result + ')' + (die.mult > 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0]) + modeObj.formatValue(Math.abs(die.mult));
+      }
+      if (modeObj.number_base && die.mod !== 0) {
+        if (die.mult !== 1) {
+          result += (die.mod > 0 ? '+' : '-') + modeObj.formatValue(die.mod);
+        } else {
+          result = '(' + result + ')' + (die.mod > 0 ? '+' : '-') + modeObj.formatValue(die.mod);
+        }
+      }
+      return result;
+    }
+
     const previousRolls = computed((): { text: string; html: string }[] => {
       const result: { text: string; html: string }[] = [];
       for (const r of props.rolls.slice(
         props.skip,
         props.limit + 1 + props.skip
       )) {
+        const display = formatMultiRepeat(r.die, r.mode);
         result.push({
-          text: MODE[r.mode].displayMulti(r.die),
-          html: MODE[r.mode].displayMulti(r.die),
+          text: display,
+          html: display,
         });
       }
       return result;

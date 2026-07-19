@@ -1,4 +1,4 @@
-import { Die } from './die'
+import { Die, DIVIDE_CHARS, MULTIPY_CHARS } from './die'
 
 export enum MODE_ID {
   default = 0,
@@ -125,8 +125,11 @@ class ModeBase {
     } else {
       result = this._displayMultiValsOnly(die);
     }
+    if (this.number_base && die.mult !== 1) {
+      result += (die.mult > 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0]) + this.formatValue(Math.abs(die.mult));
+    }
     if (this.number_base && die.mod !== 0) {
-      result += (die.mod > 0 ? '+' : '') + this.formatValue(die.mod);
+      result += (die.mod > 0 ? '+' : '-') + this.formatValue(die.mod);
     }
     return result;
   }

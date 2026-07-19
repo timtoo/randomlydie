@@ -52,7 +52,7 @@ watch(console_input, () => {
 });
 
 function onSubmit() {
-  let terms = console_input.value.split(/[ :;.,/]+/);
+  let terms = console_input.value.split(/[\s:;.,]+/);
   let valid_die = false;
   let valid_mode = false;
   let new_die = props.die;

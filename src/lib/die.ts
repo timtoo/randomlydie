@@ -29,11 +29,12 @@ const DEFAULT_MULT = 1;
 const DEFAULT_MOD = 0;
 const DEFAULT_REPEAT = 1;
 
-const MULTIPY_CHARS = 'Xx×*';
-const DIVIDE_CHARS = '/÷';
+// the first char is used for official formatting, the last char is common ascii/typed character.
+const MULTIPY_CHARS = '×X*⋅x';
+const DIVIDE_CHARS = '/⁄÷∕/';        // solidus, fraction slash, division slash, division sign, forward slash
 
 const DieRegExp = new RegExp(
-  `\\b((?<repeat>\\d+)[${MULTIPY_CHARS}]\\(?)?(?<rolls>\\d*)[dD](?<max>-?\\d*)(>(?<min>-?\\d+))?((?<mult>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)(?<mod>[+-]\\d+)|(?<mod1>[+-]\\d+)(?<mult1>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)|(?<mod2>[+-]\\d+)|(?<mult2>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+))?(?<flag1>[xXzZ])?(?<flag2>[xXzZ])?\\b`
+  `\\b((?<repeat>\\d+)[${MULTIPY_CHARS}]\\(?)?(?<rolls>\\d*)[dD](?<max>-?\\d*)(>(?<min>-?\\d+))?((?<mult>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)(?<mod>[+-]\\d+)|(?<mod1>[+-]\\d+)(?<mult1>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)|(?<mod2>[+-]\\d+)|(?<mult2>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+))?(?<flag1>[xXzZ])?(?<flag2>[xXzZ])?\\b`,
 );
 
 class Die {
@@ -59,7 +60,7 @@ class Die {
     mult = DEFAULT_MULT,
     repeat = DEFAULT_REPEAT,
     exclusive = false,
-    zerobase = false
+    zerobase = false,
   ) {
     this.min = DEFAULT_MIN; // default minimum allowed
     this.max = max; // sides of dice
@@ -161,7 +162,7 @@ class Die {
     mult?: number,
     repeat?: number,
     exclusive?: boolean,
-    zerobase?: boolean
+    zerobase?: boolean,
   ) {
     const d = new Die(
       min || this.min,
@@ -171,7 +172,7 @@ class Die {
       mult || this.mult,
       repeat || this.repeat,
       exclusive || this.exclusive,
-      zerobase || this.zerobase
+      zerobase || this.zerobase,
     );
     return d;
   }
@@ -189,6 +190,16 @@ class Die {
     );
   }
 
+  // format any multiplier to how it should look as part of dice notation
+  toString_format_mult(): string {
+    let value = "";
+    if (this.mult > 1) value = MULTIPY_CHARS[0] + this.mult
+    else if (this.mult < 1)
+      value = DIVIDE_CHARS[0] + Math.round(1 / this.mult);
+    return value;
+  }
+
+  // dice notation 
   toString(compact = false): string {
     let value = `${this.dice}d${this.max}`;
 
@@ -197,10 +208,8 @@ class Die {
     if (this.min !== 1) {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
-    if (this.mult > 1) value += 'x' + this.mult;
-    if (this.mult > 0 && this.mult < 1)
-      value += '/' + Math.round(1 / this.mult);
-
+    
+    if (this.mult !== 0) value += this.toString_format_mult();
     if (this.mod > 0) value += '+' + this.mod;
     if (this.mod < 0) value += this.mod;
 
@@ -274,4 +283,4 @@ class Die {
   }
 }
 
-export { Die, DieRegExp };
+export { Die, DieRegExp, MULTIPY_CHARS, DIVIDE_CHARS };
