@@ -413,17 +413,13 @@ export default defineComponent({
       const r = lastRoll.value;
       if (!r) return;
       if (r.isMulti && r.dice.length > 1) {
-        router.push({
-          params: {
-            mode: r.dice.map((e) => MODE[e.mode].name_stripped).join(','),
-            die: r.dice.map((e) => e.die.toString()).join(','),
-          },
-          replace: replace,
-        });
+        const modeStr = r.dice.map((e) => MODE[e.mode].name_stripped).join(',');
+        const dieStr = r.dice.map((e) => e.die.toString()).join(',');
+        router.push({ path: `/roll/${modeStr}/${dieStr}`, replace });
       } else {
         router.push({
-          params: { mode: MODE[r.mode].name_stripped, die: r.label },
-          replace: replace,
+          path: `/roll/${MODE[r.mode].name_stripped}/${r.label}`,
+          replace,
         });
       }
     }

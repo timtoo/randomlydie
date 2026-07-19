@@ -17,7 +17,7 @@ import { MODE } from 'src/lib/modes';
               <div class="text-h6" style="color: var(--rr-text)">
                 <q-icon :name="val.material_icon" size="sm" class="q-mr-sm" />
                 <router-link
-                  :to="'/' + val.name"
+                  :to="'/roll/' + val.name_stripped"
                   custom
                   v-slot="{ navigate }"
                 >
