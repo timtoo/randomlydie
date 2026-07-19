@@ -33,6 +33,7 @@ const $q = useQuasar();
 const console_history = useStorage<string[]>('rd-console-history', []);
 const selected_match = ref(-1);
 const selectingMatch = ref(false);
+const show_history = ref(false);
 
 const inputValue = computed(() => (console_input.value || '').trim());
 
@@ -52,7 +53,15 @@ const matches = computed(() => {
   return list;
 });
 
-const show_matches = computed(() => matches.value.length > 0);
+const historyPreview = computed(() => console_history.value.slice(0, 8));
+
+const effectiveItems = computed(() => {
+  if (inputValue.value && matches.value.length > 0) return matches.value;
+  if (show_history.value) return historyPreview.value;
+  return [];
+});
+
+const show_matches = computed(() => effectiveItems.value.length > 0);
 
 const sparkleGlow = computed(() => {
   if (!props.sparkle || !console_active.value) return undefined;
@@ -73,6 +82,7 @@ watch(
 
 watch(console_input, () => {
   selected_match.value = -1;
+  show_history.value = false;
   if (!console_input.value) {
     error_status.value = false;
   }
@@ -80,7 +90,7 @@ watch(console_input, () => {
 
 function onSubmit() {
   if (selectingMatch.value) {
-    console_input.value = matches.value[selected_match.value];
+    console_input.value = effectiveItems.value[selected_match.value];
     selectingMatch.value = false;
     selected_match.value = -1;
     return;
@@ -124,21 +134,29 @@ function onSubmit() {
 }
 
 function selectMatch(index: number) {
-  console_input.value = matches.value[index];
+  console_input.value = effectiveItems.value[index];
   selected_match.value = -1;
 }
 
 function onInputKeydown(event: KeyboardEvent) {
-  if (!show_matches.value) return;
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    show_history.value = true;
+    if (!show_matches.value) return;
 
-  if (event.key === 'ArrowDown') {
     event.preventDefault();
-    selected_match.value = (selected_match.value + 1) % matches.value.length;
-  } else if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    selected_match.value =
-      (selected_match.value - 1 + matches.value.length) % matches.value.length;
-  } else if (event.key === 'Enter' && selected_match.value >= 0) {
+    const items = effectiveItems.value;
+    if (selected_match.value < 0) {
+      selected_match.value = 0;
+    } else if (event.key === 'ArrowDown') {
+      selected_match.value = (selected_match.value + 1) % items.length;
+    } else {
+      selected_match.value =
+        (selected_match.value - 1 + items.length) % items.length;
+    }
+    return;
+  }
+
+  if (event.key === 'Enter' && selected_match.value >= 0) {
     event.preventDefault();
     selectingMatch.value = true;
   }
@@ -207,12 +225,14 @@ onUnmounted(() => {
           v-show="show_matches"
           bordered
           separator
+          dense
           class="rounded-borders console-history-list"
         >
           <q-item
-            v-for="(entry, index) in matches"
-            :key="entry + index"
+            v-for="(entry, index) in effectiveItems"
+            :key="entry + '-' + index"
             clickable
+            dense
             :active="index === selected_match"
             active-class="bg-primary text-white"
             @click="selectMatch(index)"
@@ -245,9 +265,9 @@ onUnmounted(() => {
 
 <style lang="scss">
 .console-history-list {
-  max-height: 30vh;
+  max-height: 25vh;
   overflow-y: auto;
-  margin-top: 0.5em;
+  margin-top: 0.25em;
   background-color: var(--rr-paper);
 }
 
