@@ -113,7 +113,7 @@ export default defineComponent({
       return `hsla(${h}, 80%, 60%, ${alpha})`;
     });
 
-    const sparkleEmojis = computed(() => {
+/*    const sparkleEmojis = computed(() => {
       if (!props.sparkle || !props.roll) return [];
       const emojis = [
         '✨',
@@ -136,14 +136,14 @@ export default defineComponent({
         '🎈',
         '🌙',
         '☀️',
-      ];
+      ]; 
       const count = 2 + Math.floor(Math.random() * 4);
       const result = [];
       for (let i = 0; i < count; i++) {
         result.push(emojis[Math.floor(Math.random() * emojis.length)]);
       }
       return result;
-    });
+    });*/
 
     const isSingleResult = computed(() => {
       return props.roll ? props.roll.die.getThrow().length === 1 : false;
@@ -205,7 +205,7 @@ export default defineComponent({
       svgHeight,
       sparkleBg,
       sparkleGlow,
-      sparkleEmojis,
+//      sparkleEmojis,
       handleLongPress,
       inLongPress,
       MODE_ID,
