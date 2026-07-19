@@ -1,7 +1,10 @@
 <script lang="ts">
 import { defineComponent, computed, PropType } from 'vue';
 import { rollHistoryType } from 'src/lib/models';
-import { MODE } from 'src/lib/modes'
+import { MODE } from 'src/lib/modes';
+
+const MULTI_ROLL_ICON = 'layers';
+const MULTI_ROLL_MODE_NAME = 'Multi';
 
 export default defineComponent({
   name: 'HistoryList',
@@ -13,7 +16,22 @@ export default defineComponent({
   emits: ['onDieChip'],
   setup(props) {
     function makeKey(roll: rollHistoryType): string {
-      return roll.chipLabel + ':' + roll.mode;
+      return (roll.isMulti ? 'multi:' : '') + roll.chipLabel + ':' + roll.mode;
+    }
+
+    function chipIcon(roll: rollHistoryType): string {
+      return roll.isMulti ? MULTI_ROLL_ICON : MODE[roll.mode].material_icon;
+    }
+
+    function chipLabel(roll: rollHistoryType): string {
+      return roll.isMulti ? roll.chipLabel : roll.chipLabel;
+    }
+
+    function chipAriaLabel(roll: rollHistoryType): string {
+      const modeName = roll.isMulti
+        ? MULTI_ROLL_MODE_NAME
+        : MODE[roll.mode].name;
+      return 'Roll ' + roll.chipLabel + ' in ' + modeName + ' mode';
     }
 
     const filteredRolls = computed((): rollHistoryType[] => {
@@ -32,10 +50,18 @@ export default defineComponent({
     });
 
     const currentKey = computed(() =>
-      props.rolls.length > 0 ? makeKey(props.rolls[0]) : ''
+      props.rolls.length > 0 ? makeKey(props.rolls[0]) : '',
     );
 
-    return { filteredRolls, makeKey, currentKey, MODE };
+    return {
+      filteredRolls,
+      makeKey,
+      chipIcon,
+      chipLabel,
+      chipAriaLabel,
+      currentKey,
+      MODE,
+    };
   },
 });
 </script>
@@ -49,16 +75,21 @@ export default defineComponent({
         clickable
         tabindex="0"
         role="button"
-        :aria-label="'Roll ' + r.chipLabel + ' in ' + MODE[r.mode].name + ' mode'"
+        :aria-label="chipAriaLabel(r)"
         @click="$emit('onDieChip', r)"
         @keydown.enter="$emit('onDieChip', r)"
         @keydown.space.prevent="$emit('onDieChip', r)"
-        :icon="MODE[r.mode].material_icon"
+        :icon="chipIcon(r)"
         text-color="white"
-      >{{ r.chipLabel }}</q-chip>
+        >{{ chipLabel(r) }}</q-chip
+      >
     </template>
   </div>
-  <div v-else class="text-center text-italic text-body2" style="color: var(--rr-text-muted)">
+  <div
+    v-else
+    class="text-center text-italic text-body2"
+    style="color: var(--rr-text-muted)"
+  >
     No history yet
   </div>
 </template>

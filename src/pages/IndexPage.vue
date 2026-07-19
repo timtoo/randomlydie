@@ -48,8 +48,10 @@ function letsroll(
     label: die.toString(),
     chipLabel: MODE[mode].chipLabel(die),
     display: MODE[mode].displayMulti(die),
+    dice: [{ die: die, mode: mode }],
     die: die,
     mode: mode,
+    isMulti: false,
     time: new Date(),
   });
 
@@ -65,6 +67,82 @@ function letsroll(
   lastRollDisplay.value = rolls[0].display;
 
   return newDie;
+}
+
+function formatMultiRollChipLabel(
+  entries: { die: Die; mode: MODE_ID }[],
+): string {
+  return entries
+    .map((e, i) => (i > 0 ? ' + ' : '') + e.die.toString())
+    .join('');
+}
+
+function formatMultiRollDisplay(
+  entries: { die: Die; mode: MODE_ID }[],
+): string {
+  const numericEntries = entries.filter(
+    ({ mode }) => MODE[mode].number_base !== 0,
+  );
+  if (numericEntries.length > 0) {
+    const grandTotal = numericEntries.reduce(
+      (sum, { die }) => sum + die.getResult(),
+      0,
+    );
+    const subtotals = numericEntries.map(({ die, mode }) =>
+      MODE[mode].historyValue(die.getResult(), die.max, die.mod),
+    );
+    return `${grandTotal.toLocaleString()} (${subtotals.join(' + ')})`;
+  }
+
+  const values: string[] = [];
+  for (const { die, mode } of entries) {
+    const modeObj = MODE[mode];
+    const repeatCount = die.repeat || 1;
+    for (let r = 1; r <= repeatCount; r++) {
+      const throwValues = die.getThrow(r);
+      for (const v of throwValues) {
+        values.push(modeObj.historyValue(v, die.max, die.mod));
+      }
+    }
+  }
+  return values.join(' · ');
+}
+
+function letsrollMulti(
+  entries: { die: Die; mode: MODE_ID }[],
+  rolls: rollHistoryType[],
+): void {
+  const title_divider = ' | ';
+  const rolledEntries = entries.map((e) => {
+    const die = e.die.clone();
+    die.roll();
+    return { die: die, mode: e.mode };
+  });
+
+  const label = formatMultiRollChipLabel(rolledEntries);
+  const display = formatMultiRollDisplay(rolledEntries);
+
+  rolls.unshift({
+    label: label,
+    chipLabel: label,
+    display: display,
+    dice: rolledEntries,
+    die: rolledEntries[0].die,
+    mode: rolledEntries[0].mode,
+    isMulti: true,
+    time: new Date(),
+  });
+
+  if (rolls.length > MAX_HISTORY) rolls.pop();
+
+  const title_divider_index = document.title.lastIndexOf(title_divider);
+  if (title_divider_index >= 0) {
+    document.title = document.title.slice(
+      title_divider_index + title_divider.length,
+    );
+  }
+  document.title = `${rolls[0].display}${title_divider}${rolls[0].label}${title_divider}${document.title}`;
+  lastRollDisplay.value = rolls[0].display;
 }
 
 export default defineComponent({
@@ -108,6 +186,19 @@ export default defineComponent({
       {},
     );
     const mode = ref(lastMode.value);
+    const multiDice = ref<{ die: Die; mode: MODE_ID }[] | null>(null);
+
+    function isMultiRollActive(): boolean {
+      return multiDice.value !== null && multiDice.value.length > 1;
+    }
+
+    function setMultiDice(entries: { die: Die; mode: MODE_ID }[] | null) {
+      multiDice.value = entries;
+    }
+
+    function clearMultiDice() {
+      multiDice.value = null;
+    }
 
     function saveModeNotation(m = mode.value) {
       if (die.value) {
@@ -169,23 +260,52 @@ export default defineComponent({
 
     const displayItems = computed(() => {
       if (!lastRoll.value) return [];
-      const items: { value: number; index: number; repeatIndex: number; combinedMod?: number }[] = [];
-      const die = lastRoll.value.die;
-      const repeatCount = die.repeat || 1;
-      for (let r = 0; r < repeatCount; r++) {
-        const throwValues = die.getThrow(r + 1);
-        throwValues.forEach((value, index) => {
-          items.push({ value, index, repeatIndex: r });
-        });
-        if (MODE[lastRoll.value.mode].number_base !== 0) {
-          if (die.mult !== 1 && die.mod !== 0) {
-            items.push({ value: die.mult, index: throwValues.length, repeatIndex: r, combinedMod: die.mod });
-          } else {
-            if (die.mult !== 1) {
-              items.push({ value: die.mult, index: throwValues.length, repeatIndex: r });
-            }
-            if (die.mod !== 0) {
-              items.push({ value: die.mod, index: throwValues.length + (die.mult !== 1 ? 1 : 0), repeatIndex: r });
+      const items: {
+        value: number;
+        index: number;
+        repeatIndex: number;
+        combinedMod?: number;
+        die: Die;
+        mode: MODE_ID;
+      }[] = [];
+      for (const entry of lastRoll.value.dice) {
+        const die = entry.die;
+        const mode = entry.mode;
+        const repeatCount = die.repeat || 1;
+        for (let r = 0; r < repeatCount; r++) {
+          const throwValues = die.getThrow(r + 1);
+          throwValues.forEach((value, index) => {
+            items.push({ value, index, repeatIndex: r, die, mode });
+          });
+          if (MODE[mode].number_base !== 0) {
+            if (die.mult !== 1 && die.mod !== 0) {
+              items.push({
+                value: die.mult,
+                index: throwValues.length,
+                repeatIndex: r,
+                die,
+                mode,
+                combinedMod: die.mod,
+              });
+            } else {
+              if (die.mult !== 1) {
+                items.push({
+                  value: die.mult,
+                  index: throwValues.length,
+                  repeatIndex: r,
+                  die,
+                  mode,
+                });
+              }
+              if (die.mod !== 0) {
+                items.push({
+                  value: die.mod,
+                  index: throwValues.length + (die.mult !== 1 ? 1 : 0),
+                  repeatIndex: r,
+                  die,
+                  mode,
+                });
+              }
             }
           }
         }
@@ -208,6 +328,11 @@ export default defineComponent({
 
     const showRollTotal = computed(() => {
       if (!lastRoll.value) return false;
+      if (lastRoll.value.isMulti) {
+        return lastRoll.value.dice.some(
+          ({ mode }) => MODE[mode].number_base !== 0,
+        );
+      }
       const m = MODE[lastRoll.value.mode];
       // Show total for numeric modes when there are multiple dice,
       // or when modifiers/multipliers/repeats make the result differ from raw sum
@@ -220,6 +345,9 @@ export default defineComponent({
 
     const rollTotal = computed(() => {
       if (!lastRoll.value) return '';
+      if (lastRoll.value.isMulti) {
+        return formatMultiRollDisplay(lastRoll.value.dice);
+      }
       const m = MODE[lastRoll.value.mode];
       return m.formatValue(lastRoll.value.die.getResult());
     });
@@ -228,22 +356,41 @@ export default defineComponent({
       const modeParam = Array.isArray(route.params.mode)
         ? route.params.mode[0]
         : route.params.mode;
-      if (modeParam) {
-        const new_mode = mode_by_name(modeParam);
-        if (new_mode) {
-          mode.value = new_mode.id;
-        }
-      }
       const dieParam = Array.isArray(route.params.die)
         ? route.params.die[0]
         : route.params.die;
-      if (dieParam) {
+
+      if (!modeParam || !dieParam) return;
+
+      const modeParts = modeParam.split(',').filter((s) => s.trim());
+      const dieParts = dieParam.split(',').filter((s) => s.trim());
+      if (modeParts.length !== dieParts.length) return;
+
+      const entries: { die: Die; mode: MODE_ID }[] = [];
+      for (let i = 0; i < modeParts.length; i++) {
+        const modeObj = mode_by_name(modeParts[i]);
+        if (!modeObj) return;
+        const notation = dieParts[i].trim();
+        if (!notation) return;
         try {
-          const new_die = new Die(dieParam);
-          die.value = new_die;
+          const new_die = new Die(notation);
+          entries.push({ die: new_die, mode: modeObj.id });
         } catch {
-          console.log('Could not parse die: ', dieParam);
+          console.log('Could not parse die: ', notation);
+          return;
         }
+      }
+
+      if (entries.length === 0) return;
+
+      if (entries.length === 1) {
+        die.value = entries[0].die;
+        mode.value = entries[0].mode;
+        clearMultiDice();
+      } else {
+        setMultiDice(entries);
+        die.value = entries[0].die.clone();
+        mode.value = entries[0].mode;
       }
     }
 
@@ -264,7 +411,16 @@ export default defineComponent({
 
     function updateURL(replace = true) {
       const r = lastRoll.value;
-      if (r) {
+      if (!r) return;
+      if (r.isMulti && r.dice.length > 1) {
+        router.push({
+          params: {
+            mode: r.dice.map((e) => MODE[e.mode].name_stripped).join(','),
+            die: r.dice.map((e) => e.die.toString()).join(','),
+          },
+          replace: replace,
+        });
+      } else {
         router.push({
           params: { mode: MODE[r.mode].name_stripped, die: r.label },
           replace: replace,
@@ -282,7 +438,15 @@ export default defineComponent({
     }
 
     function bigButtonClick() {
-      die.value = letsroll(die.value, mode.value, rolls.value);
+      if (isMultiRollActive() && multiDice.value) {
+        const entries = multiDice.value.map((e) => ({
+          die: e.die.clone(),
+          mode: e.mode,
+        }));
+        letsrollMulti(entries, rolls.value);
+      } else {
+        die.value = letsroll(die.value, mode.value, rolls.value);
+      }
       lastUpdate.value = rolls.value[0].time;
       saveModeNotation();
       if (
@@ -306,6 +470,7 @@ export default defineComponent({
 
     function handleQuickButton(v: number) {
       MODE[mode.value].configureDie(die.value, v);
+      clearMultiDice();
       saveModeNotation();
       bigButtonClick();
     }
@@ -334,6 +499,7 @@ export default defineComponent({
       die.value.dice = v[2];
       if (v.length > 3) die.value.repeat = v[3];
       if (v.length > 4) die.value.mult = v[4];
+      clearMultiDice();
       saveModeNotation();
     }
 
@@ -350,12 +516,14 @@ export default defineComponent({
         // For other modes, just set the raw mod value
         die.value.mod = newMod;
       }
+      clearMultiDice();
       saveModeNotation();
     }
 
     function incrementDice() {
       if (die.value.dice < MAX_DICE) {
         die.value.dice++;
+        clearMultiDice();
         advancedUpdate([die.value.min, die.value.max, die.value.dice]);
         bigButtonClick();
       }
@@ -364,19 +532,25 @@ export default defineComponent({
     function decrementDice() {
       if (die.value.dice > 1) {
         die.value.dice--;
+        clearMultiDice();
         advancedUpdate([die.value.min, die.value.max, die.value.dice]);
         bigButtonClick();
       }
     }
 
     function handleChipClick(v: rollHistoryType) {
+      if (v.isMulti && v.dice.length > 1) {
+        setMultiDice(v.dice.map((e) => ({ die: e.die.clone(), mode: e.mode })));
+      } else {
+        clearMultiDice();
+      }
       die.value = v.die.clone();
       mode.value = v.mode;
       saveModeNotation();
       bigButtonClick();
     }
 
-    function handleModeChange(m: number, reroll = true) {
+    function handleModeChange(m: number, reroll = true, clearMulti = true) {
       if (m != mode.value) {
         const new_mode = MODE[m];
         if (new_mode) {
@@ -416,6 +590,7 @@ export default defineComponent({
             }
           }
           mode.value = m;
+          if (clearMulti) clearMultiDice();
           saveModeNotation();
           if (reroll) bigButtonClick();
         }
@@ -428,12 +603,14 @@ export default defineComponent({
       die.value.zerobase = !die.value.zerobase;
       die.value.min = die.value.zerobase ? 0 : 1;
       if (die.value.max <= die.value.min) die.value.max = die.value.min + 1;
+      clearMultiDice();
       saveModeNotation();
     }
 
     function handleExclusiveToggle() {
       if (mode.value === MODE_ID.emoji || mode.value === MODE_ID.games) return;
       die.value.exclusive = !die.value.exclusive;
+      clearMultiDice();
       saveModeNotation();
     }
 
@@ -444,6 +621,7 @@ export default defineComponent({
       console_active.value = false;
       rolls.value = [];
       lastNotationPerMode.value = {};
+      clearMultiDice();
       reset_confirm_dialog.value = false;
       const targetMode = MODE_ID.dice;
       lastMode.value = targetMode;
@@ -476,6 +654,13 @@ export default defineComponent({
 
     function handleConsoleSubmit(data: consoleSubmitType) {
       if (data.dice && data.dice.length > 0) {
+        if (data.dice.length > 1) {
+          setMultiDice(
+            data.dice.map((e) => ({ die: e.die.clone(), mode: e.mode })),
+          );
+        } else {
+          clearMultiDice();
+        }
         die.value = data.dice[0].die;
         mode.value = data.dice[0].mode;
       }
@@ -510,7 +695,7 @@ export default defineComponent({
 
     function closeConsole() {
       console_active.value = false;
-      handleModeChange(preConsoleMode.value, false);
+      handleModeChange(preConsoleMode.value, false, false);
     }
 
     function shouldIgnoreHotkey() {
@@ -577,6 +762,9 @@ export default defineComponent({
       mode,
       die,
       rolls,
+      multiDice,
+      isMultiRollActive,
+      formatMultiRollChipLabel,
       afrender,
       aboutDialogOpen,
       console_active,
@@ -631,12 +819,22 @@ export default defineComponent({
         <template v-if="lastRoll">
           <div
             v-for="item in displayItems"
-            :key="lastRoll.time.getTime() + '-' + item.repeatIndex + '-' + item.index"
+            :key="
+              lastRoll.time.getTime() +
+              '-' +
+              item.repeatIndex +
+              '-' +
+              item.index +
+              '-' +
+              item.mode
+            "
           >
             <roll-display
               :value="item.value"
               :index="item.index"
               :roll="lastRoll"
+              :die="item.die"
+              :mode="item.mode"
               :combined-mod="item.combinedMod"
               :sparkle="options?.sparkleMode"
               :scale="displayScale"
@@ -955,14 +1153,24 @@ export default defineComponent({
       <div v-if="!console_active" :style="fabStyle">
         <q-btn
           fab
-          :icon="slideshow ? 'stop' : MODE[mode].material_icon"
+          :icon="
+            slideshow
+              ? 'stop'
+              : isMultiRollActive()
+                ? 'layers'
+                : MODE[mode].material_icon
+          "
           :color="slideshow ? 'positive' : 'secondary'"
           text-color="black"
           @click="fabClick"
         >
           &nbsp;
           <span style="text-transform: none">{{
-            slideshow ? 'Stop' : die.toString()
+            slideshow
+              ? 'Stop'
+              : isMultiRollActive() && multiDice
+                ? formatMultiRollChipLabel(multiDice)
+                : die.toString()
           }}</span>
         </q-btn>
       </div>

@@ -31,7 +31,7 @@ const DEFAULT_REPEAT = 1;
 
 // the first char is used for official formatting, the last char is common ascii/typed character.
 const MULTIPY_CHARS = '×X*⋅x';
-const DIVIDE_CHARS = '/⁄÷∕/';        // solidus, fraction slash, division slash, division sign, forward slash
+const DIVIDE_CHARS = '/⁄÷∕/'; // solidus, fraction slash, division slash, division sign, forward slash
 
 const DieRegExp = new RegExp(
   `\\b((?<repeat>\\d+)[${MULTIPY_CHARS}]\\(?)?(?<rolls>\\d*)[dD](?<max>-?\\d*)(>(?<min>-?\\d+))?((?<mult>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)(?<mod>[+-]\\d+)|(?<mod1>[+-]\\d+)(?<mult1>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+)|(?<mod2>[+-]\\d+)|(?<mult2>[${MULTIPY_CHARS}${DIVIDE_CHARS}]\\d+))?(?<flag1>[xXzZ])?(?<flag2>[xXzZ])?\\b`,
@@ -62,7 +62,7 @@ class Die {
     repeat = DEFAULT_REPEAT,
     exclusive = false,
     zerobase = false,
-    operator = '+'
+    operator = '+',
   ) {
     this.min = DEFAULT_MIN; // default minimum allowed
     this.max = max; // sides of dice
@@ -166,6 +166,7 @@ class Die {
     repeat?: number,
     exclusive?: boolean,
     zerobase?: boolean,
+    operator?: string,
   ) {
     const d = new Die(
       min || this.min,
@@ -177,6 +178,7 @@ class Die {
       exclusive || this.exclusive,
       zerobase || this.zerobase,
     );
+    d.operator = operator !== undefined ? operator : this.operator;
     return d;
   }
 
@@ -195,39 +197,43 @@ class Die {
 
   get_mod_operator(): string {
     if (this.mod !== 0) {
-      return this.mod > 0 ? "+" : "-";
+      return this.mod > 0 ? '+' : '-';
     }
-    return "";
-  } 
+    return '';
+  }
 
   get_mod_value(): number {
-    return this.mod > 0 ? this.mod : Math.abs(this.mod)
+    return this.mod > 0 ? this.mod : Math.abs(this.mod);
   }
 
   // the number to put after the operator
   get_mult_operator(): string {
-    if (this.mult === 1) return "";
-    return this.mult > 1 || this.mult === 0 ? MULTIPY_CHARS[0] : DIVIDE_CHARS[0];
+    if (this.mult === 1) return '';
+    return this.mult > 1 || this.mult === 0
+      ? MULTIPY_CHARS[0]
+      : DIVIDE_CHARS[0];
   }
 
   // the number to put after the operator
   get_mult_value(): number {
-    return (this.mult > 1 || this.mult === 0) ? this.mult : Math.round(1 / this.mult);  
+    return this.mult > 1 || this.mult === 0
+      ? this.mult
+      : Math.round(1 / this.mult);
   }
 
   // format any multiplier to how it should look as part of dice notation
   toString_format_mult(): string {
-    if (this.mult === 1) return "";
+    if (this.mult === 1) return '';
     return this.get_mult_operator() + this.get_mult_value();
   }
 
   toString_format_mod(): string {
-    if (this.mod === 0) return ""
+    if (this.mod === 0) return '';
     return this.get_mod_operator() + this.get_mod_value();
   }
 
   toString_format_mult_mod(): string {
-    return this.toString_format_mult() + this.toString_format_mod()
+    return this.toString_format_mult() + this.toString_format_mod();
   }
 
   // dice notation git push --force-with-lease origin multid
@@ -239,9 +245,9 @@ class Die {
     if (this.min !== 1) {
       if (!(this.min === 0 && this.zerobase)) value += '>' + this.min;
     }
-    
-    value += this.toString_format_mult_mod()
- 
+
+    value += this.toString_format_mult_mod();
+
     if (this.repeat > 1) value = `${this.repeat}x(${value})`;
 
     if (compact) {
