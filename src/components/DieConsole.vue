@@ -194,7 +194,7 @@ onUnmounted(() => {
     ref="console_ref"
   >
     <div
-      class="row console justify-center items-center"
+      class="row console justify-center items-start"
       :class="[sparkle && console_active ? 'rr-sparkle-glow' : '']"
       :style="{
         marginBottom: keyboardOffset + 'px',
@@ -247,15 +247,17 @@ onUnmounted(() => {
         <div class="col">
           <div>
             <q-btn
-              style="width: 100%"
+              style="width: 100%; color: var(--rr-text-muted)"
               outline
+              size="sm"
+              dense
               @click="$emit('console-close')"
               color="primary"
               >Esc</q-btn
             >
           </div>
           <div>
-            <q-btn outline @click="onSubmit" color="primary">Enter</q-btn>
+            <q-btn outline @click="onSubmit" push color="primary">Enter</q-btn>
           </div>
         </div>
       </div>
