@@ -20,7 +20,7 @@ export default defineComponent({
     }
 
     function chipIcon(roll: rollHistoryType): string {
-      return roll.isMulti ? MULTI_ROLL_ICON : MODE[roll.mode].material_icon;
+      return roll.isMulti ? MODE[roll.mode].material_icon : MODE[roll.mode].material_icon;
     }
 
     function chipLabel(roll: rollHistoryType): string {
