@@ -346,7 +346,8 @@ export default defineComponent({
       const d = lastRoll.value.die;
       const throws = d.getThrow();
       const rawSum = throws.reduce((a, b) => a + b, 0);
-      return throws.length > 1 || d.getResult() !== rawSum;
+      // there is more than one throw, or a mod, or a mult (dividing rounds up).
+      return throws.length > 1 || d.getResult() !== rawSum || d.mult !== 1;
     });
 
     const rollTotal = computed(() => {

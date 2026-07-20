@@ -43,6 +43,7 @@ const test_dice: { [key: string]: [Die, string, string?] } = {
     'd-6>-10',
   ],
   'd6>-10x': [new Die(-10, 6, 1, 0, 1, 1, true, false), '1d6>-10x', 'd>-10x'],
+  'd2/2': [new Die(1, 2, 1, 0, 0.5, 1, false, false, '/'), `1d2${DIVIDE_CHARS[0]}2`],
 };
 
 expect.extend({
@@ -213,3 +214,13 @@ test('test randomness (sort of?? PROBABLY will work? theoretically could fail)',
 
   d = new Die('2d5/3+2'); // 1-4
 });
+
+test('Should return 1', () => {
+  const d = new Die('1d1/2');
+  expect(d.roll().getResult()).toEqual(1);
+  expect(d.roll().getResult()).toEqual(1);
+  expect(d.roll().getResult()).toEqual(1);
+  expect(d.roll().getResult()).toEqual(1);
+  expect(d.roll().getResult()).toEqual(1);
+});
+
